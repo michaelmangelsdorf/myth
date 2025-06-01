@@ -7,7 +7,7 @@ will help me explore a modified version of the CPU a little more and write softw
 before developing more hardware.
 
 The schematics have been stripped of everything I thought wasn't essential, so it's a bit
-easier to read. In order words, although it's possible to load the schematics file into KiCad,
+easier to read. In other words, although it's possible to load the schematics file into KiCad,
 its intended use is only for reference.
 
 ![PCB with working Sonne8 micro-controller](https://github.com/michaelmangelsdorf/myth/blob/main/sonne8pcb.jpg)
