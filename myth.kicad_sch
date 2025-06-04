@@ -44868,7 +44868,7 @@
 		)
 		(uuid "b5d136c5-ff14-4bbe-b3ef-fbd0b6511aa0")
 	)
-	(label "P4BO"
+	(label "SPBO"
 		(at 1089.66 600.71 180)
 		(effects
 			(font
