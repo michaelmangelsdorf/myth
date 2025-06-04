@@ -21134,7 +21134,7 @@
 		)
 		(uuid "4ed0b19d-b4cd-468d-b0d9-38d850391a32")
 	)
-	(text "O:\n- Saves offset of current instruction byte during call/trap/go\n- Outputs return offset during RET\n- Is the (only!) implied address offset for memory read-write, with the corresponding page index stored in B (Base)\n- Together with B forms 16-bit address pointers subject to the xU instruction.\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
+	(text "O:\n- Saves offset of current instruction byte during call/trap/go\n- Outputs RTSurn offset during RTS\n- Is the (only!) implied address offset for memory read-write, with the corresponding page index stored in B (Base)\n- Together with B forms 16-bit address pointers subject to the xU instruction.\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
 		(exclude_from_sim no)
 		(at 773.176 389.89 0)
 		(effects
@@ -21433,7 +21433,7 @@
 		)
 		(uuid "6ed62aa8-14f5-40be-a008-fee8563dbfa2")
 	)
-	(text "On RET/xG/xC:\nLoad instruction\noffset from O\ninto PC\n"
+	(text "On RTS/xG/xC:\nLoad instruction\noffset from O\ninto PC\n"
 		(exclude_from_sim no)
 		(at 566.674 302.514 0)
 		(effects
@@ -21543,7 +21543,7 @@
 		)
 		(uuid "7ec2e5f2-63dc-4fef-b01c-562caf56e5ee")
 	)
-	(text "Register at CLOSE\nxU instruction adder\nwould feedback\n\nB0-7 goes to PC module\nlatched during RET"
+	(text "Register at CLOSE\nxU instruction adder\nwould feedback\n\nB0-7 goes to PC module\nlatched during RTS"
 		(exclude_from_sim no)
 		(at 1035.558 259.334 0)
 		(effects
@@ -21763,7 +21763,7 @@
 		)
 		(uuid "9bfdf295-a52e-44fd-b371-f1f970c7e687")
 	)
-	(text "On RET:\nRestore PC value\nfrom O register\n(Center right)"
+	(text "On RTS:\nRestore PC value\nfrom O register\n(Center right)"
 		(exclude_from_sim no)
 		(at 511.81 364.49 0)
 		(effects
@@ -21830,7 +21830,7 @@
 		)
 		(uuid "a2ee2bcd-e745-41c6-acfa-ee799ad2e945")
 	)
-	(text "On EXIT (SUBR/xG):\nSave code page\noffset into O\nfor return"
+	(text "On EXIT (SUBR/xG):\nSave code page\noffset into O\nfor RTSurn"
 		(exclude_from_sim no)
 		(at 883.666 324.612 0)
 		(effects
@@ -21972,7 +21972,7 @@
 		)
 		(uuid "ad9ac7ca-336e-4f98-bca2-4c5b0a5e4df7")
 	)
-	(text "On EXIT (SUBR/xG):\nSave code page\nindex into B\nfor return"
+	(text "On EXIT (SUBR/xG):\nSave code page\nindex into B\nfor RTSurn"
 		(exclude_from_sim no)
 		(at 767.08 566.42 0)
 		(effects
@@ -22193,7 +22193,7 @@
 		)
 		(uuid "cea52e1b-29b0-4371-8f15-9e3beb285e9b")
 	)
-	(text "The L register is decremented during CALL/TRAP/ENTER\nand incremented during RET/LEAVE\n\nThis operations provide single-page local\nstack frames for nested subroutines.\n\nEach local page has \"GETPUT\" variables called\nL0-L7 at byte offsets 0xF8-0xFF.\n"
+	(text "The L register is decremented during CALL/TRAP/ENTER\nand incremented during RTS/LEAVE\n\nThis operations provide single-page local\nstack frames for nested subroutines.\n\nEach local page has \"GETPUT\" variables called\nL0-L7 at byte offsets 0xF8-0xFF.\n"
 		(exclude_from_sim no)
 		(at 500.126 624.332 0)
 		(effects
@@ -22291,7 +22291,7 @@
 		)
 		(uuid "d9549f53-1f03-4931-a4ed-ab9b2d9eb31b")
 	)
-	(text "B:\n- Saves page index of current instruction byte during call/trap/go\n- Outputs return page index during RET\n- Is the implied page index for memory read-write, with the corresponding byte offset stored in O (Offset)\n- Together with O forms a 16-bit address pointers subject to the xU instruction\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
+	(text "B:\n- Saves page index of current instruction byte during call/trap/go\n- Outputs RTSurn page index during RTS\n- Is the implied page index for memory read-write, with the corresponding byte offset stored in O (Offset)\n- Together with O forms a 16-bit address pointers subject to the xU instruction\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
 		(exclude_from_sim no)
 		(at 748.284 608.838 0)
 		(effects
@@ -41248,7 +41248,7 @@
 		)
 		(uuid "63d80368-894f-4448-83b2-86db96c2540b")
 	)
-	(label "RET"
+	(label "RTS"
 		(at 615.95 326.39 180)
 		(effects
 			(font
@@ -43118,7 +43118,7 @@
 		)
 		(uuid "8f2a6709-854c-4caf-959b-d289d2962128")
 	)
-	(label "~{RET}"
+	(label "~{RTS}"
 		(at 497.84 720.09 180)
 		(effects
 			(font
@@ -48798,7 +48798,7 @@
 		)
 		(uuid "fd97359f-b5d1-4491-8c66-0af5dbfcff8e")
 	)
-	(label "~{RET}"
+	(label "~{RTS}"
 		(at 316.23 408.94 0)
 		(effects
 			(font
