@@ -22052,7 +22052,7 @@
 		)
 		(uuid "6ed62aa8-14f5-40be-a008-fee8563dbfa2")
 	)
-	(text "On RET/xG/xC:\nLoad instruction\noffset from O\ninto PC\n"
+	(text "On RET/COR/xC:\nLoad instruction\noffset from O\ninto PC\n"
 		(exclude_from_sim no)
 		(at 566.674 302.514 0)
 		(effects
@@ -22062,17 +22062,6 @@
 			(justify left bottom)
 		)
 		(uuid "6f9ab96f-0bcc-40ba-812b-bf2e82bf15b0")
-	)
-	(text "Go"
-		(exclude_from_sim no)
-		(at 440.436 318.77 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "70268a0f-a8f1-4762-9a22-1bf83478c4da")
 	)
 	(text "rdmem"
 		(exclude_from_sim no)
@@ -22240,17 +22229,6 @@
 			(justify left bottom)
 		)
 		(uuid "8f06f6b0-c27b-49c1-a0b9-6f397b5a2409")
-	)
-	(text "Local"
-		(exclude_from_sim no)
-		(at 440.436 275.59 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "8f8fbad2-7cab-4a64-93bb-5beeea59ce40")
 	)
 	(text "Low order address byte either from ALU reg B,\nfrom a hardwired address byte during interpage\ncontrol flow (call, xI etc) in the local page,\nor from program counter register (PC) during\nautomatic instruction fetch / Fx literal fetch."
 		(exclude_from_sim no)
@@ -22482,7 +22460,7 @@
 		)
 		(uuid "a2ee2bcd-e745-41c6-acfa-ee799ad2e945")
 	)
-	(text "On EXIT (SUBR/xG)\n or CODE:\nSave code page\noffset into O"
+	(text "On EXIT (SUBR/COR)\n or CODE:\nSave code page\noffset into O"
 		(exclude_from_sim no)
 		(at 881.126 335.28 0)
 		(effects
@@ -22625,7 +22603,7 @@
 		)
 		(uuid "ad9ac7ca-336e-4f98-bca2-4c5b0a5e4df7")
 	)
-	(text "On EXIT (SUBR/xG):\nSave code page\nindex into B\nfor RTSurn"
+	(text "On EXIT (SUBR/COR):\nSave code page\nindex into B\nfor RTSurn"
 		(exclude_from_sim no)
 		(at 767.08 566.42 0)
 		(effects
@@ -22694,7 +22672,7 @@
 	)
 	(text "Down-Counter"
 		(exclude_from_sim no)
-		(at 439.928 313.69 0)
+		(at 439.928 316.23 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -23011,7 +22989,7 @@
 	)
 	(text "Update (add 8-bit signed to 16-bit B:O)"
 		(exclude_from_sim no)
-		(at 439.928 316.23 0)
+		(at 439.928 318.77 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -23173,6 +23151,17 @@
 			(justify left bottom)
 		)
 		(uuid "ef749795-c17e-42b5-b454-186d56d4828b")
+	)
+	(text "Local"
+		(exclude_from_sim no)
+		(at 439.928 313.69 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f004c152-97b6-42bf-bad8-f116b3c3a7df")
 	)
 	(text "(Local Page Index\n Register)"
 		(exclude_from_sim no)
@@ -24112,10 +24101,6 @@
 	(no_connect
 		(at 326.39 523.24)
 		(uuid "53d1c2d0-2ce3-438e-8883-e79eb88acff0")
-	)
-	(no_connect
-		(at 434.34 384.81)
-		(uuid "54e7de78-51f0-4d9d-9922-513d48711ba5")
 	)
 	(no_connect
 		(at 928.37 157.48)
@@ -26326,6 +26311,16 @@
 			(type default)
 		)
 		(uuid "0c7d4955-9cec-414a-a8f9-fc6a3c766010")
+	)
+	(wire
+		(pts
+			(xy 613.41 321.31) (xy 615.95 321.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0c85be52-ccee-4cd3-aedd-cea2555250de")
 	)
 	(wire
 		(pts
@@ -39138,7 +39133,7 @@
 		(uuid "29f65a6a-bccf-42be-be5f-11df28c3b7ac")
 	)
 	(label "xU"
-		(at 436.88 316.23 0)
+		(at 436.88 318.77 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -39488,7 +39483,7 @@
 		(uuid "31bfc3e7-147b-4531-a0c5-e3a305c1647d")
 	)
 	(label "xD"
-		(at 436.88 313.69 0)
+		(at 436.88 316.23 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -41247,16 +41242,6 @@
 		)
 		(uuid "54b7adc0-99dd-4489-9f54-1f7c35b573de")
 	)
-	(label "~{xL}"
-		(at 436.88 275.59 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "54e5c745-08e6-4085-9433-5f77e9a05cee")
-	)
 	(label "DB6"
 		(at 247.65 689.61 0)
 		(effects
@@ -42448,7 +42433,7 @@
 		(uuid "6ceb10bf-4340-4309-8250-882c2b60a70e")
 	)
 	(label "JUMP"
-		(at 600.71 318.77 180)
+		(at 598.17 318.77 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -43357,7 +43342,7 @@
 		)
 		(uuid "7f064424-06a6-4f5b-87d6-1970ae527766")
 	)
-	(label "~{KEY}"
+	(label "~{COR}"
 		(at 298.45 415.29 0)
 		(effects
 			(font
@@ -44288,7 +44273,7 @@
 		(uuid "94d24676-7ae3-483c-8bd6-88d31adf00b4")
 	)
 	(label "PH3"
-		(at 600.71 323.85 180)
+		(at 598.17 323.85 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -48027,16 +48012,6 @@
 		)
 		(uuid "df253e1a-c6d7-40fc-b0ff-d59917710dad")
 	)
-	(label "xG"
-		(at 436.88 318.77 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left bottom)
-		)
-		(uuid "df91c2bc-686f-4571-86e2-fbbc510cbae5")
-	)
 	(label "RES"
 		(at 57.15 739.14 180)
 		(effects
@@ -48447,7 +48422,7 @@
 		)
 		(uuid "e6a3d75c-68ce-4402-b043-e0cafb27c518")
 	)
-	(label "xG"
+	(label "COR"
 		(at 615.95 323.85 180)
 		(effects
 			(font
@@ -49307,6 +49282,16 @@
 		)
 		(uuid "f71cd02d-cbea-43b1-a9cf-2cafcfaea841")
 	)
+	(label "xL"
+		(at 436.88 313.69 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "f74bdc3a-e85e-45f3-9ad3-fcd8c45becbb")
+	)
 	(label "D3"
 		(at 638.81 220.98 180)
 		(effects
@@ -49337,7 +49322,7 @@
 		)
 		(uuid "f769436a-cca4-4a40-9030-dd7a1152d9b7")
 	)
-	(label "xG"
+	(label "COR"
 		(at 561.34 468.63 180)
 		(effects
 			(font
@@ -64379,7 +64364,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74LS08")
-		(at 608.33 321.31 0)
+		(at 605.79 321.31 0)
 		(unit 4)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -64387,7 +64372,7 @@
 		(dnp no)
 		(uuid "80ff9714-ccf5-4612-960a-d96ee3d434a2")
 		(property "Reference" "U100"
-			(at 608.33 313.055 0)
+			(at 605.79 313.055 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -64395,7 +64380,7 @@
 			)
 		)
 		(property "Value" "74AHC08"
-			(at 608.33 315.3664 0)
+			(at 605.79 315.3664 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -64403,7 +64388,7 @@
 			)
 		)
 		(property "Footprint" "Package_DIP:DIP-14_W7.62mm_Socket_LongPads"
-			(at 608.33 321.31 0)
+			(at 605.79 321.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -64412,7 +64397,7 @@
 			)
 		)
 		(property "Datasheet" "http://www.ti.com/lit/gpn/sn74LS08"
-			(at 608.33 321.31 0)
+			(at 605.79 321.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -64421,7 +64406,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 608.33 321.31 0)
+			(at 605.79 321.31 0)
 			(effects
 				(font
 					(size 1.27 1.27)

@@ -69,7 +69,7 @@ static void call( uint8_t dstpage);
 */
 
 #define Fx 0 /*from FETCH literal*/
-#define Mx 1 /*from MEMORY @ BASE:OFFSET*/
+#define Mx 1 /*from MEMORY @ B:O*/
 #define Bx 2 /*from BASE register*/
 #define Ox 3 /*from OFFSET register*/
 #define Ax 4 /*from ACCUMULATOR register*/
@@ -82,8 +82,8 @@ static void call( uint8_t dstpage);
    i.e. REG is a destination
 */
 
-#define xL 0  /* into LOCAL register */
-#define xM 1  /* into MEMORY @ BASE:OFFSET */
+#define xK 0
+#define xM 1  /* into MEMORY @ B:O */
 #define xB 2  /* into BASE register */
 #define xO 3  /* into OFFSET register */
 #define xA 4  /* into ACCUMULATOR register */
@@ -91,9 +91,9 @@ static void call( uint8_t dstpage);
 #define xS 6  /* into SERIAL output */
 #define xP 7  /* into PARALLEL output */
 
-#define xD 8  /* into DOWN-COUNTER register */
-#define xU 9  /* UPDATE - add signed byte into 16-bit pair B:O) */
-#define xG 10 /* GO - write into C, jumps to C:O, store return pointer in B:O */
+#define xL 8  /* into LOCAL register */
+#define xD 9  /* into DOWN-COUNTER register */
+#define xU 10 /* UPDATE - add signed byte into 16-bit pair B:O) */
 #define xJ 11 /* JUMP - write into pc */
 #define xW 12 /* WHILE JUMP - write into PC WHILE D not zero, decrement D */
 #define xN 13 /* NOT-ZERO JUMP - write into PC if A not zero */
@@ -132,7 +132,7 @@ static void call( uint8_t dstpage);
 #define SCH 4 /* Set serial Clock High */
 #define RTS 5 /* Return from Subroutine */
 #define RTI 6 /* Return from Interrupt */
-#define KEY 7 /* NOP for now */
+#define COR 7 /* Coroutine: Jump to B:O, save return pointer in B:O */
 
 
 /*BOP Instructions
@@ -200,12 +200,12 @@ myth_step()
 
         /*Decode priority encoded opcode
          and execute decoded instruction*/
-        if (opcode & 0x80) pair( opcode);
+        if (opcode & 0x80)      pair( opcode);
         else if (opcode & 0x40) getput( opcode);
         else if (opcode & 0x20) trap( opcode);
         else if (opcode & 0x10) alu( opcode);
         else if (opcode & 0x08) bops( opcode);
-        else sys( opcode);
+        else                    sys( opcode);
 }
 
 
@@ -225,22 +225,29 @@ fetch_opcode()
 
 
 void
-go( uint8_t dstpage)
+cor()
 {
-        uint8_t temp = o;
-        o = pc;
+        uint8_t temp;
+
+        temp = o;
+        o = pc; /* Save offset of return instruction */
         pc = temp;
 
-        b = c;
-        c = dstpage;
-
-        call( dstpage);
+        temp = b;
+        b = c; /* Save page index of return instruction */
+        c = temp;
 }
+
 
 void
 call( uint8_t dstpage)
 {
-        go( dstpage);
+        o = pc; /* Save offset of return instruction */
+        pc = 0; /*Branch to page head, offset 0*/
+
+        b = c; /* Save page index of return instruction */
+        c = dstpage;
+
         /*Create stack frame*/
         l--;
 }
@@ -250,18 +257,7 @@ void
 trap( uint8_t opcode)
 {
         uint8_t dstpage = opcode & 31; /*Zero except low order 5 bits*/
-
-        o = pc;
-
-        /*Branch to page head*/
-        pc = 0;
-
-        b = c;
-        c = dstpage;
-
-        /*Create stack frame*/
-        l--;
-
+        call(dstpage);
 }
 
 
@@ -333,7 +329,7 @@ pair( uint8_t opcode)
         uint16_t ui16;
 
         switch(dst){
-                case xL: l = v;         break;
+
                 case xM: ram[b][o] = v; break;
                 case xB: b = v;         break;
                 case xO: o = v;         break;
@@ -344,6 +340,8 @@ pair( uint8_t opcode)
                 
                 case xS: sor = v;       break;
                 case xP: por = v;       break;
+
+                case xL: l = v;         break;
                 case xD: d = v;         break; 
                 
                 case xU: ui16 = o + v>127 ? (uint16_t) v|0x00FF : v;
@@ -351,7 +349,6 @@ pair( uint8_t opcode)
                          b = ui16 >> 8;
                          break;
 
-                case xG: go(v);         break;
                 case xJ: pc = v;        break;
                 
                 case xW: if (d) pc = v;
@@ -481,7 +478,7 @@ sys( uint8_t opcode)
                         pc = o;
                         l++;
                         break;
-                case KEY: /* Fall through */
+                case COR: cor(); break;
                 default: break;
         }
 }
