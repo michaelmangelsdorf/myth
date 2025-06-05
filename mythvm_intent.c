@@ -28,6 +28,10 @@ uint8_t pir;
 uint8_t por;
 
 uint8_t a;
+uint8_t a0;
+uint8_t t;
+uint8_t t0;
+
 uint8_t o;
 uint8_t d;
 uint8_t pc;
@@ -35,7 +39,6 @@ uint8_t pc;
 uint8_t c;
 uint8_t b;
 uint8_t l;
-uint8_t t;
 
 uint8_t p1_b;
 uint8_t p2_b;
@@ -50,7 +53,7 @@ uint8_t sp_o;
 
 void reset();
 void myth_step();
-static uint8_t fetch();
+static uint8_t fetch_opcode();
 static uint8_t srcval( uint8_t srcreg);
 static void scrounge( uint8_t opcode);
 static void pair( uint8_t opcode);
@@ -171,6 +174,11 @@ reset() {
          por = 0;
 
          a = 0;
+         a0 = 0;
+         t = 0;
+         t0 = 0;
+
+
          o = 0;
          d = 0;
          pc = 0;
