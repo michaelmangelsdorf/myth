@@ -28,7 +28,7 @@ uint8_t pir; /* Parallel Input Register */
 uint8_t por; /* Parallel Output Register */
 
 uint8_t a; /* Accumulator Register */
-uint8_t t; /* ALU 2nd Operand */
+uint8_t prev; /* ALU 2nd Operand */
 
 uint8_t o; /* Offset Register */
 uint8_t d; /* Down-Counter / Decrement Register */
@@ -82,7 +82,7 @@ static void call( uint8_t dstpage);
    i.e. REG is a destination
 */
 
-#define xK 0
+#define xL 0  /* into LOCAL register */
 #define xM 1  /* into MEMORY @ B:O */
 #define xB 2  /* into BASE register */
 #define xO 3  /* into OFFSET register */
@@ -91,35 +91,35 @@ static void call( uint8_t dstpage);
 #define xS 6  /* into SERIAL output */
 #define xP 7  /* into PARALLEL output */
 
-#define xL 8  /* into LOCAL register */
-#define xD 9  /* into DOWN-COUNTER register */
-#define xU 10 /* UPDATE - add signed byte into 16-bit pair B:O) */
-#define xJ 11 /* JUMP - write into pc */
-#define xW 12 /* WHILE JUMP - write into PC WHILE D not zero, decrement D */
-#define xN 13 /* NOT-ZERO JUMP - write into PC if A not zero */
-#define xZ 14 /* ZERO JUMP- write into PC if A zero */
-#define xC 15 /* CALL - write into C, calls C:O, store return pointer in B:O */
+#define xD 8  /* into DOWN-COUNTER register */
+#define xU 9  /* UPDATE - add signed byte into 16-bit pair B:O) */
+#define xJ 10 /* JUMP - write into pc */
+#define xW 11 /* JUMP WHILE D - write into PC WHILE D not zero, decrement D */
+#define xH 12 /* JUMP IF HOT (NOT ZERO) - write into PC if D not zero*/
+#define xZ 13 /* JUMP IF ZERO - write into PC if A zero */
+#define xN 14 /* JUMP IF NEGATIVE - write into PC if A has bit 7 set */
+#define xC 15 /* CALL - write into C, call C:0, store return pointer in B:O */
 
 
 /*ALU Instructions
 */
 
 #define COA 0 /* Copy A */
-#define COT 1 /* Copy T */
+#define COP 1 /* Copy PREV */
 #define OCA 2 /* Ones' complement of A */
-#define OCT 3 /* Ones' complement of T */
+#define OCP 3 /* Ones' complement of PREV */
 #define SLA 4 /* Shift left A */
-#define SLT 5 /* Shift left T */
+#define SLP 5 /* Shift left PREV */
 #define SRA 6 /* Shift right A */
-#define SRT 7 /* Shift right T */
+#define SRP 7 /* Shift right PREV */
 #define AND 8 /* A AND T */
-#define IOR 9 /* A OR T */
+#define IOR 9 /* A OR PREV */
 #define EOR 10 /* A XOR T */
-#define ADD 11 /* A + T */
-#define CAR 12 /* Carry of: A + T (0 or 1) */
-#define ALT 13 /* 255 if A<T else 0 */
-#define AET 14 /* 255 if A=T else 0 */
-#define AGT 15 /* 255 if A>T else 0 */
+#define ADD 11 /* A + PREV */
+#define CAR 12 /* Carry of: A + PREV (0 or 1) */
+#define ALP 13 /* 255 if A<PREV else 0 */
+#define AEP 14 /* 255 if A=PREV else 0 */
+#define AGP 15 /* 255 if A>PREV else 0 */
 
 
 /*SYS Instructions
@@ -167,7 +167,7 @@ reset() {
          por = 0;
 
          a = 0;  /* ALU registers */
-         t = 0;
+         prev = 0;
 
 
          o = 0;
@@ -177,7 +177,6 @@ reset() {
          c = 0;
          b = 0;
          l = 0;
-         t = 0;
 
          p1_b = 0;
          p2_b = 0;
@@ -313,6 +312,11 @@ scrounge( uint8_t opcode)
         }
 }
 
+void push_acc(uint8_t v){
+        prev = a;
+        a = v;
+}
+
 
 /* Second part of handling PAIR instructions,
    stores source value into destination
@@ -329,35 +333,29 @@ pair( uint8_t opcode)
         uint16_t ui16;
 
         switch(dst){
-
+                case xL: l = v;         break;
                 case xM: ram[b][o] = v; break;
                 case xB: b = v;         break;
                 case xO: o = v;         break;
-                case xA: a = v;         break;
-                
+                case xA: push_acc(v);   break;
                 case xE: e_old = e_new;
                          e_new = v;     break;
-                
                 case xS: sor = v;       break;
                 case xP: por = v;       break;
 
-                case xL: l = v;         break;
-                case xD: d = v;         break; 
-                
+                case xD: d = v;         break;
                 case xU: ui16 = o + v>127 ? (uint16_t) v|0x00FF : v;
                          o = ui16 & 0xFF;
                          b = ui16 >> 8;
                          break;
-
                 case xJ: pc = v;        break;
-                
                 case xW: if (d) pc = v;
                          d--; /*Post decrement, either case!*/
                          break;
-
-                case xN: if (a) pc = v;  break;
-                case xZ: if (!a) pc = v; break;
-                case xC: call(v);        break;
+                case xH: if (a) pc = v;     break;
+                case xZ: if (!a) pc = v;    break;
+                case xN: if (a&128) pc = v; break;
+                case xC: call(v);           break;
         }
 }
 
@@ -388,10 +386,10 @@ getput( uint8_t opcode)
                 }
         else
         switch(BITS45){
-                case 0: b = *mptr; break;
-                case 1: o = *mptr; break;
-                case 2: a = *mptr; break;
-                case 3: d = *mptr; break;
+                case 0: b = *mptr;       break;
+                case 1: o = *mptr;       break;
+                case 2: push_acc(*mptr); break;
+                case 3: d = *mptr;       break;
         }
 }
 
@@ -405,29 +403,29 @@ alu( uint8_t opcode)
         uint8_t a0 = a;
 
         switch(opcode & 15){
-                case COA:              break;
-                case COT: a=t;        break;
-                case OCA: a = ~a;     break;
-                case OCT: a = ~t;     break;
-                case SLA: a = a << 1; break;
-                case SLT: a = t << 1; break;
-                case SRA: a = a >> 1; break;
-                case SRT: a = t >> 1; break;
+                case COA:                break;
+                case COP: a=prev;        break;
+                case OCA: a = ~a;        break;
+                case OCP: a = ~prev;     break;
+                case SLA: a = a << 1;    break;
+                case SLP: a = prev << 1; break;
+                case SRA: a = a >> 1;    break;
+                case SRP: a = prev >> 1; break;
                 
-                case AND: a = a & t;  break;
-                case IOR: a = a | t;  break;
-                case EOR: a = a ^ t;  break;
-                case ADD: a = a + t;  break;
+                case AND: a = a & prev;  break;
+                case IOR: a = a | prev;  break;
+                case EOR: a = a ^ prev;  break;
+                case ADD: a = a + prev;  break;
                 
-                case CAR: i = a + t;
+                case CAR: i = a + prev;
                           a =  (i > 255) ? 1 : 0;
                           break;
 
-                case ALT: a = (a<t)  ? 255 : 0; break;
-                case AET: a = (a==t) ? 255 : 0; break;
-                case AGT: a = (a>t)  ? 255 : 0; break;
+                case ALP: a = (a<prev)  ? 255 : 0; break;
+                case AEP: a = (a==prev) ? 255 : 0; break;
+                case AGP: a = (a>prev)  ? 255 : 0; break;
         }
-        t = a0;
+        prev = a0;
 }
 
 
