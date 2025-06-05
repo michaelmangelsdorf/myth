@@ -173,7 +173,7 @@ reset() {
          pir = 0;
          por = 0;
 
-         a = 0;
+         a = 0;  /* ALU registers */
          a0 = 0;
          t = 0;
          t0 = 0;
