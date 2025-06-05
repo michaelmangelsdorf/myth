@@ -16,36 +16,34 @@ uint8_t e_old; /* LO Nybble 0: NOP, 1: POE, HI Nybble: 0: NOP, 1: PLE */
 uint8_t e_new;
 
 uint8_t irq; /* Interrupt Request flag (input) */
-uint8_t busy; /* Interrupts disabled flag (output) */
+uint8_t busy; /* Interrupts-Disabled flag (output) */
 
-uint8_t sclk; /* Serial clock (output) */
-uint8_t miso;
-uint8_t mosi;
-uint8_t sir;
-uint8_t sor;
+uint8_t sclk; /* Serial Clock (output) */
+uint8_t miso; /* SPI Master-in Slave-out */
+uint8_t mosi; /* SPI Master-out Slave-in */
+uint8_t sir; /* Serial Input Register */
+uint8_t sor; /* Serial Output Register */
 
-uint8_t pir;
-uint8_t por;
+uint8_t pir; /* Parallel Input Register */
+uint8_t por; /* Parallel Output Register */
 
-uint8_t a;
-uint8_t a0;
-uint8_t t;
-uint8_t t0;
+uint8_t a; /* Accumulator Register */
+uint8_t t; /* ALU 2nd Operand */
 
-uint8_t o;
-uint8_t d;
-uint8_t pc;
+uint8_t o; /* Offset Register */
+uint8_t d; /* Down-Counter / Decrement Register */
+uint8_t pc; /* Program Counter Register */
 
-uint8_t c;
-uint8_t b;
-uint8_t l;
+uint8_t c; /* Code Page Index register */
+uint8_t b; /* Base Page Index Register */
+uint8_t l; /* Local Page Index Register */
 
-uint8_t p1_b;
+uint8_t p1_b; /* Pointer 1 Page Index */
 uint8_t p2_b;
 uint8_t p3_b;
 uint8_t sp_b;
 
-uint8_t p1_o;
+uint8_t p1_o; /* Pointer 1 Offset */
 uint8_t p2_o;
 uint8_t p3_o;
 uint8_t sp_o;
@@ -84,44 +82,44 @@ static void call( uint8_t dstpage);
    i.e. REG is a destination
 */
 
-#define xL 0  /*to LOCAL register*/
-#define xM 1  /*to MEMORY @ BASE:OFFSET*/
-#define xB 2  /*to BASE register*/
-#define xO 3  /*to OFFSET register*/
-#define xA 4  /*to ACCUMULATOR register*/
-#define xE 5  /*to ENABLE register*/
-#define xS 6  /*to SERIAL output*/
-#define xP 7  /*to PARALLEL output*/
+#define xL 0  /* into LOCAL register */
+#define xM 1  /* into MEMORY @ BASE:OFFSET */
+#define xB 2  /* into BASE register */
+#define xO 3  /* into OFFSET register */
+#define xA 4  /* into ACCUMULATOR register */
+#define xE 5  /* into ENABLE register */
+#define xS 6  /* into SERIAL output */
+#define xP 7  /* into PARALLEL output */
 
-#define xD 8  /*to DOWN-COUNTER register*/
-#define xU 9  /* UPDATE - add signed byte to 16-bit pair B:O)*/
-#define xG 10 /* GO - write to C, jumps to C:O, store return pointer in B:O*/
-#define xJ 11 /* JUMP - write to pc*/
-#define xW 12 /* WHILE JUMP - write to PC WHILE D not zero, decrement D*/
-#define xN 13 /* NOT-ZERO JUMP - write to PC if A not zero*/
-#define xZ 14 /* ZERO JUMP- write to PC if A zero*/
-#define xC 15 /* CALL - write to C, calls C:O, store return pointer in B:O*/
+#define xD 8  /* into DOWN-COUNTER register */
+#define xU 9  /* UPDATE - add signed byte into 16-bit pair B:O) */
+#define xG 10 /* GO - write into C, jumps to C:O, store return pointer in B:O */
+#define xJ 11 /* JUMP - write into pc */
+#define xW 12 /* WHILE JUMP - write into PC WHILE D not zero, decrement D */
+#define xN 13 /* NOT-ZERO JUMP - write into PC if A not zero */
+#define xZ 14 /* ZERO JUMP- write into PC if A zero */
+#define xC 15 /* CALL - write into C, calls C:O, store return pointer in B:O */
 
 
 /*ALU Instructions
 */
 
-#define COA 0 /*Copy A*/
-#define COT 1 /*Copy T*/
-#define OCA 2 /*Ones' complement of A*/
-#define OCT 3 /*Ones' complement of T*/
-#define SLA 4 /*Shift left A*/
-#define SLT 5 /*Shift left T*/
-#define SRA 6 /*Shift right A*/
-#define SRT 7 /*Shift right T*/
-#define AND 8 /*A AND T*/
-#define IOR 9 /*A OR T*/
-#define EOR 10 /*A XOR T*/
-#define ADD 11 /*A + T*/
-#define CAR 12 /*Carry of: A + T (0 or 1)*/
-#define ALT 13 /*255 if A<T else 0*/
-#define AET 14 /*255 if A=T else 0*/
-#define AGT 15 /*255 if A>T else 0*/
+#define COA 0 /* Copy A */
+#define COT 1 /* Copy T */
+#define OCA 2 /* Ones' complement of A */
+#define OCT 3 /* Ones' complement of T */
+#define SLA 4 /* Shift left A */
+#define SLT 5 /* Shift left T */
+#define SRA 6 /* Shift right A */
+#define SRT 7 /* Shift right T */
+#define AND 8 /* A AND T */
+#define IOR 9 /* A OR T */
+#define EOR 10 /* A XOR T */
+#define ADD 11 /* A + T */
+#define CAR 12 /* Carry of: A + T (0 or 1) */
+#define ALT 13 /* 255 if A<T else 0 */
+#define AET 14 /* 255 if A=T else 0 */
+#define AGT 15 /* 255 if A>T else 0 */
 
 
 /*SYS Instructions
@@ -155,13 +153,8 @@ static void call( uint8_t dstpage);
 
 void
 reset() {
+        /* Clear regs, to do: match schematics */
 
-     //   memset(ram[256][256], 0, 256*256); /* Clear RAM */
-
-         e_old = 0; /* LO Nybble 0: NOP, 1: POE, HI Nybble: 0: NOP, 1: PLE */
-         e_new = 0;
-
-         irq = 0; /* Interrupt Request flag (input) */
          busy = 0; /* Interrupts disabled flag (output) */
 
          sclk = 0; /* Serial clock (output) */
@@ -174,9 +167,7 @@ reset() {
          por = 0;
 
          a = 0;  /* ALU registers */
-         a0 = 0;
          t = 0;
-         t0 = 0;
 
 
          o = 0;
@@ -374,17 +365,18 @@ pair( uint8_t opcode)
 }
 
 
+/* Execute GETPUT instruction
+*/
 void
-getput( uint8_t opcode) /*Execute GETPUT instruction*/
+getput( uint8_t opcode)
 {
-        /* OPCODE
-            BITS 0-2 encode byte address offset in local page (from F8)
-            BIT 3 encodes GET/PUT mode
-            BITS 4-5 encode register index (BOAD)
-        */
-
+        /* Opcode BIT 3 encodes GET/PUT mode */
         #define BIT3 8
+
+        /* Opcode BITS 4-5 encode register index (BOAD) */
         #define BITS45 (opcode >> 4) & 3
+        
+        /* Opcode BITS 0-2 encode address offset in local page (from F8) */
         #define BITS02 opcode & 7
 
         uint8_t index = BITS02;
@@ -407,39 +399,43 @@ getput( uint8_t opcode) /*Execute GETPUT instruction*/
 }
 
 
+/* Execute ALU instruction
+*/
 void
 alu( uint8_t opcode)
 {
         int i;
-        uint8_t u, t = a;
+        uint8_t a0 = a;
 
         switch(opcode & 15){
-                case COA:             break;
-                case COT: a=t0;        break;
-                case OCA: a = ~a0;     break;
-                case OCT: a = ~t0;     break;
-                case SLA: a = a0 << 1; break;
-                case SLT: a = t0 << 1; break;
-                case SRA: a = a0 >> 1; break;
-                case SRT: a = t0 >> 1; break;
+                case COA:              break;
+                case COT: a=t;        break;
+                case OCA: a = ~a;     break;
+                case OCT: a = ~t;     break;
+                case SLA: a = a << 1; break;
+                case SLT: a = t << 1; break;
+                case SRA: a = a >> 1; break;
+                case SRT: a = t >> 1; break;
                 
-                case AND: a = a0 & t0;  break;
-                case IOR: a = a0 | t0;  break;
-                case EOR: a = a0 ^ t0;  break;
-                case ADD: a = a0 + t0;  break;
+                case AND: a = a & t;  break;
+                case IOR: a = a | t;  break;
+                case EOR: a = a ^ t;  break;
+                case ADD: a = a + t;  break;
                 
-                case CAR: i = a0 + t0;
+                case CAR: i = a + t;
                           a =  (i > 255) ? 1 : 0;
                           break;
 
-                case ALT: a = (a0<t0)  ? 255 : 0; break;
-                case AET: a = (a0==t0) ? 255 : 0; break;
-                case AGT: a = (a0>t0)  ? 255 : 0; break;
+                case ALT: a = (a<t)  ? 255 : 0; break;
+                case AET: a = (a==t) ? 255 : 0; break;
+                case AGT: a = (a>t)  ? 255 : 0; break;
         }
-        t0=t;
+        t = a0;
 }
 
 
+/* Execute BOPS instruction
+*/
 void
 bops( uint8_t opcode)
 {
@@ -460,6 +456,8 @@ bops( uint8_t opcode)
 }
 
 
+/* Execute SYS instruction
+*/
 void
 sys( uint8_t opcode)
 {
@@ -492,9 +490,8 @@ sys( uint8_t opcode)
 int
 main(int argc, char *argv[])
 {       
-        irq = 0;
         reset();
-        // Run fetch n times
+        // Run fetch() n times
         exit(0);
 }
 
