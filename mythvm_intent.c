@@ -84,23 +84,23 @@ static void call( uint8_t dstpage);
    i.e. REG is a destination
 */
 
-#define xL 0 /*to LOCAL register*/
-#define xM 1 /*to MEMORY @ BASE:OFFSET*/
-#define xB 2 /*to BASE register*/
-#define xO 3 /*to OFFSET register*/
-#define xA 4 /*to ACCUMULATOR register*/
-#define xE 5 /*to ENABLE register*/
-#define xS 6 /*to SERIAL output*/
-#define xP 7 /*to PARALLEL output*/
+#define xL 0  /*to LOCAL register*/
+#define xM 1  /*to MEMORY @ BASE:OFFSET*/
+#define xB 2  /*to BASE register*/
+#define xO 3  /*to OFFSET register*/
+#define xA 4  /*to ACCUMULATOR register*/
+#define xE 5  /*to ENABLE register*/
+#define xS 6  /*to SERIAL output*/
+#define xP 7  /*to PARALLEL output*/
 
-#define xD 8 /*to DOWN-COUNTER register*/
-#define xU 9 /*Add signed byte to 16-bit register pair BASE:OFFSET)*/
-#define xG 10 /*Write GO to page index*/
-#define xJ 11 /*write JUMP TO program counter value*/
-#define xW 12 /*write JUMP TO PC value WHILE D not zero, decrement D*/
-#define xN 13 /*write JUMP TO PC value if A not zero*/
-#define xZ 14 /*write JUMP TO PC value if A zero*/
-#define xC 15 /*write CALL to page index*/
+#define xD 8  /*to DOWN-COUNTER register*/
+#define xU 9  /* UPDATE - add signed byte to 16-bit pair B:O)*/
+#define xG 10 /* GO - write to C, jumps to C:O, store return pointer in B:O*/
+#define xJ 11 /* JUMP - write to pc*/
+#define xW 12 /* WHILE JUMP - write to PC WHILE D not zero, decrement D*/
+#define xN 13 /* NOT-ZERO JUMP - write to PC if A not zero*/
+#define xZ 14 /* ZERO JUMP- write to PC if A zero*/
+#define xC 15 /* CALL - write to C, calls C:O, store return pointer in B:O*/
 
 
 /*ALU Instructions
@@ -127,26 +127,26 @@ static void call( uint8_t dstpage);
 /*SYS Instructions
 */
 
-#define NOP 0 /*No Operation*/
-#define SSI 1 /*Serial Shift In*/
-#define SSO 2 /*Serial Shift Out*/
-#define SCL 3 /*Set serial Clock Low*/
-#define SCH 4 /*Set serial Clock High*/
-#define RTS 5
-#define RTI 6
-#define KEY 7
+#define NOP 0 /* No Operation */
+#define SSI 1 /* Serial Shift In */
+#define SSO 2 /* Serial Shift Out */
+#define SCL 3 /* Set serial Clock Low */
+#define SCH 4 /* Set serial Clock High */
+#define RTS 5 /* Return from Subroutine */
+#define RTI 6 /* Return from Interrupt */
+#define KEY 7 /* NOP for now */
 
 
 /*BOP Instructions
 */
 
-#define P1BO 0
-#define BOP1 1
+#define P1BO 0 /* Store P1 into B:O */
+#define BOP1 1 /* Store B:O into P1 */
 #define P2BO 2
 #define BOP2 3
 #define P3BO 4
 #define BOP3 5
-#define SPBO 6
+#define SPBO 6 /* P4 => SP Stack Pointer */
 #define BOSP 7
 
 #define GETPUT_OFFSET 0xF8 /*Local-page offset used by GETPUT instructions*/
