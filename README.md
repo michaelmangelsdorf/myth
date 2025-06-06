@@ -10,7 +10,7 @@ The schematics have been stripped of everything I thought wasn't essential, so i
 easier to read. In other words, although it's possible to load the schematics file into KiCad,
 its intended use is only for reference.
 
-The C file is also just for reference. It implements the intended workings of the CPU.
+The C file is also just for reference. It implements the intended workings of the CPU. For a more detailed description of this microcontroller read "spec.md".
 
 ![PCB with working Sonne8 micro-controller](https://github.com/michaelmangelsdorf/myth/blob/main/sonne8pcb.jpg)
 
