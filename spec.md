@@ -61,8 +61,7 @@ The 16-bit value B:O is called the Base Pointer.
 
 When code is running, the current instruction is fetched at position PC, either on the page-index stored in register C (Code) or in the R (Resident) register. The choice is based on the most significant bit of the program counter value: If the MSB of PC is set (offset of the instruction byte in the page is 128 or higher), the page index in R is used. Otherwise (the offset of the instruction byte is below 128), the page index in C is used.
 
-Conceptually, this creates two independent code segments, a lower segment (offsets < 128) and an upper segment. Subroutine and coroutine calls set C but not R, hence the name "Resident" since the code mapped into the upper segment is like a resident routine and persists inter-page control flow. There is a dedicated instruction to set R and jump to offset 0x80, the
-first byte of the upper segment.
+Conceptually, this creates two independent code segments, a lower segment (offsets < 128) and an upper segment. Subroutine and coroutine calls set C but not R, hence the name "Resident" since the code mapped into the upper segment is like a resident routine and persists during inter-page control flow. The dedicated instruction "xR" is there to set R.
 
 Note that the lower portion of the page (with index number in R) which provides the upper segment is not available to the running code. The reason for this is that when an intrapage jump to an address below 0x80 (the lower segment) occurs, the page-index in C takes over and the program in the
 lower segment of page C is at the program counter.
