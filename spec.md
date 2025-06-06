@@ -135,8 +135,8 @@ There are four 16-bit registers into which the B:O pointer can be saved, or from
 	P2BO Load P2 into BO
 	BOP2 Save BO into P2
 	
-	P3BO Load P3 into BO
-	BOP3 Save BO into P3
+	IPBO Load IP into BO
+	BOIP Save BO into IP
 
 	SPBO Load SP into BO
 	BOSP Save BO into SP
@@ -147,13 +147,13 @@ There are four 16-bit registers into which the B:O pointer can be saved, or from
 
 #### Device Selection
 
-The CPU is designed to handle serial and parallel communication external components. This is facilitated by dedicated hardware-registers and instructions.
+The CPU is designed to handle serial and parallel communication with external components. This is facilitated by dedicated hardware-registers and instructions.
 
 ##### E (Enable) register
 
 The 8-bit E register is used to control the select state of devices attached to the serial or parallel bus lines. To this end, the register is divided into two independent four-bit groups for device selection.
 
-Each four-bit group (L for the low-order, H for the high-order) drives a 4-to-16 line decoder, which maps the bit pattern encoded by that group to 1 of 16 possible, mutually exclusive select signals (SL0-15 and SH0-15).
+Each four-bit group (L for the low-order, H for the high-order) drives a 4-to-16 line decoder, which maps the bit pattern encoded by that group to 1 of 16 possible, mutually exclusive select signals (SL0-15 and SH0-15) per group.
 
 ###### Special Purpose Selectors
 
@@ -343,6 +343,8 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
 
 ### Opcode Descriptions
 
+    Group SYS
+    
     0x00: NOP	Pass the turn (no operation)
     0x01: SSI	Shift serial bit in
     0x02: SSO	Shift serial bit out
@@ -351,14 +353,20 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x05: RTS	Return from subroutine
     0x06: RTI	Return from interrupt
     0x07: COR	Set C to B. Set PC to O. Save return pointer into B:O
+    
+    Group BOPs
+    
     0x08: P1BO	Copy pointer P1 into B:O
     0x09: BOP1	Copy B:O into pointer P1
     0x0A: P2BO	Copy pointer P2 into B:O
     0x0B: BOP2	Copy B:O into pointer P2
-    0x0C: P3BO	Copy pointer P3 into B:O
-    0x0D: BOP3	Copy B:O into pointer P3
-    0x0E: SBPO	Copy stack pointer into B:O
+    0x0C: IPBO	Copy pointer IP into B:O
+    0x0D: BOIP	Copy B:O into pointer IP
+    0x0E: SPPO	Copy stack pointer into B:O
     0x0F: BOSP	Copy B:O into stack pointer
+    
+    Group ALU
+    
     0x10: COA	Push copy of A
     0x11: COX	Push copy of X
     0x12: OCA	Push one's complement of A
@@ -375,6 +383,9 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x1D: ALX	Push A<X flag (0 or 255)
     0x1E: AEX	Push A=X flag (0 or 255)
     0x1F: AGX	Push A>X flag (0 or 255)
+    
+    Group TRAP
+    
     0x20: *0	Trap call to page 0, offset 0
     0x21: *1	Trap call to page 1, offset 0
     0x22: *2	Trap call to page 2, offset 0
@@ -407,6 +418,9 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x3D: *29	Trap call to page 29, offset 0
     0x3E: *30	Trap call to page 30, offset 0
     0x3F: *31	Trap call to page 31, offset 0
+    
+    Group GETPUT
+    
     0x40: 1b	Load B from L1 (mem[L:0xF8])
     0x41: 2b	Load B from L2 (mem[L:0xF9])
     0x42: 3b	Load B from L3 (mem[L:0xFA])
@@ -471,6 +485,9 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x7D: d6	Store D into L6 (mem[L:0xFD])
     0x7E: d7	Store D into L7 (mem[L:0xFE])
     0x7F: d8	Store D into L8 (mem[L:0xFF])
+    
+    Group PAIR
+    
     0x80: FR	Take mem[C/R:PC++] into R
     0x81: CODE	Set pointer B:O to C/R:PC
     0x82: FB	Take mem[C/R:PC++] into B
@@ -599,5 +616,6 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xFD: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
     0xFE: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
     0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-        
+    
+            
     
