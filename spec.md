@@ -63,8 +63,7 @@ When code is running, the current instruction is fetched at position PC, either 
 
 Conceptually, this creates two independent code segments, a lower segment (offsets < 128) and an upper segment. Subroutine and coroutine calls set C but not R, hence the name "Resident" since the code mapped into the upper segment is like a resident routine and persists during inter-page control flow. The dedicated instruction "xR" is there to set R.
 
-Note that the lower portion of the page (with index number in R) which provides the upper segment is not available to the running code. The reason for this is that when an intrapage jump to an address below 0x80 (the lower segment) occurs, the page-index in C takes over and the program in the
-lower segment of page C is at the program counter.
+Note that the lower portion of the page (with index number in R) which provides the upper segment is not available to the running code, if R and C are different. The reason for this is that when an intrapage jump to an address below 0x80 (the lower segment) occurs, the page-index in C takes over and the program in the lower segment of page C is at the program counter.
 
 ###### L
 
@@ -327,8 +326,8 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
            x0    x1    x2    x3    x4    x5    x6    x7    x8    x9    xA    xB    xC    xD    xE    xF
     0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR  P1BO  BOP1  P2BO  BOP2  P3BO  BOP3  SPBO  BOSP
     1x    COA   COX   OCA   OCX   ASL   XSL   ASR   XSR   AND   IOR   EOR   SUM   CAR   ALX   AEX   AGX
-    2x    T00   T01   T02   T03   T04   T05   T06   T07   T08   T09   T10   T11   T12   T13   T14   T15
-    3x    T16   T17   T18   T19   T20   T21   T22   T23   T24   T25   T26   T27   T28   T29   T30   T31
+    2x     *0    *1    *2    *3    *4    *5    *6    *7    *8    *9   *10   *11   *12   *13   *14   *15
+    3x    *16   *17   *18   *19   *20   *21   *22   *23   *24   *25   *26   *27   *28   *29   *30   *31
     4x     1b    2b    3b    4b    5b    6b    7b    8b    b1    b2    b3    b4    b5    b6    b7    b8
     5x     1o    2o    3o    4o    5o    6o    7o    8o    o1    o2    o3    o4    o5    o6    o7    o8
     6x     1a    2a    3a    4a    5a    6a    7a    8a    a1    a2    a3    a4    a5    a6    a7    a8
@@ -342,5 +341,263 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     Ex     sr    sm    sb    so    sa    se    ss    sp    sd    su    sj    sw    sh    sz    sn    sc
     Fx     pr    pm    pb    po    pa    pe    ps    pp    pd    pu    pj    pw    ph    pz    pn    pc
 
+### Opcode Descriptions
 
-
+    0x00: NOP	Pass the turn (no operation)
+    0x01: SSI	Shift serial bit in
+    0x02: SSO	Shift serial bit out
+    0x03: SCL	Set serial clock low
+    0x04: SCH	Set serial clock high
+    0x05: RTS	Return from subroutine
+    0x06: RTI	Return from interrupt
+    0x07: COR	Set C to B. Set PC to O. Save return pointer into B:O
+    0x08: P1BO	Copy pointer P1 into B:O
+    0x09: BOP1	Copy B:O into pointer P1
+    0x0A: P2BO	Copy pointer P2 into B:O
+    0x0B: BOP2	Copy B:O into pointer P2
+    0x0C: P3BO	Copy pointer P3 into B:O
+    0x0D: BOP3	Copy B:O into pointer P3
+    0x0E: SBPO	Copy stack pointer into B:O
+    0x0F: BOSP	Copy B:O into stack pointer
+    0x10: COA	Push copy of A
+    0x11: COX	Push copy of X
+    0x12: OCA	Push one's complement of A
+    0x13: OCX	Push one's complement of X
+    0x14: ASL	Push A shifted left
+    0x15: XSL	Push X shifted left
+    0x16: ASR	Push A shifted right
+    0x17: XSR	Push X shifted right
+    0x18: AND	Push A AND X
+    0x19: IOR	Push A OR X
+    0x1A: EOR	PUSH A XOR X
+    0x1B: SUM	Push A + B
+    0x1C: CAR	Push CARRY of: A + B (0 or 1)
+    0x1D: ALX	Push A<X flag (0 or 255)
+    0x1E: AEX	Push A=X flag (0 or 255)
+    0x1F: AGX	Push A>X flag (0 or 255)
+    0x20: *0	Trap call to page 0, offset 0
+    0x21: *1	Trap call to page 1, offset 0
+    0x22: *2	Trap call to page 2, offset 0
+    0x23: *3	Trap call to page 3, offset 0
+    0x24: *4	Trap call to page 4, offset 0
+    0x25: *5	Trap call to page 5, offset 0
+    0x26: *6	Trap call to page 6, offset 0
+    0x27: *7	Trap call to page 7, offset 0
+    0x28: *8	Trap call to page 8, offset 0
+    0x29: *9	Trap call to page 9, offset 0
+    0x2A: *10	Trap call to page 10, offset 0
+    0x2B: *11	Trap call to page 11, offset 0
+    0x2C: *12	Trap call to page 12, offset 0
+    0x2D: *13	Trap call to page 13, offset 0
+    0x2E: *14	Trap call to page 14, offset 0
+    0x2F: *15	Trap call to page 15, offset 0
+    0x30: *16	Trap call to page 16, offset 0
+    0x31: *17	Trap call to page 17, offset 0
+    0x32: *18	Trap call to page 18, offset 0
+    0x33: *19	Trap call to page 19, offset 0
+    0x34: *20	Trap call to page 20, offset 0
+    0x35: *21	Trap call to page 21, offset 0
+    0x36: *22	Trap call to page 22, offset 0
+    0x37: *23	Trap call to page 23, offset 0
+    0x38: *24	Trap call to page 24, offset 0
+    0x39: *25	Trap call to page 25, offset 0
+    0x3A: *26	Trap call to page 26, offset 0
+    0x3B: *27	Trap call to page 27, offset 0
+    0x3C: *28	Trap call to page 28, offset 0
+    0x3D: *29	Trap call to page 29, offset 0
+    0x3E: *30	Trap call to page 30, offset 0
+    0x3F: *31	Trap call to page 31, offset 0
+    0x40: 1b	Load B from L1 (mem[L:0xF8])
+    0x41: 2b	Load B from L2 (mem[L:0xF9])
+    0x42: 3b	Load B from L3 (mem[L:0xFA])
+    0x43: 4b	Load B from L4 (mem[L:0xFB])
+    0x44: 5b	Load B from L5 (mem[L:0xFC])
+    0x45: 6b	Load B from L6 (mem[L:0xFD])
+    0x46: 7b	Load B from L7 (mem[L:0xFE])
+    0x47: 8b	Load B from L8 (mem[L:0xFF])
+    0x48: b1	Store B into L1 (mem[L:0xF8])
+    0x49: b2	Store B into L2 (mem[L:0xF9])
+    0x4A: b3	Store B into L3 (mem[L:0xFA])
+    0x4B: b4	Store B into L4 (mem[L:0xFB])
+    0x4C: b5	Store B into L5 (mem[L:0xFC])
+    0x4D: b6	Store B into L6 (mem[L:0xFD])
+    0x4E: b7	Store B into L7 (mem[L:0xFE])
+    0x4F: b8	Store B into L8 (mem[L:0xFF])
+    0x50: 1o	Load O from L1 (mem[L:0xF8])
+    0x51: 2o	Load O from L2 (mem[L:0xF9])
+    0x52: 3o	Load O from L3 (mem[L:0xFA])
+    0x53: 4o	Load O from L4 (mem[L:0xFB])
+    0x54: 5o	Load O from L5 (mem[L:0xFC])
+    0x55: 6o	Load O from L6 (mem[L:0xFD])
+    0x56: 7o	Load O from L7 (mem[L:0xFE])
+    0x57: 8o	Load O from L8 (mem[L:0xFF])
+    0x58: o1	Store O into L1 (mem[L:0xF8])
+    0x59: o2	Store O into L2 (mem[L:0xF9])
+    0x5A: o3	Store O into L3 (mem[L:0xFA])
+    0x5B: o4	Store O into L4 (mem[L:0xFB])
+    0x5C: o5	Store O into L5 (mem[L:0xFC])
+    0x5D: o6	Store O into L6 (mem[L:0xFD])
+    0x5E: o7	Store O into L7 (mem[L:0xFE])
+    0x5F: o8	Store O into L8 (mem[L:0xFF])
+    0x60: 1a	Load A from L1 (mem[L:0xF8])
+    0x61: 2a	Load A from L2 (mem[L:0xF9])
+    0x62: 3a	Load A from L3 (mem[L:0xFA])
+    0x63: 4a	Load A from L4 (mem[L:0xFB])
+    0x64: 5a	Load A from L5 (mem[L:0xFC])
+    0x65: 6a	Load A from L6 (mem[L:0xFD])
+    0x66: 7a	Load A from L7 (mem[L:0xFE])
+    0x67: 8a	Load A from L8 (mem[L:0xFF])
+    0x68: a1	Store A into L1 (mem[L:0xF8])
+    0x69: a2	Store A into L2 (mem[L:0xF9])
+    0x6A: a3	Store A into L3 (mem[L:0xFA])
+    0x6B: a4	Store A into L4 (mem[L:0xFB])
+    0x6C: a5	Store A into L5 (mem[L:0xFC])
+    0x6D: a6	Store A into L6 (mem[L:0xFD])
+    0x6E: a7	Store A into L7 (mem[L:0xFE])
+    0x6F: a8	Store A into L8 (mem[L:0xFF])
+    0x70: 1d	Load D from L1 (mem[L:0xF8])
+    0x71: 2d	Load D from L2 (mem[L:0xF9])
+    0x72: 3d	Load D from L3 (mem[L:0xFA])
+    0x73: 4d	Load D from L4 (mem[L:0xFB])
+    0x74: 5d	Load D from L5 (mem[L:0xFC])
+    0x75: 6d	Load D from L6 (mem[L:0xFD])
+    0x76: 7d	Load D from L7 (mem[L:0xFE])
+    0x77: 8d	Load D from L8 (mem[L:0xFF])
+    0x78: d1	Store D into L1 (mem[L:0xF8])
+    0x79: d2	Store D into L2 (mem[L:0xF9])
+    0x7A: d3	Store D into L3 (mem[L:0xFA])
+    0x7B: d4	Store D into L4 (mem[L:0xFB])
+    0x7C: d5	Store D into L5 (mem[L:0xFC])
+    0x7D: d6	Store D into L6 (mem[L:0xFD])
+    0x7E: d7	Store D into L7 (mem[L:0xFE])
+    0x7F: d8	Store D into L8 (mem[L:0xFF])
+    0x80: FR	Take mem[C/R:PC++] into R
+    0x81: CODE	Set pointer B:O to C/R:PC
+    0x82: FB	Take mem[C/R:PC++] into B
+    0x83: FO	Take mem[C/R:PC++] into O
+    0x84: FA	Take mem[C/R:PC++] into A
+    0x85: FE	Take mem[C/R:PC++] into E
+    0x86: FS	Take mem[C/R:PC++] into SOR
+    0x87: FP	Take mem[C/R:PC++] into POR
+    0x88: FD	Take mem[C/R:PC++] into D
+    0x89: FU	Take mem[C/R:PC++] as 8-bit signed number and add it to 16-bit pointer B:O
+    0x8A: FJ	Take mem[C/R:PC++] as page offset and store it into PC - always
+    0x8B: FW	Take mem[C/R:PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0x8C: FH	Take mem[C/R:PC++] as page offset and store it into PC - if A is not equal to zero
+    0x8D: FZ	Take mem[C/R:PC++] as page offset and store it into PC - if A is equal to zero
+    0x8E: FN	Take mem[C/R:PC++] as page offset and store it into PC - if A is negative (has bit 7 set)
+    0x8F: FC	Take mem[C/R:PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0x90: MR	Take mem[B:O] into R
+    0x91: LOCAL	Set pointer B:O to L:0xF7 (L0)
+    0x92: MB	Take mem[B:O] into B
+    0x93: MO	Take mem[B:O] into O
+    0x94: MA	Take mem[B:O] into A
+    0x95: ME	Take mem[B:O] into E
+    0x96: MS	Take mem[B:O] into SOR
+    0x97: MP	Take mem[B:O] into POR
+    0x98: MD	Take mem[B:O] into D
+    0x99: MU	Take mem[B:O] as 8-bit signed number and add it to 16-bit pointer B:O
+    0x9A: MJ	Take mem[B:O] as page offset and store it into PC - always
+    0x9B: MW	Take mem[B:O] as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0x9C: MH	Take mem[B:O] as page offset and store it into PC - if A is not equal to zero
+    0x9D: MZ	Take mem[B:O] as page offset and store it into PC - if A is equal to zero
+    0x9E: MN	Take mem[B:O] as page offset and store it into PC - if A is negative (has bit 7 set)
+    0x9F: MC	Take mem[B:O] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0xA0: BR	Take B into R
+    0xA1: BM	Take B into mem[B:O]
+    0xA2: LEAVE	Increment L
+    0xA3: BO	Take B into O
+    0xA4: BA	Take B into A
+    0xA5: BE	Take B into E
+    0xA6: BS	Take B into SOR
+    0xA7: BP	Take B into POR
+    0xA8: BD	Take B into D
+    0xA9: BU	Take B as 8-bit signed number and add it to 16-bit pointer B:O
+    0xAA: BJ	Take B as page offset and store it into PC - always
+    0xAB: BW	Take B as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0xAC: BH	Take B as page offset and store it into PC - if A is not equal to zero
+    0xAD: BZ	Take B as page offset and store it into PC - if A is equal to zero
+    0xAE: BN	Take B as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xAF: BC	Take B as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0xB0: OR	Take O into R
+    0xB1: OM	Take O into mem[B:O]
+    0xB2: OB	Take O into B
+    0xB3: ENTER	Decrement L
+    0xB4: OA	Take O into A
+    0xB5: OE	Take O into E
+    0xB6: OS	Take O into SOR
+    0xB7: OP	Take O into POR
+    0xB8: OD	Take O into D
+    0xB9: OU	Take O as 8-bit signed number and add it to 16-bit pointer B:O
+    0xBA: OJ	Take O as page offset and store it into PC - always
+    0xBB: OW	Take O as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0xBC: OH	Take O as page offset and store it into PC - if A is not equal to zero
+    0xBD: OZ	Take O as page offset and store it into PC - if A is equal to zero
+    0xBE: ON	Take O as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xBF: OC	Take O as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0xC0: AR	Take A into R
+    0xC1: AM	Take A into mem[B:O]
+    0xC2: AB	Take A into B
+    0xC3: AO	Take A into O
+    0xC4: INC	Increment A
+    0xC5: AE	Take A into E
+    0xC6: AS	Take A into SOR
+    0xC7: AP	Take A into POR
+    0xC8: AD	Take A into D
+    0xC9: AU	Take A as 8-bit signed number and add it to 16-bit pointer B:O
+    0xCA: AJ	Take A as page offset and store it into PC - always
+    0xCB: AW	Take A as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0xCC: AH	Take A as page offset and store it into PC - if A is not equal to zero
+    0xCD: AZ	Take A as page offset and store it into PC - if A is equal to zero
+    0xCE: AN	Take A as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xCF: AC	Take A as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0xD0: ER	Take E into R
+    0xD1: EM	Take E into mem[B:O]
+    0xD2: EB	Take E into B
+    0xD3: EO	Take E into O
+    0xD4: EA	Take E into A
+    0xD5: DEC	Decrement A
+    0xD6: ES	Take E into SOR
+    0xD7: EP	Take E into POR
+    0xD8: ED	Take E into D
+    0xD9: EU	Take E as 8-bit signed number and add it to 16-bit pointer B:O
+    0xDA: EJ	Take E as page offset and store it into PC - always
+    0xDB: EW	Take E as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0xDC: EH	Take E as page offset and store it into PC - if A is not equal to zero
+    0xDD: EZ	Take E as page offset and store it into PC - if A is equal to zero
+    0xDE: EN	Take E as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xDF: EC	Take E as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0xE0: SR	Take SIR into R
+    0xE1: SM	Take SIR into mem[B:O]
+    0xE2: SB	Take SIR into B
+    0xE3: SO	Take SIR into O
+    0xE4: SA	Take SIR into A
+    0xE5: SE	Take SIR into E
+    0xE6: SS	Take SIR into SOR
+    0xE7: SP	Take SIR into POR
+    0xE8: SD	Take SIR into D
+    0xE9: SU	Take SIR as 8-bit signed number and add it to 16-bit pointer B:O
+    0xEA: SJ	Take SIR as page offset and store it into PC - always
+    0xEB: SW	Take SIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0xEC: SH	Take SIR as page offset and store it into PC - if A is not equal to zero
+    0xED: SZ	Take SIR as page offset and store it into PC - if A is equal to zero
+    0xEE: SN	Take SIR as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xEF: SC	Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0xF0: PR	Take PIR into R
+    0xF1: PM	Take PIR into mem[B:O]
+    0xF2: PB	Take PIR into B
+    0xF3: PO	Take PIR into O
+    0xF4: PA	Take PIR into A
+    0xF5: PE	Take PIR into E
+    0xF6: PS	Take PIR into SOR
+    0xF7: PP	Take PIR into POR
+    0xF8: PD	Take PIR into D
+    0xF9: PU	Take PIR as 8-bit signed number and add it to 16-bit pointer B:O
+    0xFA: PJ	Take PIR as page offset and store it into PC - always
+    0xFB: PW	Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0xFC: PH	Take PIR as page offset and store it into PC - if A is not equal to zero
+    0xFD: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
+    0xFE: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+        
+    
