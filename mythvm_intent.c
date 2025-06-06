@@ -34,9 +34,10 @@ uint8_t o; /* Offset Register */
 uint8_t d; /* Down-Counter / Decrement Register */
 uint8_t pc; /* Program Counter Register */
 
-uint8_t c; /* Code Page Index register */
-uint8_t b; /* Base Page Index Register */
-uint8_t l; /* Local Page Index Register */
+uint8_t c; /* Code-Page Index register */
+uint8_t r; /* Resident-Page Index register */
+uint8_t b; /* Base Page-Index Register */
+uint8_t l; /* Local-Page Index Register */
 
 uint8_t p1_b; /* Pointer 1 Page Index */
 uint8_t p2_b;
@@ -49,7 +50,6 @@ uint8_t p3_o;
 uint8_t sp_o;
 
 
-void reset();
 void myth_step();
 static uint8_t fetch_opcode();
 static uint8_t srcval( uint8_t srcreg);
@@ -82,7 +82,7 @@ static void call( uint8_t dstpage);
    i.e. REG is a destination
 */
 
-#define xL 0  /* into LOCAL register */
+#define xR 0  /* into RESIDENT register */
 #define xM 1  /* into MEMORY @ B:O */
 #define xB 2  /* into BASE register */
 #define xO 3  /* into OFFSET register */
@@ -151,45 +151,6 @@ static void call( uint8_t dstpage);
 
 
 
-void
-reset() {
-        /* Clear regs, to do: match schematics */
-
-         busy = 0; /* Interrupts disabled flag (output) */
-
-         sclk = 0; /* Serial clock (output) */
-         miso = 0;
-         mosi = 0;
-         sir = 0;
-         sor = 0;
-
-         pir = 0;
-         por = 0;
-
-         a = 0;  /* ALU registers */
-         prev = 0;
-
-
-         o = 0;
-         d = 0;
-         pc = 0;
-
-         c = 0;
-         b = 0;
-         l = 0;
-
-         p1_b = 0;
-         p2_b = 0;
-         p3_b = 0;
-         sp_b = 0;
-
-         p1_o = 0;
-         p2_o = 0;
-         p3_o = 0;
-         sp_o = 0;
-}
-
-
 /* Single-step 1 instruction cycle
 */
 void
@@ -214,11 +175,13 @@ myth_step()
 uint8_t
 fetch_opcode()
 {
+        uint8_t pc0 = pc;
         if (irq && c>0) {
                 busy = 1;
                 return 32; /* TRAP0 */
         } else
-                return ram[c][pc++];
+        /* Instruction byte page offset high: map "resident" routine */
+                return ram[ pc0 & 0x80 ? r:c ][pc++];
 }
 
 
@@ -333,7 +296,7 @@ pair( uint8_t opcode)
         uint16_t ui16;
 
         switch(dst){
-                case xL: l = v;         break;
+                case xR: r = v;         break;
                 case xM: ram[b][o] = v; break;
                 case xB: b = v;         break;
                 case xO: o = v;         break;
@@ -485,7 +448,7 @@ sys( uint8_t opcode)
 int
 main(int argc, char *argv[])
 {       
-        reset();
+        // Set all regs and BUSY to 0 - match schematics
         // Run fetch() n times
         exit(0);
 }
