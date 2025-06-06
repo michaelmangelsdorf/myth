@@ -1,0 +1,347 @@
+## Myth CPU/Micro-Controller
+## OVERVIEW
+
+Myth is a spinoff with minor changes of an earlier micro-controller built successfully using just under 100 74HC series chips, some CMOS memory and passive components.
+
+Myth is an educational 8-bit toy CPU with a reduced, but hopefully enjoyable feature set. It has no microcoded complex instructions, but care has been taken to allow for practicable programming that should be intuitive to the assembler programmer.
+
+Published schematics and documentation of the earlier, working prototype:
+https://github.com/michaelmangelsdorf/Sonne8
+
+## PART 1
+
+### Computations
+
+The accumulator is a two element push-down stack representing the input operands to the ALU. The stack is formed by registers A (for Accumulator) and X. Executing an ALU opcode pushes the result onto the accumulator stack. This operation is a two-step process: (1) Store the previous value of A into X, overwriting X. (2) Store the ALU result into A, overwriting A.
+
+The ALU can compute the following functions (results are pushed):
+
+	0 COA ("Copy of A - DUP")
+	1 COX ("Copy of X - SWAP")
+	2 OCA ("One's complement of A" / A := ~A)
+	3 OCX ("One's complement of X" / A := ~X)
+	4 ASL ("A shifted left" / A := A << 1)
+	5 XSL ("X shifted left" / A := X << 1)
+	6 ASR ("A shifted right" / A := A >>1)
+	7 XSR ("X Shifted right" / A := X >> 1)
+	8 AND (A := A & X)
+	9 IOR (A := A | X)
+	10 EOR (A := A ^ X)
+	11 SUM ("SUM of A and X" / A := A + X, bits 0-7)
+	12 CAR ("Carry Bit of: A plus X" / A := 9th bit of A + X) 00h or 01h
+	13 ALX ("Flag: A less than X" / A := (A<X)? 0xFF:0
+	14 AEX ("Flag: A equals X" / A := (A==X)? 0xFF:0
+	15 AGX ("Flag: A greater than X" / A := (A>X)? 0xFF:0
+
+#### Memory Layout
+
+The CPU has access to 64 kilobytes of RAM. This memory is organized into 256 pages of 256 bytes.
+
+A memory address is composed of a page index (high order address) and a byte offset (low order address) within that page. For example address 0x6502 has a page index of 0x65 and a byte offset of 0x02.
+
+##### Offset Registers
+
+Without exception, the byte offset for data memory access is stored in O (offset), and the byte offset for fetching instructions and literals is stored in the program counter register (PC).
+
+When reading memory data, the O register must be set to a suitable page-offset value at any time, except when using GETPUT instructions or fetching a literal placed in the code.
+
+##### Page-index Registers
+
+There are four dedicated page-index registers: B for Base, C for Code, R for Resident, and L for Local.
+
+###### B
+
+Without exception, the B register (base) is used together with O (offset) as the memory pointer to the address where read or write operations occur.
+
+When reading memory data, the B:O register pair must be set to a suitable memory pointer, except when using GETPUT instructions or fetching a literal placed in the code.
+
+The 16-bit value B:O is called the Base Pointer.
+
+###### C and R
+
+When code is running, the current instruction is fetched at position PC, either on the page-index stored in register C (Code) or in the R (Resident) register. The choice is based on the most significant bit of the program counter value: If the MSB of PC is set (offset of the instruction byte in the page is 128 or higher), the page index in R is used. Otherwise (the offset of the instruction byte is below 128), the page index in C is used.
+
+Conceptually, this creates two independent code segments, a lower segment (offsets < 128) and an upper segment. Subroutine and coroutine calls set C but not R, hence the name "Resident" since the code mapped into the upper segment is like a resident routine and persists inter-page control flow. There is a dedicated instruction to set R and jump to offset 0x80, the
+first byte of the upper segment.
+
+Note that the lower portion of the page (with index number in R) which provides the upper segment is not available to the running code. The reason for this is that when an intrapage jump to an address below 0x80 (the lower segment) occurs, the page-index in C takes over and the program in the
+lower segment of page C is at the program counter.
+
+###### L
+
+The purpose of the L (local) page index register is to provide single page stack frames for subroutines. During subroutine calls, the page index in L is decremented, so that memory reads and writes using the L page index transparently access memory which is local to the currently running subroutine. When the subroutine returns, the page index in L is incremented, so that the previous stack frame (or L page) is restored to the calling subroutine.
+
+#### GETPUT Instructions and Stack Frames
+
+Instructions of type GETPUT complement the behaviour explained in the section on L. GETPUT instructions have mnemonics that consist of a digit and a letter. The letter names one of the allowed registers for this type of instruction: B, O, A, or D. The letter is a digit between 1 and 8, used as a short-hand to reference offsets 0xF8 to 0xFF in the local page (page index L). These memory locations are also referred to as L1 to L8. By means of the GETPUT instructions, L1 to L8 become quick-access memory locations that can be used as local variables within the current stack frame.
+
+The position of the digit relative to the letter determines the direction of the data move. For example: 1a transfers the memory content at offset 0xF8 into register A. And d5 transfers register D (down-counter) into memory at offset 0xFC of the local page.
+
+The local-page index can be manually decremented using ENTER, and manually incremented using LEAVE.
+
+
+#### PAIR Instructions and Effect Registers
+
+Data move instructions of type PAIR have mnemonics that consist of two letters, one for the source, followed by one for the target of the data move. For example, in order to write register B into A, there is an instruction with the mnemonic "ba".
+
+Some registers are "conventional" data registers, such as B and A, which correspond to physical registers, but there are also EFFECT registers, which procure or distribute data indirectly, or trigger conditional actions. One of them is the F register (fetch). It extracts the next byte in the instruction stream, and then skips to the next instruction.
+
+Example: "fa" fetches the byte following the current instruction in memory, and stores it into A. It then increments the program counter by 1 so that the next instruction is fetched instead of the literal.
+
+
+#### Intrapage Control Flow and D Register
+
+Branching inside of the current code page (page index C or R) is controlled by writing into the five effect registers J (Jump), W (While), H (Hot/Not zero), Z (Zero), or N (Negative).
+
+By writing a branch offset into J, the program counter is set to this new offset without condition. Writing to H loads the PC with the new offset only if register A (Accumulator) is non-zero ("hot"). Writing to Z loads PC with the new offset only if A is zero. W (while) works in conjunction with the D (down-counter) register; when a branch offset is written into W, PC is loaded with the new offset only while/if the D register is non-zero. Then, in either case, the D register is decremented.
+
+#### Interpage Control Flow and TRAP Instructions
+
+Branching to code in a different page is done by writing into one of the effect registers C (call) or R (resident), by executing a return instruction (RTS or RTI), the COR (coroutine) instruction, or executing a TRAP instruction.
+
+TRAP instructions have immediate opcodes that encode a target page-index for a call. When executed, an implicit subroutine call to this encoded page-index occurs within a single instruction.
+
+When executing RTS or RTI, the code page index register C is loaded with the value in B (base), the program counter register PC is loaded with the value of register O (offset), and the local-page index in register L is incremented.
+
+While executing a trap or when writing a target page-index into the effect register C (call), the program counter is set to 0 (!) and the target page index is loaded into C, so that execution in the target page always starts at offset zero, the page "head".
+
+When writing a target page index into C (call), the previous value of C is first saved into B (base), and the value of PC is saved into the O (offset) register before PC is set to zero, so that the called subroutine can save this information in order to return to the caller.
+
+When writing R to run a resident routine in the upper segment, care must be taken so that either the current instruction is in the lower segment, or that the mapped resident routine contains the intended code at the current position of PC, since the switch is immediate.
+
+#### PAIR Memory access - Effect Register M
+
+Writing into M (xM) stores the value into memory at page index B offset O. Conversely, reading from M (Mx) transfers the value stored into that memory cell into the target of the PAIR instruction. There are no other memory transfer instructions besides xMx, the GETPUT instructions, and Fx.
+
+#### SCROUNGED opcodes
+
+Inherent NOP instructions such as BB, OO, AA, and EE, and impractical instructions such as FM and MM (same-cycle memory load-store) are repurposed ("scrounged"), and their respective opcodes execute different instructions.
+
+	FM routed to: CODE (set B:O to C:PC)
+	MM routed to: LOCAL (set B:O to L:0xF7 - L0)
+	BB routed to: LEAVE (increment L)
+	OO routed to: ENTER (decrement L)
+	AA routed to: INC (increment A)
+	EE routed to: DEC (decrement A)
+
+
+#### B:O Pointer Registers (BOPs)
+
+As mentioned, registers B (base) and O (offset) form a 16-bit pointer for memory access. The xU (update) instruction is used to add an 8-bit signed number to this pointer for doing address arithmetic.
+
+There are four 16-bit registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction. P4 should be used as global stack pointer and has specific mnemonics, but this is only a convention.
+
+	P1BO Load P1 into BO
+	BOP1 Save BO into P1
+	
+	P2BO Load P2 into BO
+	BOP2 Save BO into P2
+	
+	P3BO Load P3 into BO
+	BOP3 Save BO into P3
+
+	SPBO Load SP into BO
+	BOSP Save BO into SP
+
+## PART 2
+
+### External Communication (I/O)
+
+#### Device Selection
+
+The CPU is designed to handle serial and parallel communication external components. This is facilitated by dedicated hardware-registers and instructions.
+
+##### E (Enable) register
+
+The 8-bit E register is used to control the select state of devices attached to the serial or parallel bus lines. To this end, the register is divided into two independent four-bit groups for device selection.
+
+Each four-bit group (L for the low-order, H for the high-order) drives a 4-to-16 line decoder, which maps the bit pattern encoded by that group to 1 of 16 possible, mutually exclusive select signals (SL0-15 and SH0-15).
+
+###### Special Purpose Selectors
+
+Select signals SL0 and SH0 are reserved to select a NULL device ("nothing").
+
+SL1 corresponds to the internal POR register output enable signal (POE). SH1 corresponds to the internal PIR register latch enable signal (PLE).
+
+In order to latch the current value of the GPIO bus into the PIR, the PLE signal must be set by the high-order nybble of E. Selecting the POE signal by the low-order nybble of E enables the output of the POR register onto the GPIO bus.
+
+All remaining selectors can be used freely.
+
+#### Communication Registers
+
+SOR (Serial Output Register)
+
+A write-only parallel-to-serial shift register for serialising an output byte, modelled after a 74HC165 chip. Writing an output value for serialisation is done by writing the value into register S.
+
+This value is clocked out/serialized by pulsing the SCLK clock line. This is achieved by alternating SCL and SCH instructions (set clock low/high).
+
+SCL-SCH-SCL generates a positive clock edge. SCH-SCL-SCH generates an inverted clock. Eight clock cycles are required to send-out a byte.
+
+SIR (Serial Input Register)
+
+A read-only serial-to-parallel shift register for de-serialising an incoming bit stream into an input byte, modelled after a 74HC595 chip.
+
+Receiving a byte is done by executing the SCL/SCH instructions eight times as explained above. Reading the deserialised input byte is done by reading register S.
+
+POR (Parallel Output Register)
+
+A tri-state register with 8-bit parallel output, modelled after a 74HC574 chip. Writing an output byte onto the parallel bus is a two step process. First, the data byte must be latched into the register by writing it into P. Then, the register output must be enabled by selecting POE in the E register, as described above.
+
+PIR (Parallel Input Register)
+
+A read-only 8-bit parallel input register, modelled after a 74HC574 chip. Latching the current 8-bit value of the parallel bus into the register is done by selecting PLE in E. The latched data byte can then be read from P. The bus operates in weak pull-down mode, so when all bus-devices are in tri-state mode, a zero value is registered.
+
+#### Communication Instructions
+
+#### SERIAL
+
+The following instructions contained in the SYS group operate on the communication registers:
+
+SSI (Shift Serial In)
+
+This instruction receives a serial bit via the serial input line. It then shifts SIR left and sets its least significant bit (LSB) to the received bit state.
+
+SSO (Shift Serial Out)
+
+This instruction outputs the most significant bit (MSB) of SOR onto the serial output line and then shifts SOR left.
+
+SCH (Serial clock high)
+
+This instruction sets the clock line to HIGH.
+
+SCL (Serial clock low)
+
+This instruction sets the clock line to LOW.
+
+#### PARALLEL
+
+The CPU interfaces to an external bidirectional 8-bit wide bus (GPIO bus).
+
+It can communicate on this bus by writing a data byte into P (POR register), and then enabling POE in the E register by setting its lower nybble to 1. Setting the bit to 1 switches the POR from tri-state output to active output, so that the byte value is output on the bus lines.
+
+While the output is active, other devices on the bus can read the data byte. Usually, such a device will be controlled or synchronised by the Myth controller. It does this by enabling or disabling latches or outputs of the required device in E as explained above. This generates output signals made available to external devices on the micro-controller pins. Exactly two output signals (one per nybble in E) can be active at the same time.
+
+Deselecting POE in E again (setting the low-order nybble to a value different from 1) tristates the POR output, so that other devices can put data bytes on the GPIO bus.
+
+Enabling PLE in E (setting the high-order nybble to 1) latches a data byte into the PIR. This byte can then be read from the P register.
+
+Once a data byte has been read, the PIR input should be deselected again in E by setting the high-order nybble to a value different from 1.
+
+### Serial Communication
+
+The Serial Peripheral Interface (SPI) protocol can be implemented using the device enable register E, serial registers SIR and SOR, and instructions SCL, SCH, SSI, and SSO.
+
+#### Device Selection
+
+Before communicating with a specific device connected to the serial bus, the corresponding se<lector bit representing the device must be set in the E register.
+
+#### Data Transmission
+
+To transmit data to the selected device, the processor writes a data byte (8 bits) to be serialised for output into the SOR (Serial Output) register.
+
+The SSO (Serial Shift Out) instruction is then used, which clocks the serial output shift register and produces a data bit on the MOSI line. Using the instruction sequence SCL SCH SCL (Serial Clock Low/High), a positive edge clock pulse is generated.
+
+As each bit is shifted out, it is sent to the selected device through the serial bus. The passive device processes the transmitted bit and the cycle repeats.
+
+#### Data Reception
+
+To receive data from an external device, the SSI (Serial Shift In) instruction is used. It clocks the serial input shift register, allowing the processor to receive one bit of data at a time from the selected device via the MISO line. The received data can then be read from the S register. Clocking is done as above.
+
+##### CPOL (Clock Polarity)
+
+The CPOL parameter determines the idle state of the clock signal. The controller provides signals SCL (Serial Clock Low) and SCH (Serial Clock High) instructions which can be used to control the clock signal's state.
+
+To configure CPOL=0 (clock idles low), execute SCL to set the clock signal low during the idle state. To configure CPOL=1 (clock idles high), execute SCH to set the clock signal high during the idle state.
+
+##### CPHA (Clock Phase)
+
+The CPHA parameter determines the edge of the clock signal where data is captured or changed. The Myth controller provides instructions SSI (Serial shift in) and SSO (Serial shift out) to control data transfer on each clock transition.
+
+To configure CPHA=0 (data captured on the leading edge), execute SSI before the clock transition to capture the incoming data. To configure CPHA=1 (data captured on the trailing edge), execute SSI after the clock transition to capture the incoming data.
+
+Similarly, to transmit data on the leading or trailing edge, execute SSO before or after the clock transition, respectively.
+
+#### Device Deselection
+
+After data transmission is complete, the selected device needs to be deselected to allow other devices to communicate on the bus. This is done by updating the E register with the appropriate value.
+
+
+### Interrupts
+
+An external device can make an interrupt request (IRQ) by asserting the IRQ signal.
+
+At the beginning of each instruction cycle, the CPU checks whether an Interrupt must be serviced. There are two conditions which prevent an interrupt from being serviced by the microcontroller during a given instruction cycle. Firstly, when the CPU is running code with the page-index in C set to 0, and secondly when the BUSY flag is set.
+
+If the BUSY flag is not set, and the code-page selected in C is not zero, the CPU injects a "fake" TRAP call instruction to page 0, instead of fetching a proper instruction opcode. It then sets the BUSY flag and starts running the interrupt service routine in page zero at address-offset 0. Since this process sets the C page-index to 0, further interrupts are disabled until execution leaves page zero. Note: The xR (Resident) instruction can be used to map code into the upper segment as explained; as long as the page-index in C remains zero, interrupts are disabled.
+
+To re-enable interrupts, the software must execute an RTI instruction (Return from Interrupt). RTI behaves identically to RTS (Return from Subroutine), but clears the BUSY flag. As long as the BUSY flag remains set, downstream service routines or other code will not be interrupted by interrupts.
+
+The interrupt service subroutine once it returns resumes execution at the point in code where the interrupt occurred.
+
+## Opcode Format
+
+Operation codes fall into 6 format groups, which are decodable using a priority encoder. 
+
+                      -- Opcode Bits --
+                         MSB     LSB
+    all 0: OPC_SYS       00000   xxx    See table @ SYS decoder
+     else: OPC_BOPS      00001   xxx    See table @ BOPS decoder
+           OPC_ALU       0001   xxxx    See table @ ALU
+           OPC_TRAP      001   xxxxx    b0-4: DESTPAGE
+           OPC_GETPUT    01 xx x xxx    b0-2: OFFS, b3: GET/PUT, b4-5: REG
+           OPC_PAIR      1  xxx xxxx    b0-3: DST, b4-6: SRC
+
+## Assembler
+
+Multiple assembler mnemonics can occur on a single line. Commas (",") can optionally be used for grouping "phrases" of instructions that logically belong together.
+
+### Comments
+
+Place comments into parentheses. A semicolon (";") works as a line comment.
+
+### Number Literals
+
+Decimal numbers from 0-255 can be included in the source text as literals, and be prefixed by an optional minus sign. Hexadecimal numbers must be in two uppercase digits and marked with the suffix "h", for instance: "80h" for 128.            Binary numbers can either be formatted as four numeric digits with the suffix "b" (1111b = 15), or in the following way, as two 4-bit groups separated by an underscore ("_") with the suffix "b", for instance: "0010_0000b" for 32.
+
+### Strings and Characters
+
+Characters enclosed in double quotation marks such as "Hello World" are assembled to ASCII strings of characters.
+
+### Labels
+
+Prefix page labels by @@, and offset labels by @. Once the assembler reaches a page label, the remaining bytes of the current page are padded with 0 (NOP), and the object-code pointer is set to offset 0 of the new page.
+
+A number can occur before the page label prefix ("n@@label"). This pads the remaining bytes of the current page with zeros, and sets the object-code pointer to the specified number prefix.
+
+An asterisk placed before a page label encodes a trap call instruction to that address. Such label references will generate an opcode that will trigger a TRAP to the head (offset 0) of the target page.
+
+### Label References
+
+Labels are referenced by prefixing their identifier with < for backward references (the intended label is defined earlier in the source code than the reference to it), or with > for forward references (the intended label is defined after the reference to it in the source code).
+
+If a label is not unique, the reference goes to the nearest occurrence of it in the given direction. A label reference is just a numerical value and can be used as a literal anywhere in the code.
+
+## Appendices
+
+### Opcode Matrix
+
+           x0    x1    x2    x3    x4    x5    x6    x7    x8    x9    xA    xB    xC    xD    xE    xF
+    0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR  P1BO  BOP1  P2BO  BOP2  P3BO  BOP3  SPBO  BOSP
+    1x    COA   COX   OCA   OCX   ASL   XSL   ASR   XSR   AND   IOR   EOR   SUM   CAR   ALX   AEX   AGX
+    2x    T00   T01   T02   T03   T04   T05   T06   T07   T08   T09   T10   T11   T12   T13   T14   T15
+    3x    T16   T17   T18   T19   T20   T21   T22   T23   T24   T25   T26   T27   T28   T29   T30   T31
+    4x     1b    2b    3b    4b    5b    6b    7b    8b    b1    b2    b3    b4    b5    b6    b7    b8
+    5x     1o    2o    3o    4o    5o    6o    7o    8o    o1    o2    o3    o4    o5    o6    o7    o8
+    6x     1a    2a    3a    4a    5a    6a    7a    8a    a1    a2    a3    a4    a5    a6    a7    a8
+    7x     1d    2d    3d    4d    5d    6d    7d    8d    d1    d2    d3    d4    d5    d6    d7    d8
+    8x     fr  CODE    fb    fo    fa    fe    fs    fp    fd    fu    fj    fw    fh    fz    fn    fc
+    9x     mr LOCAL    mb    mo    ma    me    ms    mp    md    mu    mj    mw    mh    mz    mn    mc
+    Ax     br    bm LEAVE    bo    ba    be    bs    bp    bd    bu    bj    bw    bh    bz    bn    bc
+    Bx     or    om    ob ENTER    oa    oe    os    op    od    ou    oj    ow    oh    oz    on    oc
+    Cx     ar    am    ab    ao   INC    ae    as    ap    ad    au    aj    aw    ah    az    an    ac
+    Dx     er    em    eb    eo    ea   DEC    es    ep    ed    eu    ej    ew    eh    ez    en    ec
+    Ex     sr    sm    sb    so    sa    se    ss    sp    sd    su    sj    sw    sh    sz    sn    sc
+    Fx     pr    pm    pb    po    pa    pe    ps    pp    pd    pu    pj    pw    ph    pz    pn    pc
+
+
+

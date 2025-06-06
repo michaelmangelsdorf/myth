@@ -28,7 +28,7 @@ uint8_t pir; /* Parallel Input Register */
 uint8_t por; /* Parallel Output Register */
 
 uint8_t a; /* Accumulator Register */
-uint8_t prev; /* ALU 2nd Operand */
+uint8_t x; /* ALU 2nd Operand */
 
 uint8_t o; /* Offset Register */
 uint8_t d; /* Down-Counter / Decrement Register */
@@ -104,22 +104,22 @@ static void call( uint8_t dstpage);
 /*ALU Instructions
 */
 
-#define COA 0 /* Copy A */
-#define COP 1 /* Copy PREV */
+#define COA 0 /* Copy of A */
+#define COX 1 /* Copy of X */
 #define OCA 2 /* Ones' complement of A */
-#define OCP 3 /* Ones' complement of PREV */
-#define SLA 4 /* Shift left A */
-#define SLP 5 /* Shift left PREV */
-#define SRA 6 /* Shift right A */
-#define SRP 7 /* Shift right PREV */
-#define AND 8 /* A AND T */
-#define IOR 9 /* A OR PREV */
-#define EOR 10 /* A XOR T */
-#define ADD 11 /* A + PREV */
-#define CAR 12 /* Carry of: A + PREV (0 or 1) */
-#define ALP 13 /* 255 if A<PREV else 0 */
-#define AEP 14 /* 255 if A=PREV else 0 */
-#define AGP 15 /* 255 if A>PREV else 0 */
+#define OCX 3 /* Ones' complement of X */
+#define ASL 4 /* A shifted left */
+#define XSL 5 /* X shifted left */
+#define ASR 6 /* A shifted right*/
+#define XSR 7 /* X shifted right*/
+#define AND 8 /* A AND X */
+#define IOR 9 /* A OR X */
+#define EOR 10 /* A XOR X */
+#define SUM 11 /* Sum of A plus X (low order 8-bits) */
+#define CAR 12 /* Carry bit of: A + X (0 or 1) */
+#define ALX 13 /* 255 if A<X else 0 */
+#define AEX 14 /* 255 if A=X else 0 */
+#define AGX 15 /* 255 if A>X else 0 */
 
 
 /*SYS Instructions
@@ -367,28 +367,28 @@ alu( uint8_t opcode)
 
         switch(opcode & 15){
                 case COA:                break;
-                case COP: a=prev;        break;
+                case COX: a=x;           break;
                 case OCA: a = ~a;        break;
-                case OCP: a = ~prev;     break;
+                case OCX: a = ~x;        break;
                 case SLA: a = a << 1;    break;
-                case SLP: a = prev << 1; break;
+                case SLX: a = x << 1;    break;
                 case SRA: a = a >> 1;    break;
-                case SRP: a = prev >> 1; break;
+                case SRX: a = x >> 1;    break;
                 
-                case AND: a = a & prev;  break;
-                case IOR: a = a | prev;  break;
-                case EOR: a = a ^ prev;  break;
-                case ADD: a = a + prev;  break;
+                case AND: a = a & x;  break;
+                case IOR: a = a | x;  break;
+                case EOR: a = a ^ x;  break;
+                case ADD: a = a + x;  break;
                 
-                case CAR: i = a + prev;
+                case CAR: i = a + x;
                           a =  (i > 255) ? 1 : 0;
                           break;
 
-                case ALP: a = (a<prev)  ? 255 : 0; break;
-                case AEP: a = (a==prev) ? 255 : 0; break;
-                case AGP: a = (a>prev)  ? 255 : 0; break;
+                case ALX: a = (a<x)  ? 255 : 0; break;
+                case AEX: a = (a==x) ? 255 : 0; break;
+                case AGX: a = (a>x)  ? 255 : 0; break;
         }
-        prev = a0;
+        x = a0;
 }
 
 
