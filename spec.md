@@ -63,7 +63,7 @@ When code is running, the current instruction is fetched at position PC, either 
 
 Conceptually, this creates two independent code segments, a lower segment (offsets < 128) and an upper segment. Subroutine and coroutine calls set C but not R, hence the name "Resident" since the code mapped into the upper segment is like a resident routine and persists during inter-page control flow. The dedicated instruction "xR" is there to set R.
 
-Note that the lower portion of the page (with index number in R) which provides the upper segment is not available to the running code, if R and C are different. The reason for this is that when an intrapage jump to an address below 0x80 (the lower segment) occurs, the page-index in C takes over and the program in the lower segment of page C is at the program counter.
+Note that the lower portion of the page (with index number in R) which provides the upper segment is not available to the running code, if R and C are different. The reason for this is that when an intrapage jump to an address below 0x80 (the lower segment) occurs, the page-index in C takes over and the instruction fetch in the lower segment occurs at C:PC, not at R:PC.
 
 ###### L
 

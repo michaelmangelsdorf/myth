@@ -22096,6 +22096,17 @@
 		)
 		(uuid "7aeff59e-efff-472d-baa3-358ef6939c0c")
 	)
+	(text "P4 use as index pointer"
+		(exclude_from_sim no)
+		(at 306.07 463.55 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "7b0e9337-e42a-4af0-a522-661ce7f283bf")
+	)
 	(text "Base"
 		(exclude_from_sim no)
 		(at 431.8 394.97 0)
@@ -22988,6 +22999,17 @@
 		)
 		(uuid "d9549f53-1f03-4931-a4ed-ab9b2d9eb31b")
 	)
+	(text "~{P3BO}"
+		(exclude_from_sim no)
+		(at 290.83 463.296 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "d9f84969-ac27-4bdb-b01e-2d754e4b3885")
+	)
 	(text "B:\n- Saves page index of current instruction byte during call/trap/go\n- Outputs return page index during RET\n- Is the implied page index for memory read-write, with the corresponding byte offset stored in O (Offset)\n- Together with O forms a 16-bit address pointers subject to the xU instruction\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
 		(exclude_from_sim no)
 		(at 743.204 611.378 0)
@@ -23064,6 +23086,17 @@
 			(justify left bottom)
 		)
 		(uuid "e01d1759-031a-4d00-89b7-f78b95978811")
+	)
+	(text "~{BOP3}"
+		(exclude_from_sim no)
+		(at 290.83 466.09 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e0e7c98a-fd3e-43b0-aa68-65d7643d2e3b")
 	)
 	(text "Input/Output"
 		(exclude_from_sim no)
@@ -26711,6 +26744,16 @@
 	)
 	(wire
 		(pts
+			(xy 290.83 466.09) (xy 299.72 466.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "121de51a-cea0-4e2f-a978-5603f4d40662")
+	)
+	(wire
+		(pts
 			(xy 961.39 271.78) (xy 955.04 271.78)
 		)
 		(stroke
@@ -29198,6 +29241,16 @@
 			(type default)
 		)
 		(uuid "491b47b1-1df3-4866-ac65-d66a60912737")
+	)
+	(wire
+		(pts
+			(xy 290.83 463.55) (xy 299.72 463.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "49388fcd-32ce-405b-9630-ef8bdaa84b15")
 	)
 	(wire
 		(pts
@@ -39709,7 +39762,7 @@
 		)
 		(uuid "2fb4b286-6296-434f-b91b-fced90f47bdc")
 	)
-	(label "BOP3"
+	(label "BOIP"
 		(at 1059.18 431.8 180)
 		(effects
 			(font
@@ -40489,7 +40542,7 @@
 		)
 		(uuid "3dc1ff1c-4616-49d5-bc88-e572a1f2b8b5")
 	)
-	(label "~{P3BO}"
+	(label "~{IPBO}"
 		(at 1059.18 434.34 180)
 		(effects
 			(font
@@ -41369,7 +41422,7 @@
 		)
 		(uuid "500ccdc0-9854-4e57-b072-77af7fd7c7f1")
 	)
-	(label "~{P3BO}"
+	(label "~{IPBO}"
 		(at 1115.06 434.34 180)
 		(effects
 			(font
@@ -42749,7 +42802,7 @@
 		)
 		(uuid "6b8b4630-06fb-4ed0-b89c-9e1ab1923290")
 	)
-	(label "BOP3"
+	(label "BOIP"
 		(at 1115.06 431.8 180)
 		(effects
 			(font
@@ -43909,8 +43962,8 @@
 		)
 		(uuid "81de5730-8ff1-4dea-b4db-fab66d3644ea")
 	)
-	(label "~{BOP3}"
-		(at 290.83 466.09 0)
+	(label "~{BOIP}"
+		(at 299.72 466.09 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -44959,8 +45012,8 @@
 		)
 		(uuid "98ef5e14-389c-471e-846b-09cb1a21db0c")
 	)
-	(label "~{P3BO}"
-		(at 290.83 463.55 0)
+	(label "~{IPBO}"
+		(at 299.72 463.55 0)
 		(effects
 			(font
 				(size 1.27 1.27)

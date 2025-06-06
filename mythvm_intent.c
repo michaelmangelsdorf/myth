@@ -41,12 +41,12 @@ uint8_t l; /* Local-Page Index Register */
 
 uint8_t p1_b; /* Pointer 1 Page Index */
 uint8_t p2_b;
-uint8_t p3_b;
+uint8_t ip_b;
 uint8_t sp_b;
 
 uint8_t p1_o; /* Pointer 1 Offset */
 uint8_t p2_o;
-uint8_t p3_o;
+uint8_t ip_o;
 uint8_t sp_o;
 
 
@@ -142,8 +142,8 @@ static void call( uint8_t dstpage);
 #define BOP1 1 /* Store B:O into P1 */
 #define P2BO 2
 #define BOP2 3
-#define P3BO 4
-#define BOP3 5
+#define IPBO 4
+#define BOIP 5
 #define SPBO 6 /* P4 => SP Stack Pointer */
 #define BOSP 7
 
@@ -276,7 +276,7 @@ scrounge( uint8_t opcode)
 }
 
 void push_acc(uint8_t v){
-        prev = a;
+        x = a;
         a = v;
 }
 
@@ -370,15 +370,15 @@ alu( uint8_t opcode)
                 case COX: a=x;           break;
                 case OCA: a = ~a;        break;
                 case OCX: a = ~x;        break;
-                case SLA: a = a << 1;    break;
-                case SLX: a = x << 1;    break;
-                case SRA: a = a >> 1;    break;
-                case SRX: a = x >> 1;    break;
+                case ASL: a = a << 1;    break;
+                case XSL: a = x << 1;    break;
+                case ASR: a = a >> 1;    break;
+                case XSR: a = x >> 1;    break;
                 
                 case AND: a = a & x;  break;
                 case IOR: a = a | x;  break;
                 case EOR: a = a ^ x;  break;
-                case ADD: a = a + x;  break;
+                case SUM: a = a + x;  break;
                 
                 case CAR: i = a + x;
                           a =  (i > 255) ? 1 : 0;
@@ -404,8 +404,8 @@ bops( uint8_t opcode)
                 caseP2BO: b=p2_b; o=p2_o; break;
                 caseBOP2: p2_b=b; p2_o=o; break;
         
-                caseP3BO: b=p3_b; o=p3_o; break;
-                caseBOP3: p3_b=b; p3_o=o; break;
+                caseIPBO: b=ip_b; o=ip_o; break;
+                caseBOIP: ip_b=b; ip_o=o; break;
         
                 caseSPBO: b=sp_b; o=sp_o; break;
                 caseBOSP: sp_b=b; sp_o=o; break;
