@@ -504,6 +504,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x8D: FZ	Take mem[C/R:PC++] as page offset and store it into PC - if A is equal to zero
     0x8E: FN	Take mem[C/R:PC++] as page offset and store it into PC - if A is negative (has bit 7 set)
     0x8F: FC	Take mem[C/R:PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    
     0x90: MR	Take mem[B:O] into R
     0x91: LOCAL	Set pointer B:O to L:0xF7 (L0)
     0x92: MB	Take mem[B:O] into B
@@ -520,6 +521,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x9D: MZ	Take mem[B:O] as page offset and store it into PC - if A is equal to zero
     0x9E: MN	Take mem[B:O] as page offset and store it into PC - if A is negative (has bit 7 set)
     0x9F: MC	Take mem[B:O] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    
     0xA0: BR	Take B into R
     0xA1: BM	Take B into mem[B:O]
     0xA2: LEAVE	Increment L
@@ -536,6 +538,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xAD: BZ	Take B as page offset and store it into PC - if A is equal to zero
     0xAE: BN	Take B as page offset and store it into PC - if A is negative (has bit 7 set)
     0xAF: BC	Take B as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    
     0xB0: OR	Take O into R
     0xB1: OM	Take O into mem[B:O]
     0xB2: OB	Take O into B
@@ -552,6 +555,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xBD: OZ	Take O as page offset and store it into PC - if A is equal to zero
     0xBE: ON	Take O as page offset and store it into PC - if A is negative (has bit 7 set)
     0xBF: OC	Take O as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    
     0xC0: AR	Take A into R
     0xC1: AM	Take A into mem[B:O]
     0xC2: AB	Take A into B
@@ -568,6 +572,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xCD: AZ	Take A as page offset and store it into PC - if A is equal to zero
     0xCE: AN	Take A as page offset and store it into PC - if A is negative (has bit 7 set)
     0xCF: AC	Take A as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    
     0xD0: ER	Take E into R
     0xD1: EM	Take E into mem[B:O]
     0xD2: EB	Take E into B
@@ -584,6 +589,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xDD: EZ	Take E as page offset and store it into PC - if A is equal to zero
     0xDE: EN	Take E as page offset and store it into PC - if A is negative (has bit 7 set)
     0xDF: EC	Take E as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    
     0xE0: SR	Take SIR into R
     0xE1: SM	Take SIR into mem[B:O]
     0xE2: SB	Take SIR into B
@@ -600,6 +606,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xED: SZ	Take SIR as page offset and store it into PC - if A is equal to zero
     0xEE: SN	Take SIR as page offset and store it into PC - if A is negative (has bit 7 set)
     0xEF: SC	Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    
     0xF0: PR	Take PIR into R
     0xF1: PM	Take PIR into mem[B:O]
     0xF2: PB	Take PIR into B
@@ -616,6 +623,4 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xFD: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
     0xFE: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
     0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    
-            
-    
+        
