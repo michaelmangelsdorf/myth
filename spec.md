@@ -27,7 +27,7 @@ The ALU can compute the following functions (results are pushed):
 	8 AND (A := A & X)
 	9 IOR (A := A | X)
 	10 EOR (A := A ^ X)
-	11 ADD ("ADD X to A" / A := A + X, bits 0-7)
+	11 ADD ("Add X to A" / A := A + X, bits 0-7)
 	12 CAR ("Carry Bit of: A plus X" / A := 9th bit of A + X) 00h or 01h
 	13 ALX ("Flag: A less than X" / A := (A<X)? 0xFF:0
 	14 AEX ("Flag: A equals X" / A := (A==X)? 0xFF:0
@@ -336,8 +336,8 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     9x     mr LOCAL    mb    mo    ma    me    ms    mp    md    mu    mj    mw    mh    mz    mn    mc
     Ax     br    bm LEAVE    bo    ba    be    bs    bp    bd    bu    bj    bw    bh    bz    bn    bc
     Bx     or    om    ob ENTER    oa    oe    os    op    od    ou    oj    ow    oh    oz    on    oc
-    Cx     ar    am    ab    ao   INC    ae    as    ap    ad    au    aj    aw    ah    az    an    ac
-    Dx     er    em    eb    eo    ea   DEC    es    ep    ed    eu    ej    ew    eh    ez    en    ec
+    Cx     ar    am    ab    ao  INCA    ae    as    ap    ad    au    aj    aw    ah    az    an    ac
+    Dx     er    em    eb    eo    ea  DECA    es    ep    ed    eu    ej    ew    eh    ez    en    ec
     Ex     sr    sm    sb    so    sa    se    ss    sp    sd    su    sj    sw    sh    sz    sn    sc
     Fx     pr    pm    pb    po    pa    pe    ps    pp    pd    pu    pj    pw    ph    pz    pn    pc
 
@@ -496,7 +496,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     Group PAIR
     
     0x80: FR	Take mem[CR:PC++] into R
-    0x81: CODE	Set pointer B:O to Cƒ:PC
+    0x81: CODE	Set pointer B:O to C:PC
     0x82: FB	Take mem[CR:PC++] into B
     0x83: FO	Take mem[CR:PC++] into O
     0x84: FA	Take mem[CR:PC++] into A
@@ -567,7 +567,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xC1: AM	Take A into mem[B:O]
     0xC2: AB	Take A into B
     0xC3: AO	Take A into O
-    0xC4: INC	Increment A
+    0xC4: INCA	Increment A
     0xC5: AE	Take A into E
     0xC6: AS	Take A into SOR
     0xC7: AP	Take A into POR
@@ -585,7 +585,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xD2: EB	Take E into B
     0xD3: EO	Take E into O
     0xD4: EA	Take E into A
-    0xD5: DEC	Decrement A
+    0xD5: DECA	Decrement A
     0xD6: ES	Take E into SOR
     0xD7: EP	Take E into POR
     0xD8: ED	Take E into D
@@ -630,4 +630,3 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xFD: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
     0xFE: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
     0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-            

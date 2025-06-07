@@ -267,11 +267,11 @@ scrounge( uint8_t opcode)
                                  l--;
                                  break;
 
-                case 16*Ax + xA: /*INC*/
+                case 16*Ax + xA: /*INCA*/
                                  a++;
                                  break;
 
-                case 16*Ex + xE: /*DEC*/
+                case 16*Ex + xE: /*DECA*/
                                  a--;
                                  break;
         }
