@@ -358,10 +358,13 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     
     0x08: P1BO	Copy pointer P1 into B:O
     0x09: BOP1	Copy B:O into pointer P1
+    
     0x0A: P2BO	Copy pointer P2 into B:O
     0x0B: BOP2	Copy B:O into pointer P2
+    
     0x0C: IPBO	Copy pointer IP into B:O
     0x0D: BOIP	Copy B:O into pointer IP
+    
     0x0E: SPPO	Copy stack pointer into B:O
     0x0F: BOSP	Copy B:O into stack pointer
     
