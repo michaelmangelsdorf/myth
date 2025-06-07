@@ -58,7 +58,7 @@ static void pair( uint8_t opcode);
 static void getput( uint8_t opcode);
 static void trap( uint8_t opcode);
 static void alu( uint8_t opcode);
-static void bops( uint8_t opcode);
+static void bop( uint8_t opcode);
 static void sys( uint8_t opcode);
 static void call( uint8_t dstpage);
 
@@ -400,7 +400,7 @@ alu( uint8_t opcode)
 /* Execute BOPS instruction
 */
 void
-bops( uint8_t opcode)
+bop( uint8_t opcode)
 {
         switch(opcode & 7){
                 caseP1BO: b=p1_b; o=p1_o; break;

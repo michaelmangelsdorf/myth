@@ -283,7 +283,7 @@ Operation codes fall into 6 format groups, which are decodable using a priority 
                       -- Opcode Bits --
                          MSB     LSB
     all 0: OPC_SYS       00000   xxx    See table @ SYS decoder
-     else: OPC_BOPS      00001   xxx    See table @ BOPS decoder
+     else: OPC_BOP       00001   xxx    See table @ BOP decoder
            OPC_ALU       0001   xxxx    See table @ ALU
            OPC_TRAP      001   xxxxx    b0-4: DESTPAGE
            OPC_GETPUT    01 xx x xxx    b0-2: OFFS, b3: GET/PUT, b4-5: REG
@@ -354,7 +354,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x06: RTI	Return from interrupt
     0x07: COR	Set C to B. Set PC to O. Save return pointer into B:O
     
-    Group BOPS
+    Group BOP
     
     0x08: P1BO	Copy pointer P1 into B:O
     0x09: BOP1	Copy B:O into pointer P1

@@ -22014,7 +22014,7 @@
 		)
 		(uuid "020490e4-2a4d-4247-8283-1da8df9acab5")
 	)
-	(text "BOPs Decoder"
+	(text "BOP Decoder"
 		(exclude_from_sim no)
 		(at 288.544 452.12 0)
 		(effects
@@ -22764,7 +22764,7 @@
 		)
 		(uuid "5e960153-8c44-4985-b85d-66917475be09")
 	)
-	(text "                  -- Opcode Bits --\n                     MSB     LSB\nall 0: OPC_SYS       00000   xxx    See table @ SYS decoder\n else: OPC_BOPS      00001   xxx    See table @ BOPS decoder\n       OPC_ALU       0001   xxxx    See table @ ALU\n       OPC_TRAP      001   xxxxx    b0-4: DESTPAGE\n       OPC_GETPUT    01 xx x xxx    b0-2: OFFS, b3: GET/PUT, b4-5: REG\n       OPC_PAIR      1  xxx xxxx    b0-3: DST, b4-6: SRC\n"
+	(text "                  -- Opcode Bits --\n                     MSB     LSB\nall 0: OPC_SYS       00000   xxx    See table @ SYS decoder\n else: OPC_BOP       00001   xxx    See table @ BOP decoder\n       OPC_ALU       0001   xxxx    See table @ ALU\n       OPC_TRAP      001   xxxxx    b0-4: DESTPAGE\n       OPC_GETPUT    01 xx x xxx    b0-2: OFFS, b3: GET/PUT, b4-5: REG\n       OPC_PAIR      1  xxx xxxx    b0-3: DST, b4-6: SRC\n"
 		(exclude_from_sim no)
 		(at 213.868 321.564 0)
 		(effects
@@ -41914,7 +41914,7 @@
 		)
 		(uuid "48a4c3a8-2d2d-4926-9acb-aadb24501567")
 	)
-	(label "~{opc_BOPS}"
+	(label "~{opc_BOP}"
 		(at 318.77 482.6 0)
 		(effects
 			(font
