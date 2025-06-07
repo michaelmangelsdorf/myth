@@ -381,7 +381,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x18: AND	Push A AND X
     0x19: IOR	Push A OR X
     0x1A: EOR	PUSH A XOR X
-    0x1B: ADD	Push A + B
+    0x1B: ADD	Push A + X
     0x1C: OVF	PUSH 0 + LSB=CARRY + MSB=OVERFLOW bit of: A+X
     0x1D: ALX	Push A<X flag (0 or 255)
     0x1E: AEX	Push A=X flag (0 or 255)
