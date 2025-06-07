@@ -104,19 +104,19 @@ static void call( uint8_t dstpage);
 /*ALU Instructions
 */
 
-#define COA 0 /* Copy of A */
-#define COX 1 /* Copy of X */
-#define OCA 2 /* Ones' complement of A */
-#define OCX 3 /* Ones' complement of X */
-#define ASL 4 /* A shifted left */
-#define XSL 5 /* X shifted left */
-#define ASR 6 /* A shifted right*/
-#define XSR 7 /* X shifted right*/
+#define DUP 0 /* Copy of A */
+#define SWAP 1 /* Copy of X */
+#define NOTA 2 /* Ones' complement of A */
+#define NOTX 3 /* Ones' complement of X */
+#define SLA 4 /* A shifted left */
+#define SLX 5 /* X shifted left */
+#define SRA 6 /* A shifted right*/
+#define SRX 7 /* X shifted right*/
 #define AND 8 /* A AND X */
 #define IOR 9 /* A OR X */
 #define EOR 10 /* A XOR X */
-#define SUM 11 /* Sum of A plus X (low order 8-bits) */
-#define CAR 12 /* Carry bit of: A + X (0 or 1) */
+#define ADD 11 /* Add X to A (low order 8-bits) */
+#define CAR 12 /* Carry bit of: A + X (0 or 1s) */
 #define ALX 13 /* 255 if A<X else 0 */
 #define AEX 14 /* 255 if A=X else 0 */
 #define AGX 15 /* 255 if A>X else 0 */
@@ -198,6 +198,7 @@ cor()
         temp = b;
         b = c; /* Save page index of return instruction */
         c = temp;
+        r = temp; /* ! */
 }
 
 
@@ -209,6 +210,7 @@ call( uint8_t dstpage)
 
         b = c; /* Save page index of return instruction */
         c = dstpage;
+        r = dstpage; /* ! */
 
         /*Create stack frame*/
         l--;
@@ -366,19 +368,19 @@ alu( uint8_t opcode)
         uint8_t a0 = a;
 
         switch(opcode & 15){
-                case COA:                break;
-                case COX: a=x;           break;
-                case OCA: a = ~a;        break;
-                case OCX: a = ~x;        break;
-                case ASL: a = a << 1;    break;
-                case XSL: a = x << 1;    break;
-                case ASR: a = a >> 1;    break;
-                case XSR: a = x >> 1;    break;
+                case DUP:                break;
+                case SWAP: a=x;           break;
+                case NOTA: a = ~a;        break;
+                case NOTX: a = ~x;        break;
+                case SLA: a = a << 1;    break;
+                case SLX: a = x << 1;    break;
+                case SRA: a = a >> 1;    break;
+                case SRX: a = x >> 1;    break;
                 
                 case AND: a = a & x;  break;
                 case IOR: a = a | x;  break;
                 case EOR: a = a ^ x;  break;
-                case SUM: a = a + x;  break;
+                case ADD: a = a + x;  break;
                 
                 case CAR: i = a + x;
                           a =  (i > 255) ? 1 : 0;
@@ -436,6 +438,7 @@ sys( uint8_t opcode)
                           /* Fall through */
                 case RTS:
                         c = b;
+                        r = b; /* ! */
                         pc = o;
                         l++;
                         break;
