@@ -6,7 +6,7 @@
 	(paper "A0")
 	(title_block
 		(title "Sonne-8 Micro-Controller")
-		(date "2025-06-05")
+		(date "2025-06-07")
 		(rev "Myth")
 		(company "Contact: mim@ok-schalter.de")
 		(comment 1 "Author: Michael Mangelsdorf")
@@ -22300,7 +22300,7 @@
 		)
 		(uuid "2f35b863-a9e8-4c65-9fdf-64f5de30076f")
 	)
-	(text "Put 0xF7 on the bus\nO will latch"
+	(text "Put F7h on the bus\nO will latch"
 		(exclude_from_sim no)
 		(at 563.88 615.188 0)
 		(effects
@@ -22587,7 +22587,7 @@
 		)
 		(uuid "4ed0b19d-b4cd-468d-b0d9-38d850391a32")
 	)
-	(text "O:\n- Saves offset of current instruction byte during call/trap/go\n- Outputs return offset during RET\n- Is the (only!) implied address offset for memory read-write, with the corresponding page index stored in B (Base)\n- Together with B forms 16-bit address pointers subject to the xU instruction.\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
+	(text "O:\n- Saves offset of current instruction byte during call/trap/cor\n- Outputs return offset during RET\n- Is the (only) implied address offset for memory read-write, with the corresponding page index stored in B (Base)\n- Together with B forms 16-bit address pointers subject to the xU instruction.\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
 		(exclude_from_sim no)
 		(at 755.396 389.89 0)
 		(effects
@@ -22620,7 +22620,7 @@
 		)
 		(uuid "50b75f6d-2016-4281-bd09-c9628a0f9f0d")
 	)
-	(text "A := A & X\nA := A | X\nA := A ^ X\nA := A + X, bits 0-7\nA := Zero + LSB=CARRY + MSB=OVERFLOW bit of: A+X\nA := (A<X)? 0xFF:0\nA := (A==X)? 0xFF:0\nA := (A>X)? 0xFF:0"
+	(text "A := A & X\nA := A | X\nA := A ^ X\nA := A + X, bits 0-7\nA := Zero + LSB=CARRY + MSB=OVERFLOW bit of: A+X\nA := (A<X)? FFh:0\nA := (A==X)? FFh:0\nA := (A>X)? FFh:0"
 		(exclude_from_sim no)
 		(at 799.338 151.638 0)
 		(effects
@@ -22863,7 +22863,7 @@
 		)
 		(uuid "6994d764-4909-4906-b09a-a0da068062bc")
 	)
-	(text "0xF7 = 0b11110111\nCorresponds to L0\nin local page"
+	(text "F7h = 11110111b\nCorresponds to L0\nin local page"
 		(exclude_from_sim no)
 		(at 513.334 593.598 0)
 		(effects
@@ -23713,9 +23713,9 @@
 		)
 		(uuid "ceaf4765-8cea-428d-b2aa-848d047c3116")
 	)
-	(text "The L register is decremented during CALL/TRAP/ENTER\nand incremented during RET/LEAVE\n\nThis operations provide single-page local\nstack frames for nested subroutines.\n\nEach local page has \"GETPUT\" variables called\nL1-L8 at byte offsets 0xF8-0xFF.\n"
+	(text "The L register is decremented during CALL/TRAP/ENTER\nand incremented during RET/LEAVE\n\nThis operations provide single-page local\nstack frames for nested subroutines.\n\nEach local page has \"GETPUT\" variables called\nL1-L8 at byte offsets F8h-FFh.\n\nThe LOCAL instruction sets B:O to L:F7h (L0)"
 		(exclude_from_sim no)
-		(at 471.678 686.308 0)
+		(at 468.63 688.086 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -23866,7 +23866,7 @@
 		)
 		(uuid "d9f84969-ac27-4bdb-b01e-2d754e4b3885")
 	)
-	(text "B:\n- Saves page index of current instruction byte during call/trap/go\n- Outputs return page index during RET\n- Is the implied page index for memory read-write, with the corresponding byte offset stored in O (Offset)\n- Together with O forms a 16-bit address pointers subject to the xU instruction\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
+	(text "B:\n- Saves page index of current instruction byte during call/trap/cor\n- Outputs return page index during RET\n- Is the (only) implied page index for memory read-write, with the corresponding byte offset stored in O (Offset)\n- Together with O forms a 16-bit address pointers subject to the xU instruction\n  The B:O pointer can be loaded from/saved into the BO-Pointers P1-4"
 		(exclude_from_sim no)
 		(at 743.204 611.378 0)
 		(effects
@@ -25079,10 +25079,6 @@
 	(no_connect
 		(at 201.93 728.98)
 		(uuid "9b0d91e8-847c-4b10-8574-5359bf30cef2")
-	)
-	(no_connect
-		(at -88.9 438.15)
-		(uuid "a3d2c43c-5199-42a8-a52e-1dcb493ba33e")
 	)
 	(no_connect
 		(at 196.85 245.11)
@@ -38985,7 +38981,7 @@
 		(uuid "08f2f3d9-2a59-47c0-b193-9773324e69e2")
 	)
 	(label "LOCAL"
-		(at 1083.31 596.9 180)
+		(at 1102.36 591.82 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -50684,8 +50680,8 @@
 		)
 		(uuid "f4b64713-1b79-4aea-adb3-5d66d498cb1b")
 	)
-	(label "P3BO"
-		(at 1102.36 591.82 180)
+	(label "IPBO"
+		(at 1083.31 596.9 180)
 		(effects
 			(font
 				(size 1.27 1.27)
