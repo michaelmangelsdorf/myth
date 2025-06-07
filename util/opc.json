@@ -776,6 +776,7 @@
   {
     "opcode": 129,
     "group": "PAIR",
+    "scrounge": "FM",
     "mnemonic": "CODE",
     "desc": "Set pointer B:O to C:PC"
   },
@@ -872,6 +873,7 @@
   {
     "opcode": 145,
     "group": "PAIR",
+    "scrounge": "MM",
     "mnemonic": "LOCAL",
     "desc": "Set pointer B:O to L:F7h (L0)"
   },
@@ -974,6 +976,7 @@
   {
     "opcode": 162,
     "group": "PAIR",
+    "scrounge": "BB",
     "mnemonic": "LEAVE",
     "desc": "Increment L"
   },
@@ -1076,6 +1079,7 @@
   {
     "opcode": 179,
     "group": "PAIR",
+    "scrounge": "OO",
     "mnemonic": "ENTER",
     "desc": "Decrement L"
   },
@@ -1178,6 +1182,7 @@
   {
     "opcode": 196,
     "group": "PAIR",
+    "scrounge": "AA",
     "mnemonic": "INCA",
     "desc": "Increment A"
   },
@@ -1280,6 +1285,7 @@
   {
     "opcode": 213,
     "group": "PAIR",
+    "scrounge": "EE",
     "mnemonic": "DECA",
     "desc": "Decrement A"
   },
