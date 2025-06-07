@@ -49,49 +49,49 @@
   },
   {
     "opcode": 8,
-    "group": "BOPS",
+    "group": "BOP",
     "mnemonic": "P1BO",
     "desc": "Copy pointer P1 into B:O"
   },
   {
     "opcode": 9,
-    "group": "BOPS",
+    "group": "BOP",
     "mnemonic": "BOP1",
     "desc": "Copy B:O into pointer P1"
   },
   {
     "opcode": 10,
-    "group": "BOPS",
+    "group": "BOP",
     "mnemonic": "P2BO",
     "desc": "Copy pointer P2 into B:O"
   },
   {
     "opcode": 11,
-    "group": "BOPS",
+    "group": "BOP",
     "mnemonic": "BOP2",
     "desc": "Copy B:O into pointer P2"
   },
   {
     "opcode": 12,
-    "group": "BOPS",
+    "group": "BOP",
     "mnemonic": "IPBO",
     "desc": "Copy pointer IP into B:O"
   },
   {
     "opcode": 13,
-    "group": "BOPS",
+    "group": "BOP",
     "mnemonic": "BOIP",
     "desc": "Copy B:O into pointer IP"
   },
   {
     "opcode": 14,
-    "group": "BOPS",
+    "group": "BOP",
     "mnemonic": "SPPO",
     "desc": "Copy stack pointer into B:O"
   },
   {
     "opcode": 15,
-    "group": "BOPS",
+    "group": "BOP",
     "mnemonic": "BOSP",
     "desc": "Copy B:O into stack pointer"
   },
