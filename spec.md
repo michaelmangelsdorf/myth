@@ -16,22 +16,22 @@ The accumulator is a two element push-down stack representing the input operands
 
 The ALU can compute the following functions (results are pushed):
 
-	0 DUP ("Copy of A")
-	1 SWAP ("Copy of X")
-	2 NOTA ("One's complement of A" / A := ~A)
-	3 NOTX ("One's complement of X" / A := ~X)
-	4 SLA ("Shift left A" / A := A << 1)
-	5 SLX ("Shift left X" / A := X << 1)
-	6 ASR ("Shift right A" / A := A >>1)
-	7 XSR ("Shift right X" / A := X >> 1)
-	8 AND (A := A & X)
-	9 IOR (A := A | X)
-	10 EOR (A := A ^ X)
-	11 ADD ("Add X to A" / A := A + X, bits 0-7)
-	12 CAR ("Carry Bit of: A plus X" / A := 9th bit of A + X) 00h or 01h
-	13 ALX ("Flag: A less than X" / A := (A<X)? 0xFF:0
-	14 AEX ("Flag: A equals X" / A := (A==X)? 0xFF:0
-	15 AGX ("Flag: A greater than X" / A := (A>X)? 0xFF:0
+	0 DUP (Copy of A)
+	1 SWAP (Copy of X)
+	2 NOTA (One's complement of A)
+	3 NOTX (One's complement of X)
+	4 SLA (Shift left A)
+	5 SLX (Shift left X)
+	6 SRA (Shift right A)
+	7 SRX (Shift right X)
+	8 AND (A AND X)
+	9 IOR (A OR X)
+	10 EOR (A XOR X)
+	11 ADD (A plus X)
+	12 OVF (Bits - Carry/Overflow of: A plus X)
+	13 ALX (Flag - A less than X)
+	14 AEX (Flag - A equals X)
+	15 AGX (Flag - A greater than X)
 
 #### Memory Layout
 
@@ -325,7 +325,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
 
            x0    x1    x2    x3    x4    x5    x6    x7    x8    x9    xA    xB    xC    xD    xE    xF
     0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR  P1BO  BOP1  P2BO  BOP2  IPBO  BOIP  SPBO  BOSP
-    1x    DUP  SWAP  NOTA  NOTX   SLA   SLX   SRA   SRX   AND   IOR   EOR   ADD   CAR   ALX   AEX   AGX
+    1x    DUP  SWAP  NOTA  NOTX   SLA   SLX   SRA   SRX   AND   IOR   EOR   ADD   OVF   ALX   AEX   AGX
     2x     *0    *1    *2    *3    *4    *5    *6    *7    *8    *9   *10   *11   *12   *13   *14   *15
     3x    *16   *17   *18   *19   *20   *21   *22   *23   *24   *25   *26   *27   *28   *29   *30   *31
     4x     1b    2b    3b    4b    5b    6b    7b    8b    b1    b2    b3    b4    b5    b6    b7    b8
@@ -379,7 +379,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x19: IOR	Push A OR X
     0x1A: EOR	PUSH A XOR X
     0x1B: ADD	Push A + B
-    0x1C: CAR	Push CARRY of: A + B (0 or 1)
+    0x1C: OVF	PUSH 0 + LSB=CARRY + MSB=OVERFLOW bit of: A+X
     0x1D: ALX	Push A<X flag (0 or 255)
     0x1E: AEX	Push A=X flag (0 or 255)
     0x1F: AGX	Push A>X flag (0 or 255)

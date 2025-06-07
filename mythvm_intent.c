@@ -116,7 +116,7 @@ static void call( uint8_t dstpage);
 #define IOR 9 /* A OR X */
 #define EOR 10 /* A XOR X */
 #define ADD 11 /* Add X to A (low order 8-bits) */
-#define CAR 12 /* Carry bit of: A + X (0 or 1s) */
+#define OVF 12 /* Zero + LSB=CARRY + MSB=OVERFLOW bit of: A+X */
 #define ALX 13 /* 255 if A<X else 0 */
 #define AEX 14 /* 255 if A=X else 0 */
 #define AGX 15 /* 255 if A>X else 0 */
@@ -365,7 +365,7 @@ void
 alu( uint8_t opcode)
 {
         int i;
-        uint8_t a0 = a;
+        uint8_t a0 = a, carry, overflow;
 
         switch(opcode & 15){
                 case DUP:                break;
@@ -382,8 +382,11 @@ alu( uint8_t opcode)
                 case EOR: a = a ^ x;  break;
                 case ADD: a = a + x;  break;
                 
-                case CAR: i = a + x;
-                          a =  (i > 255) ? 1 : 0;
+                case OVF: i = a + x; // Compute signed/unsigned overflow flags
+                          carry =  (i > 255) ? 1 : 0; /* Set LSB to carry */
+                          overflow = ((a&0x80) ^ (x&0x80)) == 0 /* Addends have same sign */
+                                   && ((i&0x80) != (a&0x80)); /* But result has different sign */
+                          a = carry + overflow ? 0x80 : 0;
                           break;
 
                 case ALX: a = (a<x)  ? 255 : 0; break;
