@@ -2,8 +2,9 @@ This is my successor project to
 [Sonne8](https://github.com/michaelmangelsdorf/Sonne8), a cpu/micro-controller built with
 74HC series logic chips, some CMOS memory and passive-components only.
 
-I've built a little working computer with it as a proof-of-concept. The new project over here
-will help me explore a modified version of the CPU a little more and write software for it,
+I've built a little working computer with it as a proof-of-concept. A demonstration video in the other repo shows the controller load a program for multiplying to numbers from a serial EEPROM. It then computes the result and displays the result on a 7-segment display.
+
+The new project over here will help me explore a modified version of the CPU a little more and write software for it,
 before developing more hardware.
 
 The schematics have been stripped of everything I thought wasn't essential, so it's a bit
