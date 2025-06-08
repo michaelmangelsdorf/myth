@@ -81,8 +81,7 @@ static void call( uint8_t dstpage);
 /* The 'xREG' notation means: (something) into REG
    i.e. REG is a destination
 */
-
-#define xR 0  /* into RESIDENT register */
+#define xU 0  /* UPDATE - add signed byte into 16-bit pair B:O) */
 #define xM 1  /* into MEMORY @ B:O */
 #define xB 2  /* into BASE register */
 #define xO 3  /* into OFFSET register */
@@ -92,12 +91,12 @@ static void call( uint8_t dstpage);
 #define xP 7  /* into PARALLEL output */
 
 #define xD 8  /* into DOWN-COUNTER register */
-#define xU 9  /* UPDATE - add signed byte into 16-bit pair B:O) */
+#define xW 9  /* JUMP WHILE D - write into PC WHILE D not zero, decrement D */
 #define xJ 10 /* JUMP - write into pc */
-#define xW 11 /* JUMP WHILE D - write into PC WHILE D not zero, decrement D */
-#define xH 12 /* JUMP IF HOT (NOT ZERO) - write into PC if D not zero*/
-#define xZ 13 /* JUMP IF ZERO - write into PC if A zero */
-#define xN 14 /* JUMP IF NEGATIVE - write into PC if A has bit 7 set */
+#define xH 11 /* JUMP IF HOT (NOT ZERO) - write into PC if D not zero*/
+#define xZ 12 /* JUMP IF ZERO - write into PC if A zero */
+#define xN 13 /* JUMP IF NEGATIVE - write into PC if A has bit 7 set */
+#define xR 14 /* JUMP to RESIDENT segment - write into R, set PC to 80h */
 #define xC 15 /* CALL - write into C, call C:0, store return pointer in B:O */
 
 
@@ -116,7 +115,7 @@ static void call( uint8_t dstpage);
 #define IOR 9 /* A OR X */
 #define EOR 10 /* A XOR X */
 #define ADD 11 /* Add X to A (low order 8-bits) */
-#define OVF 12 /* Zero + LSB=CARRY + MSB=OVERFLOW bit of: A+X */
+#define OVF 12 /* Overflow bits of: A+B - B6:V, B7:CARRY */
 #define ALX 13 /* 255 if A<X else 0 */
 #define AEX 14 /* 255 if A=X else 0 */
 #define AGX 15 /* 255 if A>X else 0 */
@@ -298,28 +297,28 @@ pair( uint8_t opcode)
         uint16_t ui16;
 
         switch(dst){
-                case xR: r = v;         break;
-                case xM: ram[b][o] = v; break;
-                case xB: b = v;         break;
-                case xO: o = v;         break;
-                case xA: push_acc(v);   break;
-                case xE: e_old = e_new;
-                         e_new = v;     break;
-                case xS: sor = v;       break;
-                case xP: por = v;       break;
-
-                case xD: d = v;         break;
                 case xU: ui16 = o + v>127 ? (uint16_t) v|0x00FF : v;
                          o = ui16 & 0xFF;
                          b = ui16 >> 8;
                          break;
-                case xJ: pc = v;        break;
+                case xM: ram[b][o] = v;     break;
+                case xB: b = v;             break;
+                case xO: o = v;             break;
+                case xA: push_acc(v);       break;
+                case xE: e_old = e_new;
+                         e_new = v;         break;
+                case xS: sor = v;           break;
+                case xP: por = v;           break;
+
+                case xD: d = v;             break;
                 case xW: if (d) pc = v;
                          d--; /*Post decrement, either case!*/
                          break;
+                case xJ: pc = v;            break;
                 case xH: if (a) pc = v;     break;
                 case xZ: if (!a) pc = v;    break;
                 case xN: if (a&128) pc = v; break;
+                case xR: r = v; pc=0x80;    break;
                 case xC: call(v);           break;
         }
 }
@@ -383,10 +382,10 @@ alu( uint8_t opcode)
                 case ADD: a = a + x;  break;
                 
                 case OVF: i = a + x; // Compute signed/unsigned overflow flags
-                          carry =  (i > 255) ? 1 : 0; /* Set LSB to carry */
+                          carry =  (i > 255) ? 1 : 0;
                           overflow = ((a&0x80) ^ (x&0x80)) == 0 /* Addends have same sign */
                                    && ((i&0x80) != (a&0x80)); /* But result has different sign */
-                          a = carry + overflow ? 0x80 : 0;
+                          a = carry? 0x80:0 + overflow? 0x40:0; /* Bit 7=Carry, Bit 6=Overflow */
                           break;
 
                 case ALX: a = (a<x)  ? 255 : 0; break;

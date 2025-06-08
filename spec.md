@@ -28,7 +28,7 @@ The ALU can compute the following functions (results are pushed):
 	9 IOR (A OR X)
 	10 EOR (A XOR X)
 	11 ADD (A plus X)
-	12 OVF (Bits - Carry/Overflow of: A plus X)
+	12 OVF (Signed/Unsigned Overflow of: A+B - B6:V, B7:CARRY)
 	13 ALX (Flag - A less than X)
 	14 AEX (Flag - A equals X)
 	15 AGX (Flag - A greater than X)
@@ -332,14 +332,14 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     5x     1o    2o    3o    4o    5o    6o    7o    8o    o1    o2    o3    o4    o5    o6    o7    o8
     6x     1a    2a    3a    4a    5a    6a    7a    8a    a1    a2    a3    a4    a5    a6    a7    a8
     7x     1d    2d    3d    4d    5d    6d    7d    8d    d1    d2    d3    d4    d5    d6    d7    d8
-    8x     fr  CODE    fb    fo    fa    fe    fs    fp    fd    fu    fj    fw    fh    fz    fn    fc
-    9x     mr LOCAL    mb    mo    ma    me    ms    mp    md    mu    mj    mw    mh    mz    mn    mc
-    Ax     br    bm LEAVE    bo    ba    be    bs    bp    bd    bu    bj    bw    bh    bz    bn    bc
-    Bx     or    om    ob ENTER    oa    oe    os    op    od    ou    oj    ow    oh    oz    on    oc
-    Cx     ar    am    ab    ao  INCA    ae    as    ap    ad    au    aj    aw    ah    az    an    ac
-    Dx     er    em    eb    eo    ea  DECA    es    ep    ed    eu    ej    ew    eh    ez    en    ec
-    Ex     sr    sm    sb    so    sa    se    ss    sp    sd    su    sj    sw    sh    sz    sn    sc
-    Fx     pr    pm    pb    po    pa    pe    ps    pp    pd    pu    pj    pw    ph    pz    pn    pc
+    8x     fu  CODE    fb    fo    fa    fe    fs    fp    fd    fw    fj    fh    fz    fn    fr    fc
+    9x     mu LOCAL    mb    mo    ma    me    ms    mp    md    mw    mj    mh    mz    mn    mr    mc
+    Ax     bu    bm LEAVE    bo    ba    be    bs    bp    bd    bw    bj    bh    bz    bn    br    bc
+    Bx     ou    om    ob ENTER    oa    oe    os    op    od    ow    oj    oh    oz    on    or    oc
+    Cx     au    am    ab    ao  INCA    ae    as    ap    ad    aw    aj    ah    az    an    ar    ac
+    Dx     eu    em    eb    eo    ea  DECA    es    ep    ed    ew    ej    eh    ez    en    er    ec
+    Ex     su    sm    sb    so    sa    se    ss    sp    sd    sw    sj    sh    sz    sn    sr    sc
+    Fx     pu    pm    pb    po    pa    pe    ps    pp    pd    pw    pj    ph    pz    pn    pr    pc
 
 ### Opcode Descriptions
 
@@ -382,7 +382,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x19: IOR	Push A OR X
     0x1A: EOR	PUSH A XOR X
     0x1B: ADD	Push A + X
-    0x1C: OVF	PUSH 0 + LSB=CARRY + MSB=OVERFLOW bit of: A+X
+    0x1C: OVF	PUSH 0 + B6:SIGNED OVERFLOW + B7:CARRY of: A + X
     0x1D: ALX	Push A<X flag (0 or 255)
     0x1E: AEX	Push A=X flag (0 or 255)
     0x1F: AGX	Push A>X flag (0 or 255)
@@ -424,116 +424,116 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     
     Group GETPUT
     
-    0x40: 1b	Load B from L1 (mem[L:F8h])
-    0x41: 2b	Load B from L2 (mem[L:F9h])
-    0x42: 3b	Load B from L3 (mem[L:FAh])
-    0x43: 4b	Load B from L4 (mem[L:FBh])
-    0x44: 5b	Load B from L5 (mem[L:FCh])
-    0x45: 6b	Load B from L6 (mem[L:FDh])
-    0x46: 7b	Load B from L7 (mem[L:FEh])
-    0x47: 8b	Load B from L8 (mem[L:FFh])
+    0x40: 1b	Load B from L1 (M[L:F8h])
+    0x41: 2b	Load B from L2 (M[L:F9h])
+    0x42: 3b	Load B from L3 (M[L:FAh])
+    0x43: 4b	Load B from L4 (M[L:FBh])
+    0x44: 5b	Load B from L5 (M[L:FCh])
+    0x45: 6b	Load B from L6 (M[L:FDh])
+    0x46: 7b	Load B from L7 (M[L:FEh])
+    0x47: 8b	Load B from L8 (M[L:FFh])
     
-    0x48: b1	Store B into L1 (mem[L:F8h])
-    0x49: b2	Store B into L2 (mem[L:F9h])
-    0x4A: b3	Store B into L3 (mem[L:FAh])
-    0x4B: b4	Store B into L4 (mem[L:FBh])
-    0x4C: b5	Store B into L5 (mem[L:FCh])
-    0x4D: b6	Store B into L6 (mem[L:FDh])
-    0x4E: b7	Store B into L7 (mem[L:FEh])
-    0x4F: b8	Store B into L8 (mem[L:FFh])
+    0x48: b1	Store B into L1 (M[L:F8h])
+    0x49: b2	Store B into L2 (M[L:F9h])
+    0x4A: b3	Store B into L3 (M[L:FAh])
+    0x4B: b4	Store B into L4 (M[L:FBh])
+    0x4C: b5	Store B into L5 (M[L:FCh])
+    0x4D: b6	Store B into L6 (M[L:FDh])
+    0x4E: b7	Store B into L7 (M[L:FEh])
+    0x4F: b8	Store B into L8 (M[L:FFh])
     
-    0x50: 1o	Load O from L1 (mem[L:F8h])
-    0x51: 2o	Load O from L2 (mem[L:F9h])
-    0x52: 3o	Load O from L3 (mem[L:FAh])
-    0x53: 4o	Load O from L4 (mem[L:FBh])
-    0x54: 5o	Load O from L5 (mem[L:FCh])
-    0x55: 6o	Load O from L6 (mem[L:FDh])
-    0x56: 7o	Load O from L7 (mem[L:FEh])
-    0x57: 8o	Load O from L8 (mem[L:FFh])
+    0x50: 1o	Load O from L1 (M[L:F8h])
+    0x51: 2o	Load O from L2 (M[L:F9h])
+    0x52: 3o	Load O from L3 (M[L:FAh])
+    0x53: 4o	Load O from L4 (M[L:FBh])
+    0x54: 5o	Load O from L5 (M[L:FCh])
+    0x55: 6o	Load O from L6 (M[L:FDh])
+    0x56: 7o	Load O from L7 (M[L:FEh])
+    0x57: 8o	Load O from L8 (M[L:FFh])
     
-    0x58: o1	Store O into L1 (mem[L:F8h])
-    0x59: o2	Store O into L2 (mem[L:F9h])
-    0x5A: o3	Store O into L3 (mem[L:FAh])
-    0x5B: o4	Store O into L4 (mem[L:FBh])
-    0x5C: o5	Store O into L5 (mem[L:FCh])
-    0x5D: o6	Store O into L6 (mem[L:FDh])
-    0x5E: o7	Store O into L7 (mem[L:FEh])
-    0x5F: o8	Store O into L8 (mem[L:FFh])
+    0x58: o1	Store O into L1 (M[L:F8h])
+    0x59: o2	Store O into L2 (M[L:F9h])
+    0x5A: o3	Store O into L3 (M[L:FAh])
+    0x5B: o4	Store O into L4 (M[L:FBh])
+    0x5C: o5	Store O into L5 (M[L:FCh])
+    0x5D: o6	Store O into L6 (M[L:FDh])
+    0x5E: o7	Store O into L7 (M[L:FEh])
+    0x5F: o8	Store O into L8 (M[L:FFh])
     
-    0x60: 1a	Load A from L1 (mem[L:F8h])
-    0x61: 2a	Load A from L2 (mem[L:F9h])
-    0x62: 3a	Load A from L3 (mem[L:FAh])
-    0x63: 4a	Load A from L4 (mem[L:FBh])
-    0x64: 5a	Load A from L5 (mem[L:FCh])
-    0x65: 6a	Load A from L6 (mem[L:FDh])
-    0x66: 7a	Load A from L7 (mem[L:FEh])
-    0x67: 8a	Load A from L8 (mem[L:FFh])
+    0x60: 1a	Load A from L1 (M[L:F8h])
+    0x61: 2a	Load A from L2 (M[L:F9h])
+    0x62: 3a	Load A from L3 (M[L:FAh])
+    0x63: 4a	Load A from L4 (M[L:FBh])
+    0x64: 5a	Load A from L5 (M[L:FCh])
+    0x65: 6a	Load A from L6 (M[L:FDh])
+    0x66: 7a	Load A from L7 (M[L:FEh])
+    0x67: 8a	Load A from L8 (M[L:FFh])
     
-    0x68: a1	Store A into L1 (mem[L:F8h])
-    0x69: a2	Store A into L2 (mem[L:F9h])
-    0x6A: a3	Store A into L3 (mem[L:FAh])
-    0x6B: a4	Store A into L4 (mem[L:FBh])
-    0x6C: a5	Store A into L5 (mem[L:FCh])
-    0x6D: a6	Store A into L6 (mem[L:FDh])
-    0x6E: a7	Store A into L7 (mem[L:FEh])
-    0x6F: a8	Store A into L8 (mem[L:FFh])
+    0x68: a1	Store A into L1 (M[L:F8h])
+    0x69: a2	Store A into L2 (M[L:F9h])
+    0x6A: a3	Store A into L3 (M[L:FAh])
+    0x6B: a4	Store A into L4 (M[L:FBh])
+    0x6C: a5	Store A into L5 (M[L:FCh])
+    0x6D: a6	Store A into L6 (M[L:FDh])
+    0x6E: a7	Store A into L7 (M[L:FEh])
+    0x6F: a8	Store A into L8 (M[L:FFh])
     
-    0x70: 1d	Load D from L1 (mem[L:F8h])
-    0x71: 2d	Load D from L2 (mem[L:F9h])
-    0x72: 3d	Load D from L3 (mem[L:FAh])
-    0x73: 4d	Load D from L4 (mem[L:FBh])
-    0x74: 5d	Load D from L5 (mem[L:FCh])
-    0x75: 6d	Load D from L6 (mem[L:FDh])
-    0x76: 7d	Load D from L7 (mem[L:FEh])
-    0x77: 8d	Load D from L8 (mem[L:FFh])
+    0x70: 1d	Load D from L1 (M[L:F8h])
+    0x71: 2d	Load D from L2 (M[L:F9h])
+    0x72: 3d	Load D from L3 (M[L:FAh])
+    0x73: 4d	Load D from L4 (M[L:FBh])
+    0x74: 5d	Load D from L5 (M[L:FCh])
+    0x75: 6d	Load D from L6 (M[L:FDh])
+    0x76: 7d	Load D from L7 (M[L:FEh])
+    0x77: 8d	Load D from L8 (M[L:FFh])
     
-    0x78: d1	Store D into L1 (mem[L:F8h])
-    0x79: d2	Store D into L2 (mem[L:F9h])
-    0x7A: d3	Store D into L3 (mem[L:FAh])
-    0x7B: d4	Store D into L4 (mem[L:FBh])
-    0x7C: d5	Store D into L5 (mem[L:FCh])
-    0x7D: d6	Store D into L6 (mem[L:FDh])
-    0x7E: d7	Store D into L7 (mem[L:FEh])
-    0x7F: d8	Store D into L8 (mem[L:FFh])
+    0x78: d1	Store D into L1 (M[L:F8h])
+    0x79: d2	Store D into L2 (M[L:F9h])
+    0x7A: d3	Store D into L3 (M[L:FAh])
+    0x7B: d4	Store D into L4 (M[L:FBh])
+    0x7C: d5	Store D into L5 (M[L:FCh])
+    0x7D: d6	Store D into L6 (M[L:FDh])
+    0x7E: d7	Store D into L7 (M[L:FEh])
+    0x7F: d8	Store D into L8 (M[L:FFh])
     
     Group PAIR
     
-    0x80: FR	Take mem[CR:PC++] into R
+    0x80: FU	Take M[CR:PC++] as 8-bit signed number and add it to 16-bit pointer B:O
     0x81: CODE	Set pointer B:O to C:PC
-    0x82: FB	Take mem[CR:PC++] into B
-    0x83: FO	Take mem[CR:PC++] into O
-    0x84: FA	Take mem[CR:PC++] into A
-    0x85: FE	Take mem[CR:PC++] into E
-    0x86: FS	Take mem[CR:PC++] into SOR
-    0x87: FP	Take mem[CR:PC++] into POR
-    0x88: FD	Take mem[CR:PC++] into D
-    0x89: FU	Take mem[CR:PC++] as 8-bit signed number and add it to 16-bit pointer B:O
-    0x8A: FJ	Take mem[CR:PC++] as page offset and store it into PC - always
-    0x8B: FW	Take mem[CR:PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0x8C: FH	Take mem[CR:PC++] as page offset and store it into PC - if A is not equal to zero
-    0x8D: FZ	Take mem[CR:PC++] as page offset and store it into PC - if A is equal to zero
-    0x8E: FN	Take mem[CR:PC++] as page offset and store it into PC - if A is negative (has bit 7 set)
-    0x8F: FC	Take mem[CR:PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0x82: FB	Take M[CR:PC++] into B
+    0x83: FO	Take M[CR:PC++] into O
+    0x84: FA	Take M[CR:PC++] into A
+    0x85: FE	Take M[CR:PC++] into E
+    0x86: FS	Take M[CR:PC++] into SOR
+    0x87: FP	Take M[CR:PC++] into POR
+    0x88: FD	Take M[CR:PC++] into D
+    0x89: FW	Take M[CR:PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0x8A: FJ	Take M[CR:PC++] as page offset and store it into PC - always
+    0x8B: FH	Take M[CR:PC++] as page offset and store it into PC - if A is not equal to zero
+    0x8C: FZ	Take M[CR:PC++] as page offset and store it into PC - if A is equal to zero
+    0x8D: FN	Take M[CR:PC++] as page offset and store it into PC - if A is negative (has bit 7 set)
+    0x8E: FR	Take M[CR:PC++] as page-index, load the index into R, set PC to 80h
+    0x8F: FC	Take M[CR:PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
     
-    0x90: MR	Take mem[B:O] into R
+    0x90: MU	Take M[B:O] as 8-bit signed number and add it to 16-bit pointer B:O
     0x91: LOCAL	Set pointer B:O to L:F7h (L0)
-    0x92: MB	Take mem[B:O] into B
-    0x93: MO	Take mem[B:O] into O
-    0x94: MA	Take mem[B:O] into A
-    0x95: ME	Take mem[B:O] into E
-    0x96: MS	Take mem[B:O] into SOR
-    0x97: MP	Take mem[B:O] into POR
-    0x98: MD	Take mem[B:O] into D
-    0x99: MU	Take mem[B:O] as 8-bit signed number and add it to 16-bit pointer B:O
-    0x9A: MJ	Take mem[B:O] as page offset and store it into PC - always
-    0x9B: MW	Take mem[B:O] as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0x9C: MH	Take mem[B:O] as page offset and store it into PC - if A is not equal to zero
-    0x9D: MZ	Take mem[B:O] as page offset and store it into PC - if A is equal to zero
-    0x9E: MN	Take mem[B:O] as page offset and store it into PC - if A is negative (has bit 7 set)
-    0x9F: MC	Take mem[B:O] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+    0x92: MB	Take M[B:O] into B
+    0x93: MO	Take M[B:O] into O
+    0x94: MA	Take M[B:O] into A
+    0x95: ME	Take M[B:O] into E
+    0x96: MS	Take M[B:O] into SOR
+    0x97: MP	Take M[B:O] into POR
+    0x98: MD	Take M[B:O] into D
+    0x99: MW	Take M[B:O] as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0x9A: MJ	Take M[B:O] as page offset and store it into PC - always
+    0x9B: MH	Take M[B:O] as page offset and store it into PC - if A is not equal to zero
+    0x9C: MZ	Take M[B:O] as page offset and store it into PC - if A is equal to zero
+    0x9D: MN	Take M[B:O] as page offset and store it into PC - if A is negative (has bit 7 set)
+    0x9E: MR	Take M[B:O] as page-index, load the index into R, set PC to 80h
+    0x9F: MC	Take M[B:O] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
     
-    0xA0: BR	Take B into R
-    0xA1: BM	Take B into mem[B:O]
+    0xA0: BU	Take B as 8-bit signed number and add it to 16-bit pointer B:O
+    0xA1: BM	Take B into M[B:O]
     0xA2: LEAVE	Increment L
     0xA3: BO	Take B into O
     0xA4: BA	Take B into A
@@ -541,16 +541,16 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xA6: BS	Take B into SOR
     0xA7: BP	Take B into POR
     0xA8: BD	Take B into D
-    0xA9: BU	Take B as 8-bit signed number and add it to 16-bit pointer B:O
+    0xA9: BW	Take B as page offset and store it into PC - while register D is not zero. In either case, decrement D
     0xAA: BJ	Take B as page offset and store it into PC - always
-    0xAB: BW	Take B as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xAC: BH	Take B as page offset and store it into PC - if A is not equal to zero
-    0xAD: BZ	Take B as page offset and store it into PC - if A is equal to zero
-    0xAE: BN	Take B as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xAB: BH	Take B as page offset and store it into PC - if A is not equal to zero
+    0xAC: BZ	Take B as page offset and store it into PC - if A is equal to zero
+    0xAD: BN	Take B as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xAE: BR	Take B as page-index, load the index into R, set PC to 80h
     0xAF: BC	Take B as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
     
-    0xB0: OR	Take O into R
-    0xB1: OM	Take O into mem[B:O]
+    0xB0: OU	Take O as 8-bit signed number and add it to 16-bit pointer B:O
+    0xB1: OM	Take O into M[B:O]
     0xB2: OB	Take O into B
     0xB3: ENTER	Decrement L
     0xB4: OA	Take O into A
@@ -558,16 +558,16 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xB6: OS	Take O into SOR
     0xB7: OP	Take O into POR
     0xB8: OD	Take O into D
-    0xB9: OU	Take O as 8-bit signed number and add it to 16-bit pointer B:O
+    0xB9: OW	Take O as page offset and store it into PC - while register D is not zero. In either case, decrement D
     0xBA: OJ	Take O as page offset and store it into PC - always
-    0xBB: OW	Take O as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xBC: OH	Take O as page offset and store it into PC - if A is not equal to zero
-    0xBD: OZ	Take O as page offset and store it into PC - if A is equal to zero
-    0xBE: ON	Take O as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xBB: OH	Take O as page offset and store it into PC - if A is not equal to zero
+    0xBC: OZ	Take O as page offset and store it into PC - if A is equal to zero
+    0xBD: ON	Take O as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xBE: OR	Take O as page-index, load the index into R, set PC to 80h
     0xBF: OC	Take O as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
     
-    0xC0: AR	Take A into R
-    0xC1: AM	Take A into mem[B:O]
+    0xC0: AU	Take A as 8-bit signed number and add it to 16-bit pointer B:O
+    0xC1: AM	Take A into M[B:O]
     0xC2: AB	Take A into B
     0xC3: AO	Take A into O
     0xC4: INCA	Increment A
@@ -575,16 +575,16 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xC6: AS	Take A into SOR
     0xC7: AP	Take A into POR
     0xC8: AD	Take A into D
-    0xC9: AU	Take A as 8-bit signed number and add it to 16-bit pointer B:O
+    0xC9: AW	Take A as page offset and store it into PC - while register D is not zero. In either case, decrement D
     0xCA: AJ	Take A as page offset and store it into PC - always
-    0xCB: AW	Take A as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xCC: AH	Take A as page offset and store it into PC - if A is not equal to zero
-    0xCD: AZ	Take A as page offset and store it into PC - if A is equal to zero
-    0xCE: AN	Take A as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xCB: AH	Take A as page offset and store it into PC - if A is not equal to zero
+    0xCC: AZ	Take A as page offset and store it into PC - if A is equal to zero
+    0xCD: AN	Take A as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xCE: AR	Take A as page-index, load the index into R, set PC to 80h
     0xCF: AC	Take A as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
     
-    0xD0: ER	Take E into R
-    0xD1: EM	Take E into mem[B:O]
+    0xD0: EU	Take E as 8-bit signed number and add it to 16-bit pointer B:O
+    0xD1: EM	Take E into M[B:O]
     0xD2: EB	Take E into B
     0xD3: EO	Take E into O
     0xD4: EA	Take E into A
@@ -592,16 +592,16 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xD6: ES	Take E into SOR
     0xD7: EP	Take E into POR
     0xD8: ED	Take E into D
-    0xD9: EU	Take E as 8-bit signed number and add it to 16-bit pointer B:O
+    0xD9: EW	Take E as page offset and store it into PC - while register D is not zero. In either case, decrement D
     0xDA: EJ	Take E as page offset and store it into PC - always
-    0xDB: EW	Take E as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xDC: EH	Take E as page offset and store it into PC - if A is not equal to zero
-    0xDD: EZ	Take E as page offset and store it into PC - if A is equal to zero
-    0xDE: EN	Take E as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xDB: EH	Take E as page offset and store it into PC - if A is not equal to zero
+    0xDC: EZ	Take E as page offset and store it into PC - if A is equal to zero
+    0xDD: EN	Take E as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xDE: ER	Take E as page-index, load the index into R, set PC to 80h
     0xDF: EC	Take E as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
     
-    0xE0: SR	Take SIR into R
-    0xE1: SM	Take SIR into mem[B:O]
+    0xE0: SU	Take SIR as 8-bit signed number and add it to 16-bit pointer B:O
+    0xE1: SM	Take SIR into M[B:O]
     0xE2: SB	Take SIR into B
     0xE3: SO	Take SIR into O
     0xE4: SA	Take SIR into A
@@ -609,16 +609,16 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xE6: SS	Take SIR into SOR
     0xE7: SP	Take SIR into POR
     0xE8: SD	Take SIR into D
-    0xE9: SU	Take SIR as 8-bit signed number and add it to 16-bit pointer B:O
+    0xE9: SW	Take SIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
     0xEA: SJ	Take SIR as page offset and store it into PC - always
-    0xEB: SW	Take SIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xEC: SH	Take SIR as page offset and store it into PC - if A is not equal to zero
-    0xED: SZ	Take SIR as page offset and store it into PC - if A is equal to zero
-    0xEE: SN	Take SIR as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xEB: SH	Take SIR as page offset and store it into PC - if A is not equal to zero
+    0xEC: SZ	Take SIR as page offset and store it into PC - if A is equal to zero
+    0xED: SN	Take SIR as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xEE: SR	Take SIR as page-index, load the index into R, set PC to 80h
     0xEF: SC	Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
     
-    0xF0: PR	Take PIR into R
-    0xF1: PM	Take PIR into mem[B:O]
+    0xF0: PU	Take PIR as 8-bit signed number and add it to 16-bit pointer B:O
+    0xF1: PM	Take PIR into M[B:O]
     0xF2: PB	Take PIR into B
     0xF3: PO	Take PIR into O
     0xF4: PA	Take PIR into A
@@ -626,10 +626,12 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xF6: PS	Take PIR into SOR
     0xF7: PP	Take PIR into POR
     0xF8: PD	Take PIR into D
-    0xF9: PU	Take PIR as 8-bit signed number and add it to 16-bit pointer B:O
+    0xF9: PW	Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
     0xFA: PJ	Take PIR as page offset and store it into PC - always
-    0xFB: PW	Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xFC: PH	Take PIR as page offset and store it into PC - if A is not equal to zero
-    0xFD: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
-    0xFE: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xFB: PH	Take PIR as page offset and store it into PC - if A is not equal to zero
+    0xFC: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
+    0xFD: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
+    0xFE: PR	Take PIR as page-index, load the index into R, set PC to 80h
     0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
+
+    
