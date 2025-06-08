@@ -385,7 +385,7 @@ alu( uint8_t opcode)
                           carry =  (i > 255) ? 1 : 0;
                           overflow = ((a&0x80) ^ (x&0x80)) == 0 /* Addends have same sign */
                                    && ((i&0x80) != (a&0x80)); /* But result has different sign */
-                          a = carry? 0x80:0 + overflow? 0x40:0; /* Bit 7=Carry, Bit 6=Overflow */
+                          a = (carry ? 0x80 : 0) + (overflow ? 0x40 : 0); /* Bit 7=Carry, Bit 6=Overflow */
                           break;
 
                 case ALX: a = (a<x)  ? 255 : 0; break;
