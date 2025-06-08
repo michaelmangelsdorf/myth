@@ -50,50 +50,50 @@
   {
     "opcode": 8,
     "group": "BOP",
-    "mnemonic": "P1BO",
-    "desc": "Copy pointer P1 into B:O"
+    "mnemonic": "RBO",
+    "desc": "Copy pointer R into B:O"
   },
   {
     "opcode": 9,
     "group": "BOP",
-    "mnemonic": "BOP1",
-    "desc": "Copy B:O into pointer P1"
+    "mnemonic": "BOR",
+    "desc": "Copy B:O into pointer RP"
   },
   {
     "opcode": 10,
     "group": "BOP",
-    "mnemonic": "P2BO",
-    "desc": "Copy pointer P2 into B:O"
+    "mnemonic": "WBO",
+    "desc": "Copy pointer W into B:O"
   },
   {
     "opcode": 11,
     "group": "BOP",
-    "mnemonic": "BOP2",
-    "desc": "Copy B:O into pointer P2"
+    "mnemonic": "BOW",
+    "desc": "Copy B:O into pointer WP"
   },
   {
     "opcode": 12,
     "group": "BOP",
-    "mnemonic": "IPBO",
-    "desc": "Copy pointer IP into B:O"
+    "mnemonic": "IBO",
+    "desc": "Copy pointer I into B:O"
   },
   {
     "opcode": 13,
     "group": "BOP",
-    "mnemonic": "BOIP",
+    "mnemonic": "BOI",
     "desc": "Copy B:O into pointer IP"
   },
   {
     "opcode": 14,
     "group": "BOP",
-    "mnemonic": "SPPO",
-    "desc": "Copy stack pointer into B:O"
+    "mnemonic": "SBO",
+    "desc": "Copy pointer S into B:O"
   },
   {
     "opcode": 15,
     "group": "BOP",
-    "mnemonic": "BOSP",
-    "desc": "Copy B:O into stack pointer"
+    "mnemonic": "BOS",
+    "desc": "Copy B:O into pointer S"
   },
   {
     "opcode": 16,

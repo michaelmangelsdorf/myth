@@ -324,7 +324,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
 ### Opcode Matrix
 
            x0    x1    x2    x3    x4    x5    x6    x7    x8    x9    xA    xB    xC    xD    xE    xF
-    0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR  P1BO  BOP1  P2BO  BOP2  IPBO  BOIP  SPBO  BOSP
+    0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR   RBO   BOR   WBO   BOW   IBO   BOI   SBO   BOS
     1x    DUP  SWAP  NOTA  NOTX   SLA   SLX   SRA   SRX   AND   IOR   EOR   ADD   OVF   ALX   AEX   AGX
     2x     *0    *1    *2    *3    *4    *5    *6    *7    *8    *9   *10   *11   *12   *13   *14   *15
     3x    *16   *17   *18   *19   *20   *21   *22   *23   *24   *25   *26   *27   *28   *29   *30   *31
@@ -356,17 +356,17 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     
     Group BOP
     
-    0x08: P1BO	Copy pointer P1 into B:O
-    0x09: BOP1	Copy B:O into pointer P1
+    0x08: RBO	Copy pointer R into B:O
+    0x09: BOR	Copy B:O into pointer RP
     
-    0x0A: P2BO	Copy pointer P2 into B:O
-    0x0B: BOP2	Copy B:O into pointer P2
+    0x0A: WBO	Copy pointer W into B:O
+    0x0B: BOW	Copy B:O into pointer WP
     
-    0x0C: IPBO	Copy pointer IP into B:O
-    0x0D: BOIP	Copy B:O into pointer IP
+    0x0C: IBO	Copy pointer I into B:O
+    0x0D: BOI	Copy B:O into pointer IP
     
-    0x0E: SPPO	Copy stack pointer into B:O
-    0x0F: BOSP	Copy B:O into stack pointer
+    0x0E: SBO	Copy pointer S into B:O
+    0x0F: BOS	Copy B:O into pointer S
     
     Group ALU
     
@@ -634,4 +634,3 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xFE: PR	Take PIR as page-index, load the index into R, set PC to 80h
     0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
 
-    

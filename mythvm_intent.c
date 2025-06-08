@@ -39,13 +39,13 @@ uint8_t r; /* Resident-Page Index register */
 uint8_t b; /* Base Page-Index Register */
 uint8_t l; /* Local-Page Index Register */
 
-uint8_t p1_b; /* Pointer 1 Page Index */
-uint8_t p2_b;
+uint8_t rp_b; /* Pointer Page-Index */
+uint8_t wp_b;
 uint8_t ip_b;
 uint8_t sp_b;
 
-uint8_t p1_o; /* Pointer 1 Offset */
-uint8_t p2_o;
+uint8_t rp_o; /* Pointer Offset */
+uint8_t wp_o;
 uint8_t ip_o;
 uint8_t sp_o;
 
@@ -137,14 +137,14 @@ static void call( uint8_t dstpage);
 /*BOP Instructions
 */
 
-#define P1BO 0 /* Store P1 into B:O */
-#define BOP1 1 /* Store B:O into P1 */
-#define P2BO 2
-#define BOP2 3
-#define IPBO 4
-#define BOIP 5
-#define SPBO 6 /* P4 => SP Stack Pointer */
-#define BOSP 7
+#define RBO 0 /* Store RP into B:O */
+#define BOR 1 /* Store B:O into RP */
+#define WBO 2
+#define BOW 3
+#define IBO 4
+#define BOI 5
+#define SBO 6 /* P4 => SP Stack Pointer */
+#define BOS 7
 
 #define GETPUT_OFFSET 0xF8 /*Local-page offset used by GETPUT instructions*/
 
@@ -402,17 +402,17 @@ void
 bop( uint8_t opcode)
 {
         switch(opcode & 7){
-                caseP1BO: b=p1_b; o=p1_o; break;
-                caseBOP1: p1_b=b; p1_o=o; break;
+                case RBO: b=rp_b; o=rp_o; break;
+                case BOR: rp_b=b; rp_o=o; break;
         
-                caseP2BO: b=p2_b; o=p2_o; break;
-                caseBOP2: p2_b=b; p2_o=o; break;
+                case WBO: b=wp_b; o=wp_o; break;
+                case BOW: wp_b=b; wp_o=o; break;
         
-                caseIPBO: b=ip_b; o=ip_o; break;
-                caseBOIP: ip_b=b; ip_o=o; break;
+                case IBO: b=ip_b; o=ip_o; break;
+                case BOI: ip_b=b; ip_o=o; break;
         
-                caseSPBO: b=sp_b; o=sp_o; break;
-                caseBOSP: sp_b=b; sp_o=o; break;
+                case SBO: b=sp_b; o=sp_o; break;
+                case BOS: sp_b=b; sp_o=o; break;
                 default: break;
         }
 }
