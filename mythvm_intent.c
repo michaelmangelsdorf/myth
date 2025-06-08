@@ -163,7 +163,7 @@ myth_step()
         else if (opcode & 0x40) getput( opcode);
         else if (opcode & 0x20) trap( opcode);
         else if (opcode & 0x10) alu( opcode);
-        else if (opcode & 0x08) bops( opcode);
+        else if (opcode & 0x08) bop( opcode);
         else                    sys( opcode);
 }
 

@@ -11,7 +11,7 @@
 		(company "Contact: mim@ok-schalter.de")
 		(comment 1 "Author: Michael Mangelsdorf")
 		(comment 2 "Project homepage: https://github.com/michaelmangelsdorf/myth")
-		(comment 3 "Rev. Step \"Lox58\"")
+		(comment 3 "Rev. Step \"LOx58\"")
 		(comment 4 "Based on working prototype PCB: https://github.com/michaelmangelsdorf/sonne8")
 	)
 	(lib_symbols
