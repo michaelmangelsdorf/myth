@@ -5,7 +5,7 @@ This is my successor project to
 I've built a little working computer with it as a proof-of-concept. A demonstration video in the other repo shows the controller load a program for multiplying two numbers from a serial EEPROM using a native SPI implementation. It then computes the result and displays it on a 7-segment display with its inbuilt parallel I/O functions.
 
 The new project over here will help me explore a modified version of the CPU a little more and write software for it,
-before developing more hardware.
+before developing more hardware for it.
 
 The schematics have been stripped of everything I thought wasn't essential, so it's a bit
 easier to read. In other words, although it's possible to load the schematics file into KiCad,
