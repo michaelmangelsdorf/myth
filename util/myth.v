@@ -87,6 +87,9 @@ sum = A + X;
 carry = sum[8];
 overflow = (~(A[7] ^ X[7]) & (sum[7] ^ A[7]));
 
+// Used in O block and PC block:
+reg [7:0] PC_old;
+
 
 ///Combinational decoder block///////////////////////////////////////////////
 
@@ -315,32 +318,30 @@ always @(posedge clk or posedge rst) begin
     endcase
     else if (READY)
     begin
+        if      (xB || GETB)  B <= data_bus;
+        else if (xO || GETO)  O <= data_bus;
+        else case (1'b1)
+            RTS:
+            RTI:
 
-        RTS:
-        RTI:
+            BOW: W <= BO;
+            BOR: R <= BO;
+            BOI: I <= BO;
+            BOS: S <= BO;
 
-        // Assignments
-
-        if (xB || GETB)  B <= data_bus;
-        if (xO || GETO)  O <= data_bus;
-
-        if (BOW) W <= BO;
-        if (BOR) R <= BO;
-        if (BOI) I <= BO;
-        if (BOS) S <= BO;
-        
-        if (RBO) {B, O} <= R;
-        if (WBO) {B, O} <= W;
-        if (IBO) {B, O} <= I;
-        if (SBO) {B, O} <= S;
+            RBO: {B, O} <= R;
+            WBO: {B, O} <= W;
+            IBO: {B, O} <= I;
+            SBO: {B, O} <= S;
+            
+            CODE: {B, O} <= {PC[7] ? R:C, PC};
+            default:;
+        endcase
     end
 end
 
 
 //D,PC///////////////////////////////////////////////////////////////////////
-
-// Auxiliary logic
-reg [7:0] PC_old;
 
 // Status Flags
 wire AZ = ~|A[7:0]; // A zero
@@ -396,7 +397,7 @@ begin
 end
 
 
-//MEMORY,L,C,R,I/////////////////////////////////////////////////////////////
+//MEMORY,L,R,I///////////////////////////////////////////////////////////////
 
 // Instantiate 64k x 8 synchronous RAM
 ram vendor_ram (
@@ -414,23 +415,21 @@ reg       wren; // write enable signal
 wire[7:0] q;    // 8-bit RAM output value
 
 always @(posedge clk or posedge rst) begin
-    if (reset) begin
+    if (rst) begin
         L <= 8'h00;
-        C <= 8'h00;
         R <= 8'h00;
         I <= 8'h00; // Load with NOP opcode
     end
-    else case
+    else case (1'b1)
         FETCH:  begin
                     addr <= (PC[7]) ? {R,PC} : {C,PC};  // Request opcode
                     wren <= 0;                          // Reset write enable
                 end
-        DECODE: I <= q;                                 // Latch opcode
+        DECODE: begin
+                    if (IRQ && !BUSY && C!=0) I <= q;   // Latch opcode
+                    else I <= 8'd32;                    // Inject TRAP 0
+                end
         SETUP:  case (1'b1)
-                    // Interpage Branching
-                    xC:
-                    COR:
-
                     Fx:         addr <= (PC[7]) ? {R,PC} : {C,PC};
                     OPC_GETPUT: addr <= {L, 8'hF8 + I[2:0]};
                     default:    addr <= {B,O};
@@ -452,7 +451,7 @@ end
 
 always @(posedge clk or posedge rst)
 begin
-    if (reset) begin
+    if (rst) begin
          SIR <= 8'h00;
          SOR <= 8'h00;
          PIR <= 8'h00;
@@ -462,7 +461,7 @@ begin
         BUSY <= 1'b0;
         SCLK <= 1'b0;
     end
-    else case
+    else case (1'b1)
         SETUP:  case (1'b1)
                     SSI: SIR <= {SIR[6:0], MISO};
                     SSO: begin
@@ -477,6 +476,8 @@ begin
                     xE: E <= data_bus;
                     xS: SOR <= data_bus;
                     xP: POR <= data_bus;
+                    TRAP: if (C==0) BUSY <= 1'b1;
+                    RTI: BUSY <= 1'b0;
                     default:;
                 endcase
         default:;
@@ -484,12 +485,12 @@ begin
 end
 
 
-//Multiplex a bus////////////////////////////////////////////////////////////
+//DATA_BUS///////////////////////////////////////////////////////////////////
 
-reg [7:0] data_bus; // Data bus transfer value
+reg [7:0] data_bus; // Data bus transfer value for PAIR type instructions
 
 always @(posedge clk or posedge rst)
-    if (rst) data_bus <= 8'd0; // "Weak pull-down"
+    if (rst || FETCH) data_bus <= 8'd0; // "Weak pull-down"
     else if (SETUP)
         case (1'b1)
             Bx: data_bus <= B;

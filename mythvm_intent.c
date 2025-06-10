@@ -176,7 +176,6 @@ fetch_opcode()
 {
         uint8_t pc0 = pc;
         if (irq && c>0 && !busy) {
-                busy = 1;
                 return 32; /* TRAP0 */
         } else
         /* Instruction byte page offset high: map "resident" routine */
