@@ -175,7 +175,7 @@ uint8_t
 fetch_opcode()
 {
         uint8_t pc0 = pc;
-        if (irq && c>0) {
+        if (irq && c>0 && !busy) {
                 busy = 1;
                 return 32; /* TRAP0 */
         } else
@@ -220,6 +220,7 @@ void
 trap( uint8_t opcode)
 {
         uint8_t dstpage = opcode & 31; /*Zero except low order 5 bits*/
+        if (dstpage==0) busy = 1;
         call(dstpage);
 }
 
@@ -230,8 +231,9 @@ trap( uint8_t opcode)
 uint8_t
 srcval( uint8_t srcreg)
 {
+        uint8_t pc0 = pc;
         switch(srcreg){
-                case Fx: return ram[c][pc++];
+                case Fx: return ram[ pc0 & 0x80 ? r:c ][pc++];
                 case Mx: return ram[b][o];
                 case Bx: return b;
                 case Ox: return o;
@@ -249,7 +251,7 @@ scrounge( uint8_t opcode)
 {
         switch(opcode & 0x7F /*0111_1111*/){
                 case 16*Fx + xM: /*CODE*/
-                                 b = c;
+                                 b = pc & 0x80 ? r:c;
                                  o = pc;
                                  break;
 

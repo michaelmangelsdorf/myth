@@ -45,55 +45,55 @@
     "opcode": 7,
     "group": "SYS",
     "mnemonic": "COR",
-    "desc": "Set C to B. Set PC to O. Save return pointer into B:O"
+    "desc": "Set C to B. Set PC to O. Save return pointer into B_O"
   },
   {
     "opcode": 8,
     "group": "BOP",
     "mnemonic": "RBO",
-    "desc": "Copy pointer R into B:O"
+    "desc": "Copy pointer R into B_O"
   },
   {
     "opcode": 9,
     "group": "BOP",
     "mnemonic": "BOR",
-    "desc": "Copy B:O into pointer RP"
+    "desc": "Copy B_O into pointer RP"
   },
   {
     "opcode": 10,
     "group": "BOP",
     "mnemonic": "WBO",
-    "desc": "Copy pointer W into B:O"
+    "desc": "Copy pointer W into B_O"
   },
   {
     "opcode": 11,
     "group": "BOP",
     "mnemonic": "BOW",
-    "desc": "Copy B:O into pointer WP"
+    "desc": "Copy B_O into pointer WP"
   },
   {
     "opcode": 12,
     "group": "BOP",
     "mnemonic": "IBO",
-    "desc": "Copy pointer I into B:O"
+    "desc": "Copy pointer I into B_O"
   },
   {
     "opcode": 13,
     "group": "BOP",
     "mnemonic": "BOI",
-    "desc": "Copy B:O into pointer IP"
+    "desc": "Copy B_O into pointer IP"
   },
   {
     "opcode": 14,
     "group": "BOP",
     "mnemonic": "SBO",
-    "desc": "Copy pointer S into B:O"
+    "desc": "Copy pointer S into B_O"
   },
   {
     "opcode": 15,
     "group": "BOP",
     "mnemonic": "BOS",
-    "desc": "Copy B:O into pointer S"
+    "desc": "Copy B_O into pointer S"
   },
   {
     "opcode": 16,
@@ -195,7 +195,7 @@
     "opcode": 32,
     "group": "TRAP",
     "mnemonic": "*0",
-    "desc": "Trap call to page 0, offset 0"
+    "desc": "Trap call to page 0, offset 0 - Set BUSY flag"
   },
   {
     "opcode": 33,
@@ -387,591 +387,591 @@
     "opcode": 64,
     "group": "GETPUT",
     "mnemonic": "1b",
-    "desc": "Load B from L1 (M[L:F8h])"
+    "desc": "Load B from L1 (M[L_F8h])"
   },
   {
     "opcode": 65,
     "group": "GETPUT",
     "mnemonic": "2b",
-    "desc": "Load B from L2 (M[L:F9h])"
+    "desc": "Load B from L2 (M[L_F9h])"
   },
   {
     "opcode": 66,
     "group": "GETPUT",
     "mnemonic": "3b",
-    "desc": "Load B from L3 (M[L:FAh])"
+    "desc": "Load B from L3 (M[L_FAh])"
   },
   {
     "opcode": 67,
     "group": "GETPUT",
     "mnemonic": "4b",
-    "desc": "Load B from L4 (M[L:FBh])"
+    "desc": "Load B from L4 (M[L_FBh])"
   },
   {
     "opcode": 68,
     "group": "GETPUT",
     "mnemonic": "5b",
-    "desc": "Load B from L5 (M[L:FCh])"
+    "desc": "Load B from L5 (M[L_FCh])"
   },
   {
     "opcode": 69,
     "group": "GETPUT",
     "mnemonic": "6b",
-    "desc": "Load B from L6 (M[L:FDh])"
+    "desc": "Load B from L6 (M[L_FDh])"
   },
   {
     "opcode": 70,
     "group": "GETPUT",
     "mnemonic": "7b",
-    "desc": "Load B from L7 (M[L:FEh])"
+    "desc": "Load B from L7 (M[L_FEh])"
   },
   {
     "opcode": 71,
     "group": "GETPUT",
     "mnemonic": "8b",
-    "desc": "Load B from L8 (M[L:FFh])"
+    "desc": "Load B from L8 (M[L_FFh])"
   },
   {
     "opcode": 72,
     "group": "GETPUT",
     "mnemonic": "b1",
-    "desc": "Store B into L1 (M[L:F8h])"
+    "desc": "Store B into L1 (M[L_F8h])"
   },
   {
     "opcode": 73,
     "group": "GETPUT",
     "mnemonic": "b2",
-    "desc": "Store B into L2 (M[L:F9h])"
+    "desc": "Store B into L2 (M[L_F9h])"
   },
   {
     "opcode": 74,
     "group": "GETPUT",
     "mnemonic": "b3",
-    "desc": "Store B into L3 (M[L:FAh])"
+    "desc": "Store B into L3 (M[L_FAh])"
   },
   {
     "opcode": 75,
     "group": "GETPUT",
     "mnemonic": "b4",
-    "desc": "Store B into L4 (M[L:FBh])"
+    "desc": "Store B into L4 (M[L_FBh])"
   },
   {
     "opcode": 76,
     "group": "GETPUT",
     "mnemonic": "b5",
-    "desc": "Store B into L5 (M[L:FCh])"
+    "desc": "Store B into L5 (M[L_FCh])"
   },
   {
     "opcode": 77,
     "group": "GETPUT",
     "mnemonic": "b6",
-    "desc": "Store B into L6 (M[L:FDh])"
+    "desc": "Store B into L6 (M[L_FDh])"
   },
   {
     "opcode": 78,
     "group": "GETPUT",
     "mnemonic": "b7",
-    "desc": "Store B into L7 (M[L:FEh])"
+    "desc": "Store B into L7 (M[L_FEh])"
   },
   {
     "opcode": 79,
     "group": "GETPUT",
     "mnemonic": "b8",
-    "desc": "Store B into L8 (M[L:FFh])"
+    "desc": "Store B into L8 (M[L_FFh])"
   },
   {
     "opcode": 80,
     "group": "GETPUT",
     "mnemonic": "1o",
-    "desc": "Load O from L1 (M[L:F8h])"
+    "desc": "Load O from L1 (M[L_F8h])"
   },
   {
     "opcode": 81,
     "group": "GETPUT",
     "mnemonic": "2o",
-    "desc": "Load O from L2 (M[L:F9h])"
+    "desc": "Load O from L2 (M[L_F9h])"
   },
   {
     "opcode": 82,
     "group": "GETPUT",
     "mnemonic": "3o",
-    "desc": "Load O from L3 (M[L:FAh])"
+    "desc": "Load O from L3 (M[L_FAh])"
   },
   {
     "opcode": 83,
     "group": "GETPUT",
     "mnemonic": "4o",
-    "desc": "Load O from L4 (M[L:FBh])"
+    "desc": "Load O from L4 (M[L_FBh])"
   },
   {
     "opcode": 84,
     "group": "GETPUT",
     "mnemonic": "5o",
-    "desc": "Load O from L5 (M[L:FCh])"
+    "desc": "Load O from L5 (M[L_FCh])"
   },
   {
     "opcode": 85,
     "group": "GETPUT",
     "mnemonic": "6o",
-    "desc": "Load O from L6 (M[L:FDh])"
+    "desc": "Load O from L6 (M[L_FDh])"
   },
   {
     "opcode": 86,
     "group": "GETPUT",
     "mnemonic": "7o",
-    "desc": "Load O from L7 (M[L:FEh])"
+    "desc": "Load O from L7 (M[L_FEh])"
   },
   {
     "opcode": 87,
     "group": "GETPUT",
     "mnemonic": "8o",
-    "desc": "Load O from L8 (M[L:FFh])"
+    "desc": "Load O from L8 (M[L_FFh])"
   },
   {
     "opcode": 88,
     "group": "GETPUT",
     "mnemonic": "o1",
-    "desc": "Store O into L1 (M[L:F8h])"
+    "desc": "Store O into L1 (M[L_F8h])"
   },
   {
     "opcode": 89,
     "group": "GETPUT",
     "mnemonic": "o2",
-    "desc": "Store O into L2 (M[L:F9h])"
+    "desc": "Store O into L2 (M[L_F9h])"
   },
   {
     "opcode": 90,
     "group": "GETPUT",
     "mnemonic": "o3",
-    "desc": "Store O into L3 (M[L:FAh])"
+    "desc": "Store O into L3 (M[L_FAh])"
   },
   {
     "opcode": 91,
     "group": "GETPUT",
     "mnemonic": "o4",
-    "desc": "Store O into L4 (M[L:FBh])"
+    "desc": "Store O into L4 (M[L_FBh])"
   },
   {
     "opcode": 92,
     "group": "GETPUT",
     "mnemonic": "o5",
-    "desc": "Store O into L5 (M[L:FCh])"
+    "desc": "Store O into L5 (M[L_FCh])"
   },
   {
     "opcode": 93,
     "group": "GETPUT",
     "mnemonic": "o6",
-    "desc": "Store O into L6 (M[L:FDh])"
+    "desc": "Store O into L6 (M[L_FDh])"
   },
   {
     "opcode": 94,
     "group": "GETPUT",
     "mnemonic": "o7",
-    "desc": "Store O into L7 (M[L:FEh])"
+    "desc": "Store O into L7 (M[L_FEh])"
   },
   {
     "opcode": 95,
     "group": "GETPUT",
     "mnemonic": "o8",
-    "desc": "Store O into L8 (M[L:FFh])"
+    "desc": "Store O into L8 (M[L_FFh])"
   },
   {
     "opcode": 96,
     "group": "GETPUT",
     "mnemonic": "1a",
-    "desc": "Load A from L1 (M[L:F8h])"
+    "desc": "Load A from L1 (M[L_F8h])"
   },
   {
     "opcode": 97,
     "group": "GETPUT",
     "mnemonic": "2a",
-    "desc": "Load A from L2 (M[L:F9h])"
+    "desc": "Load A from L2 (M[L_F9h])"
   },
   {
     "opcode": 98,
     "group": "GETPUT",
     "mnemonic": "3a",
-    "desc": "Load A from L3 (M[L:FAh])"
+    "desc": "Load A from L3 (M[L_FAh])"
   },
   {
     "opcode": 99,
     "group": "GETPUT",
     "mnemonic": "4a",
-    "desc": "Load A from L4 (M[L:FBh])"
+    "desc": "Load A from L4 (M[L_FBh])"
   },
   {
     "opcode": 100,
     "group": "GETPUT",
     "mnemonic": "5a",
-    "desc": "Load A from L5 (M[L:FCh])"
+    "desc": "Load A from L5 (M[L_FCh])"
   },
   {
     "opcode": 101,
     "group": "GETPUT",
     "mnemonic": "6a",
-    "desc": "Load A from L6 (M[L:FDh])"
+    "desc": "Load A from L6 (M[L_FDh])"
   },
   {
     "opcode": 102,
     "group": "GETPUT",
     "mnemonic": "7a",
-    "desc": "Load A from L7 (M[L:FEh])"
+    "desc": "Load A from L7 (M[L_FEh])"
   },
   {
     "opcode": 103,
     "group": "GETPUT",
     "mnemonic": "8a",
-    "desc": "Load A from L8 (M[L:FFh])"
+    "desc": "Load A from L8 (M[L_FFh])"
   },
   {
     "opcode": 104,
     "group": "GETPUT",
     "mnemonic": "a1",
-    "desc": "Store A into L1 (M[L:F8h])"
+    "desc": "Store A into L1 (M[L_F8h])"
   },
   {
     "opcode": 105,
     "group": "GETPUT",
     "mnemonic": "a2",
-    "desc": "Store A into L2 (M[L:F9h])"
+    "desc": "Store A into L2 (M[L_F9h])"
   },
   {
     "opcode": 106,
     "group": "GETPUT",
     "mnemonic": "a3",
-    "desc": "Store A into L3 (M[L:FAh])"
+    "desc": "Store A into L3 (M[L_FAh])"
   },
   {
     "opcode": 107,
     "group": "GETPUT",
     "mnemonic": "a4",
-    "desc": "Store A into L4 (M[L:FBh])"
+    "desc": "Store A into L4 (M[L_FBh])"
   },
   {
     "opcode": 108,
     "group": "GETPUT",
     "mnemonic": "a5",
-    "desc": "Store A into L5 (M[L:FCh])"
+    "desc": "Store A into L5 (M[L_FCh])"
   },
   {
     "opcode": 109,
     "group": "GETPUT",
     "mnemonic": "a6",
-    "desc": "Store A into L6 (M[L:FDh])"
+    "desc": "Store A into L6 (M[L_FDh])"
   },
   {
     "opcode": 110,
     "group": "GETPUT",
     "mnemonic": "a7",
-    "desc": "Store A into L7 (M[L:FEh])"
+    "desc": "Store A into L7 (M[L_FEh])"
   },
   {
     "opcode": 111,
     "group": "GETPUT",
     "mnemonic": "a8",
-    "desc": "Store A into L8 (M[L:FFh])"
+    "desc": "Store A into L8 (M[L_FFh])"
   },
   {
     "opcode": 112,
     "group": "GETPUT",
     "mnemonic": "1d",
-    "desc": "Load D from L1 (M[L:F8h])"
+    "desc": "Load D from L1 (M[L_F8h])"
   },
   {
     "opcode": 113,
     "group": "GETPUT",
     "mnemonic": "2d",
-    "desc": "Load D from L2 (M[L:F9h])"
+    "desc": "Load D from L2 (M[L_F9h])"
   },
   {
     "opcode": 114,
     "group": "GETPUT",
     "mnemonic": "3d",
-    "desc": "Load D from L3 (M[L:FAh])"
+    "desc": "Load D from L3 (M[L_FAh])"
   },
   {
     "opcode": 115,
     "group": "GETPUT",
     "mnemonic": "4d",
-    "desc": "Load D from L4 (M[L:FBh])"
+    "desc": "Load D from L4 (M[L_FBh])"
   },
   {
     "opcode": 116,
     "group": "GETPUT",
     "mnemonic": "5d",
-    "desc": "Load D from L5 (M[L:FCh])"
+    "desc": "Load D from L5 (M[L_FCh])"
   },
   {
     "opcode": 117,
     "group": "GETPUT",
     "mnemonic": "6d",
-    "desc": "Load D from L6 (M[L:FDh])"
+    "desc": "Load D from L6 (M[L_FDh])"
   },
   {
     "opcode": 118,
     "group": "GETPUT",
     "mnemonic": "7d",
-    "desc": "Load D from L7 (M[L:FEh])"
+    "desc": "Load D from L7 (M[L_FEh])"
   },
   {
     "opcode": 119,
     "group": "GETPUT",
     "mnemonic": "8d",
-    "desc": "Load D from L8 (M[L:FFh])"
+    "desc": "Load D from L8 (M[L_FFh])"
   },
   {
     "opcode": 120,
     "group": "GETPUT",
     "mnemonic": "d1",
-    "desc": "Store D into L1 (M[L:F8h])"
+    "desc": "Store D into L1 (M[L_F8h])"
   },
   {
     "opcode": 121,
     "group": "GETPUT",
     "mnemonic": "d2",
-    "desc": "Store D into L2 (M[L:F9h])"
+    "desc": "Store D into L2 (M[L_F9h])"
   },
   {
     "opcode": 122,
     "group": "GETPUT",
     "mnemonic": "d3",
-    "desc": "Store D into L3 (M[L:FAh])"
+    "desc": "Store D into L3 (M[L_FAh])"
   },
   {
     "opcode": 123,
     "group": "GETPUT",
     "mnemonic": "d4",
-    "desc": "Store D into L4 (M[L:FBh])"
+    "desc": "Store D into L4 (M[L_FBh])"
   },
   {
     "opcode": 124,
     "group": "GETPUT",
     "mnemonic": "d5",
-    "desc": "Store D into L5 (M[L:FCh])"
+    "desc": "Store D into L5 (M[L_FCh])"
   },
   {
     "opcode": 125,
     "group": "GETPUT",
     "mnemonic": "d6",
-    "desc": "Store D into L6 (M[L:FDh])"
+    "desc": "Store D into L6 (M[L_FDh])"
   },
   {
     "opcode": 126,
     "group": "GETPUT",
     "mnemonic": "d7",
-    "desc": "Store D into L7 (M[L:FEh])"
+    "desc": "Store D into L7 (M[L_FEh])"
   },
   {
     "opcode": 127,
     "group": "GETPUT",
     "mnemonic": "d8",
-    "desc": "Store D into L8 (M[L:FFh])"
+    "desc": "Store D into L8 (M[L_FFh])"
   },
   {
     "opcode": 128,
     "group": "PAIR",
     "mnemonic": "FU",
-    "desc": "Take M[CR:PC++] as 8-bit signed number and add it to 16-bit pointer B:O"
+    "desc": "Take M[C:R_PC++] as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 129,
     "group": "PAIR",
     "scrounge": "FM",
     "mnemonic": "CODE",
-    "desc": "Set pointer B:O to C:PC"
+    "desc": "Set pointer B_O to C:R_PC"
   },
   {
     "opcode": 130,
     "group": "PAIR",
     "mnemonic": "FB",
-    "desc": "Take M[CR:PC++] into B"
+    "desc": "Take M[C:R_PC++] into B"
   },
   {
     "opcode": 131,
     "group": "PAIR",
     "mnemonic": "FO",
-    "desc": "Take M[CR:PC++] into O"
+    "desc": "Take M[C:R_PC++] into O"
   },
   {
     "opcode": 132,
     "group": "PAIR",
     "mnemonic": "FA",
-    "desc": "Take M[CR:PC++] into A"
+    "desc": "Take M[C:R_PC++] into A"
   },
   {
     "opcode": 133,
     "group": "PAIR",
     "mnemonic": "FE",
-    "desc": "Take M[CR:PC++] into E"
+    "desc": "Take M[C:R_PC++] into E"
   },
   {
     "opcode": 134,
     "group": "PAIR",
     "mnemonic": "FS",
-    "desc": "Take M[CR:PC++] into SOR"
+    "desc": "Take M[C:R_PC++] into SOR"
   },
   {
     "opcode": 135,
     "group": "PAIR",
     "mnemonic": "FP",
-    "desc": "Take M[CR:PC++] into POR"
+    "desc": "Take M[C:R_PC++] into POR"
   },
   {
     "opcode": 136,
     "group": "PAIR",
     "mnemonic": "FD",
-    "desc": "Take M[CR:PC++] into D"
+    "desc": "Take M[C:R_PC++] into D"
   },
   {
     "opcode": 137,
     "group": "PAIR",
     "mnemonic": "FW",
-    "desc": "Take M[CR:PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "desc": "Take M[C:R_PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D"
   },
   {
     "opcode": 138,
     "group": "PAIR",
     "mnemonic": "FJ",
-    "desc": "Take M[CR:PC++] as page offset and store it into PC - always"
+    "desc": "Take M[C:R_PC++] as page offset and store it into PC - always"
   },
   {
     "opcode": 139,
     "group": "PAIR",
     "mnemonic": "FH",
-    "desc": "Take M[CR:PC++] as page offset and store it into PC - if A is not equal to zero"
+    "desc": "Take M[C:R_PC++] as page offset and store it into PC - if A is not equal to zero"
   },
   {
     "opcode": 140,
     "group": "PAIR",
     "mnemonic": "FZ",
-    "desc": "Take M[CR:PC++] as page offset and store it into PC - if A is equal to zero"
+    "desc": "Take M[C:R_PC++] as page offset and store it into PC - if A is equal to zero"
   },
   {
     "opcode": 141,
     "group": "PAIR",
     "mnemonic": "FN",
-    "desc": "Take M[CR:PC++] as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "desc": "Take M[C:R_PC++] as page offset and store it into PC - if A is negative (has bit 7 set)"
   },
   {
     "opcode": 142,
     "group": "PAIR",
     "mnemonic": "FR",
-    "desc": "Take M[CR:PC++] as page-index, load the index into R, set PC to 80h"
+    "desc": "Take M[C:R_PC++] as page-index, load the index into R, set PC to 80h"
   },
   {
     "opcode": 143,
     "group": "PAIR",
     "mnemonic": "FC",
-    "desc": "Take M[CR:PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L"
+    "desc": "Take M[C:R_PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   },
   {
     "opcode": 144,
     "group": "PAIR",
     "mnemonic": "MU",
-    "desc": "Take M[B:O] as 8-bit signed number and add it to 16-bit pointer B:O"
+    "desc": "Take M[B_O] as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 145,
     "group": "PAIR",
     "scrounge": "MM",
     "mnemonic": "LOCAL",
-    "desc": "Set pointer B:O to L:F7h (L0)"
+    "desc": "Set pointer B_O to L_F7h (L0)"
   },
   {
     "opcode": 146,
     "group": "PAIR",
     "mnemonic": "MB",
-    "desc": "Take M[B:O] into B"
+    "desc": "Take M[B_O] into B"
   },
   {
     "opcode": 147,
     "group": "PAIR",
     "mnemonic": "MO",
-    "desc": "Take M[B:O] into O"
+    "desc": "Take M[B_O] into O"
   },
   {
     "opcode": 148,
     "group": "PAIR",
     "mnemonic": "MA",
-    "desc": "Take M[B:O] into A"
+    "desc": "Take M[B_O] into A"
   },
   {
     "opcode": 149,
     "group": "PAIR",
     "mnemonic": "ME",
-    "desc": "Take M[B:O] into E"
+    "desc": "Take M[B_O] into E"
   },
   {
     "opcode": 150,
     "group": "PAIR",
     "mnemonic": "MS",
-    "desc": "Take M[B:O] into SOR"
+    "desc": "Take M[B_O] into SOR"
   },
   {
     "opcode": 151,
     "group": "PAIR",
     "mnemonic": "MP",
-    "desc": "Take M[B:O] into POR"
+    "desc": "Take M[B_O] into POR"
   },
   {
     "opcode": 152,
     "group": "PAIR",
     "mnemonic": "MD",
-    "desc": "Take M[B:O] into D"
+    "desc": "Take M[B_O] into D"
   },
   {
     "opcode": 153,
     "group": "PAIR",
     "mnemonic": "MW",
-    "desc": "Take M[B:O] as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "desc": "Take M[B_O] as page offset and store it into PC - while register D is not zero. In either case, decrement D"
   },
   {
     "opcode": 154,
     "group": "PAIR",
     "mnemonic": "MJ",
-    "desc": "Take M[B:O] as page offset and store it into PC - always"
+    "desc": "Take M[B_O] as page offset and store it into PC - always"
   },
   {
     "opcode": 155,
     "group": "PAIR",
     "mnemonic": "MH",
-    "desc": "Take M[B:O] as page offset and store it into PC - if A is not equal to zero"
+    "desc": "Take M[B_O] as page offset and store it into PC - if A is not equal to zero"
   },
   {
     "opcode": 156,
     "group": "PAIR",
     "mnemonic": "MZ",
-    "desc": "Take M[B:O] as page offset and store it into PC - if A is equal to zero"
+    "desc": "Take M[B_O] as page offset and store it into PC - if A is equal to zero"
   },
   {
     "opcode": 157,
     "group": "PAIR",
     "mnemonic": "MN",
-    "desc": "Take M[B:O] as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "desc": "Take M[B_O] as page offset and store it into PC - if A is negative (has bit 7 set)"
   },
   {
     "opcode": 158,
     "group": "PAIR",
     "mnemonic": "MR",
-    "desc": "Take M[B:O] as page-index, load the index into R, set PC to 80h"
+    "desc": "Take M[B_O] as page-index, load the index into R, set PC to 80h"
   },
   {
     "opcode": 159,
     "group": "PAIR",
     "mnemonic": "MC",
-    "desc": "Take M[B:O] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L"
+    "desc": "Take M[B_O] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   },
   {
     "opcode": 160,
     "group": "PAIR",
     "mnemonic": "BU",
-    "desc": "Take B as 8-bit signed number and add it to 16-bit pointer B:O"
+    "desc": "Take B as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 161,
     "group": "PAIR",
     "mnemonic": "BM",
-    "desc": "Take B into M[B:O]"
+    "desc": "Take B into M[B_O]"
   },
   {
     "opcode": 162,
@@ -1056,19 +1056,19 @@
     "opcode": 175,
     "group": "PAIR",
     "mnemonic": "BC",
-    "desc": "Take B as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L"
+    "desc": "Take B as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   },
   {
     "opcode": 176,
     "group": "PAIR",
     "mnemonic": "OU",
-    "desc": "Take O as 8-bit signed number and add it to 16-bit pointer B:O"
+    "desc": "Take O as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 177,
     "group": "PAIR",
     "mnemonic": "OM",
-    "desc": "Take O into M[B:O]"
+    "desc": "Take O into M[B_O]"
   },
   {
     "opcode": 178,
@@ -1153,19 +1153,19 @@
     "opcode": 191,
     "group": "PAIR",
     "mnemonic": "OC",
-    "desc": "Take O as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L"
+    "desc": "Take O as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   },
   {
     "opcode": 192,
     "group": "PAIR",
     "mnemonic": "AU",
-    "desc": "Take A as 8-bit signed number and add it to 16-bit pointer B:O"
+    "desc": "Take A as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 193,
     "group": "PAIR",
     "mnemonic": "AM",
-    "desc": "Take A into M[B:O]"
+    "desc": "Take A into M[B_O]"
   },
   {
     "opcode": 194,
@@ -1250,19 +1250,19 @@
     "opcode": 207,
     "group": "PAIR",
     "mnemonic": "AC",
-    "desc": "Take A as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L"
+    "desc": "Take A as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   },
   {
     "opcode": 208,
     "group": "PAIR",
     "mnemonic": "EU",
-    "desc": "Take E as 8-bit signed number and add it to 16-bit pointer B:O"
+    "desc": "Take E as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 209,
     "group": "PAIR",
     "mnemonic": "EM",
-    "desc": "Take E into M[B:O]"
+    "desc": "Take E into M[B_O]"
   },
   {
     "opcode": 210,
@@ -1347,19 +1347,19 @@
     "opcode": 223,
     "group": "PAIR",
     "mnemonic": "EC",
-    "desc": "Take E as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L"
+    "desc": "Take E as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   },
   {
     "opcode": 224,
     "group": "PAIR",
     "mnemonic": "SU",
-    "desc": "Take SIR as 8-bit signed number and add it to 16-bit pointer B:O"
+    "desc": "Take SIR as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 225,
     "group": "PAIR",
     "mnemonic": "SM",
-    "desc": "Take SIR into M[B:O]"
+    "desc": "Take SIR into M[B_O]"
   },
   {
     "opcode": 226,
@@ -1443,19 +1443,19 @@
     "opcode": 239,
     "group": "PAIR",
     "mnemonic": "SC",
-    "desc": "Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L"
+    "desc": "Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   },
   {
     "opcode": 240,
     "group": "PAIR",
     "mnemonic": "PU",
-    "desc": "Take PIR as 8-bit signed number and add it to 16-bit pointer B:O"
+    "desc": "Take PIR as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 241,
     "group": "PAIR",
     "mnemonic": "PM",
-    "desc": "Take PIR into M[B:O]"
+    "desc": "Take PIR into M[B_O]"
   },
   {
     "opcode": 242,
@@ -1539,6 +1539,6 @@
     "opcode": 255,
     "group": "PAIR",
     "mnemonic": "PC",
-    "desc": "Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L"
+    "desc": "Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   }
 ]

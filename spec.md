@@ -97,7 +97,7 @@ By writing a branch offset into J, the program counter is set to this new offset
 
 Branching to code in a different page is done by writing into one of the effect registers C (call) or R (resident), by executing a return instruction (RTS or RTI), the COR (coroutine) instruction, or executing a TRAP instruction.
 
-TRAP instructions have immediate opcodes that encode a target page-index for a call. When executed, an implicit subroutine call to this encoded page-index occurs within a single instruction.
+TRAP instructions have immediate opcodes that encode a target page-index for a call. When executed, an implicit subroutine call to this encoded page-index occurs within a single instruction. A TRAP to page 0 sets the BUSY flag and disables interrupts. The BUSY is cleared by executing RTI.
 
 When executing RTS or RTI, the code page index register C is loaded with the value in B (base), the program counter register PC is loaded with the value of register O (offset), and the local-page index in register L is incremented.
 
@@ -115,8 +115,8 @@ Writing into M (xM) stores the value into memory at page index B offset O. Conve
 
 Inherent NOP instructions such as BB, OO, AA, and EE, and impractical instructions such as FM and MM (same-cycle memory load-store) are repurposed ("scrounged"), and their respective opcodes execute different instructions.
 
-	FM routed to: CODE (set B:O to C:PC)
-	MM routed to: LOCAL (set B:O to L:0xF7 - L0)
+	FM routed to: CODE (set B:O to C:PC or R:PC, depending on PC bit 7)
+	MM routed to: LOCAL (set B:O to L:0xF7 - "L0")
 	BB routed to: LEAVE (increment L)
 	OO routed to: ENTER (decrement L)
 	AA routed to: INCA (increment A)
@@ -268,9 +268,9 @@ After data transmission is complete, the selected device needs to be deselected 
 
 An external device can make an interrupt request (IRQ) by asserting the IRQ signal.
 
-At the beginning of each instruction cycle, the CPU checks whether an Interrupt must be serviced. There are two conditions which prevent an interrupt from being serviced by the microcontroller during a given instruction cycle. Firstly, when the CPU is running code with the page-index in C set to 0, and secondly when the BUSY flag is set.
+At the beginning of each instruction cycle, the CPU checks whether an Interrupt must be serviced. There are two conditions which prevent an interrupt from being serviced by the microcontroller during a given instruction cycle. Firstly, when the CPU is running code within page 0, for example just after RESET, and secondly when the BUSY flag is set.
 
-If the BUSY flag is not set, and the code-page selected in C is not zero, the CPU injects a "fake" TRAP call instruction to page 0, instead of fetching a proper instruction opcode. It then sets the BUSY flag and starts running the interrupt service routine in page zero at address-offset 0. Since this process sets the C page-index to 0, further interrupts are disabled until execution leaves page zero. Note: The xR (Resident) instruction can be used to map code into the upper segment as explained; as long as the page-index in C remains zero, interrupts are disabled.
+If the BUSY flag is not set, and the page index in C is not zero, the CPU injects a "fake" TRAP call instruction to page 0, instead of fetching a proper instruction opcode. By entering page 0, the BUSY flag is set the interrupt service routine in page zero at address-offset 0 is run. Note: The xR (Resident) instruction can be used to map code into the upper segment as explained; as long as the page-index in C remains zero, interrupts are disabled.
 
 To re-enable interrupts, the software must execute an RTI instruction (Return from Interrupt). RTI behaves identically to RTS (Return from Subroutine), but clears the BUSY flag. As long as the BUSY flag remains set, downstream service routines or other code will not be interrupted by interrupts.
 
@@ -389,7 +389,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     
     Group TRAP
     
-    0x20: *0	Trap call to page 0, offset 0
+    0x20: *0	Trap call to page 0, offset 0 - Set BUSY flag
     0x21: *1	Trap call to page 1, offset 0
     0x22: *2	Trap call to page 2, offset 0
     0x23: *3	Trap call to page 3, offset 0
@@ -499,7 +499,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     Group PAIR
     
     0x80: FU	Take M[C:R_PC++] as 8-bit signed number and add it to 16-bit pointer B_O
-    0x81: CODE	Set pointer B_O to C_PC
+    0x81: CODE	Set pointer B_O to C:R_PC
     0x82: FB	Take M[C:R_PC++] into B
     0x83: FO	Take M[C:R_PC++] into O
     0x84: FA	Take M[C:R_PC++] into A
