@@ -12,26 +12,28 @@ https://github.com/michaelmangelsdorf/Sonne8
 
 ### Computations
 
-The accumulator is a two element push-down stack representing the input operands to the ALU. The stack is formed by registers A (for Accumulator) and X. Executing an ALU opcode pushes the result onto the accumulator stack. This operation is a two-step process: (1) Store the previous value of A into X, overwriting X. (2) Store the ALU result into A, overwriting A.
+The accumulator is a two element push-down stack representing the input operands to the ALU. The stack is formed by registers A (for Accumulator) and X. Writing a value into A pushes this value onto the accumulator stack. This operation is a two-step process: (1) Store the previous value of A into X, overwriting X. (2) Store the new value into A. Some ALU functions produce
+one result byte (for instance NOT), in which case the result is pushed onto
+the stack as described. Other ALU functions produce two results, in which case the primary result value overwrites A, and the secondary result overwrites X. The ADD instruction for example stores the addition result in A, and the carry bit of the operation in X.
 
 The ALU can compute the following functions (results are pushed):
 
-     0 SAA   Set X equal to A*/
-     1 SXX   Set A equal to X */
-     2 SXA   Swap A and X */
-     3 SHL   A shifted left, previous MSB in X as LSB */
-     4 SHR   A shifted right logically, previous LSB in X as MSB */
-     5 ASR   A shifted right arithmetically, previous LSB in X as MSB */
-     6 NOT   One's complement of A */
-     7 ALX   255 if A<X else 0 */
-     8 AEX   255 if A=X else 0 */
-     9 AGX   255 if A>X else 0 */
-    10 OVF   Signed addition overflow flag, invert A for subtraction */
-    11 ADD   Add A to X (low order 8-bits, CARRY in X) */
-    12 SUB   Subtract A from X (low order 8-bits, BORROW in X) */
-    13 AND   A AND X */
-    14 IOR   A OR X */
-    15 EOR   A XOR X */
+     0 SAA   Set X equal to A
+     1 SXX   Set A equal to X
+     2 SXA   Swap A and X
+     3 SHL   A shifted left, previous MSB in X as LSB
+     4 SHR   A shifted right logically, previous LSB in X as MSB
+     5 ASR   A shifted right arithmetically, previous LSB in X as MSB
+     6 NOT   One's complement of A
+     7 ALX   255 if A<X else 0
+     8 AEX   255 if A=X else 0
+     9 AGX   255 if A>X else 0
+    10 OVF   Signed addition overflow flag, invert A for subtraction
+    11 ADD   Add A to X (low order 8-bits, CARRY in X)
+    12 SUB   Subtract A from X (low order 8-bits, BORROW in X)
+    13 AND   A AND X
+    14 IOR   A OR X
+    15 EOR   A XOR X
 
 #### Memory Layout
 

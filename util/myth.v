@@ -12,15 +12,22 @@
 //Decoder driven control signals/////////////////////////////////////////////
 
 reg NOP, SSI, SSO, SCL, SCH, RTS, RTI, COR;         // SYS
+
 reg RBO, BOR, WBO, BOW, IBO, BOI, SBO, BOS;         // BOP
-reg DUP, SWAP, NOTA, NOTX, SLA, SLX, SRA, SRX;      // ALU
-reg AND, IOR, EOR, ADD, OVF, ALX, AEX, AGX;
+
+reg SAA, SXX, SXA, SHL, SHR, ASR, NOT, ALX;         // ALU
+reg AEX, AGX, OVF, ADD, SUB, AND, IOR, EOR;
+
 reg TRAP;                                           // TRAP
+
 reg GETB, GETO, GETA, GETD, PUTB, PUTO, PUTA, PUTD; // GETPUT
+
 reg Fx, Mx, Bx, Ox, Ax, Ex, Sx, Px;                 // PAIR SRC
+
 reg xU, xM, xB, xO, xA, xE, xS, xP;                 // PAIR DST
 reg xD, xW, xJ, xH, xZ, xN, xR, xC;
-reg CODE, LOCAL, LEAVE, ENTER, INCA, DECA;          // PAIR SCROUNGE
+
+reg CODE, LOCAL, LEAVE, ENTER, INC, DEC;          // PAIR SCROUNGE
 
 
 //Register declarations//////////////////////////////////////////////////////
@@ -104,8 +111,8 @@ always @* begin
     
     RBO=0; BOR=0;  WBO=0;  BOW=0;  IBO=0; BOI=0; SBO=0; BOS=0;   // Clear BOP
     
-    DUP=0; SWAP=0; NOTA=0; NOTX=0; SLA=0; SLX=0; SRA=0; SRX=0;   // Clear ALU
-    AND=0; IOR=0;  EOR=0;  ADD=0;  OVF=0; ALX=0; AEX=0; AGX=0;
+    SAA=0; SXX=0; SXA=0; SHL=0; SHR=0; ASR=0; NOT=0; ALX=0;      // Clear ALU
+    AEX=0; AGX=0; OVF=0; ADD=0; SUB=0; AND=0; IOR=0; EOR=0;
     
     TRAP=0;                                                     // Clear TRAP
     
@@ -116,7 +123,7 @@ always @* begin
     xU=0; xM=0; xB=0; xO=0; xA=0; xE=0; xS=0; xP=0;
     xD=0; xW=0; xJ=0; xH=0; xZ=0; xN=0; xR=0; xC=0;
     
-    CODE=0; LOCAL=0; LEAVE=0; ENTER=0; INCA=0; DECA=0;      // Clear SCROUNGE
+    CODE=0; LOCAL=0; LEAVE=0; ENTER=0; INC=0; DEC=0;        // Clear SCROUNGE
 
     if (OPC_SYS) begin
         case (I[2:0])
@@ -187,8 +194,8 @@ always @* begin
             {3'd1, 4'd1}: LOCAL = 1; // Scrounge MxM
             {3'd2, 4'd2}: LEAVE = 1; // Scrounge BxB
             {3'd3, 4'd3}: ENTER = 1; // Scrounge OxO
-            {3'd4, 4'd4}: INCA  = 1; // Scrounge AxA
-            {3'd5, 4'd5}: DECA  = 1; // Scrounge ExE
+            {3'd4, 4'd4}: INC   = 1; // Scrounge AxA
+            {3'd5, 4'd5}: DEC   = 1; // Scrounge ExE
             default: begin
                 case (I[6:4])        // Source
                     3'd0: Fx = 1;
@@ -262,26 +269,26 @@ always @(posedge clk or posedge rst) begin
         if ((xA || GETA) && READY) A <= data_bus; // Load from data bus
         else if (SETUP && OPC_ALU) begin
             case (1'b1)
-                DUP:  alu_result = A;
-                SWAP: alu_result = X;
-                NOTA: alu_result = ~A;
-                NOTX: alu_result = ~X;
-                SLA:  alu_result = A << 1;
-                SLX:  alu_result = X << 1;
-                SRA:  alu_result = A >> 1;
-                SRX:  alu_result = X >> 1;
-                AND:  alu_result = A & X;
-                IOR:  alu_result = A | X;
-                EOR:  alu_result = A ^ X;
-                ADD:  alu_result = A + X;
-                OVF:  alu_result = {carry, overflow, 6'b000000};
-                ALX:  alu_result = (A < X)  ? 8'hFF : 8'h00;
-                AEX   alu_result = (A == X) ? 8'hFF : 8'h00;
+                SAA:  alu_result = A;
+                SXX:  alu_result = X; // Not pushed
+                SXA:  alu_result = X;
+                SHL:  alu_result = A << 1;
+                SHR:  alu_result = A << 1;
+                ASR:  alu_result = X >> 1;
+                NOT:  alu_result = ~A;
+                ALX:  alu_result = (A < X)  ? 8'hFF : 8'h00; 
+                AEX:  alu_result = (A == X) ? 8'hFF : 8'h00;
                 AGX:  alu_result = (A > X)  ? 8'hFF : 8'h00;
+                OVF:  alu_result = ; // {carry, overflow, 6'b000000};
+                ADD:  alu_result = X + A;
+                SUB:  alu_result = X - A; 
+                AND:  alu_result = A & X;
+                IOR   alu_result = A | X;
+                EOR:  alu_result = A ^ X;
                 default: alu_result = A;
             endcase
-            X <= A;          // Update X with A
-            A <= alu_result; // Update A with ALU result
+            if (!SXX) X <= A; // Update X with previous A or flags
+            A <= alu_result;  // Update A with ALU result
         end
     end
 end
