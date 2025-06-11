@@ -98,98 +98,98 @@
   {
     "opcode": 16,
     "group": "ALU",
-    "mnemonic": "DUP",
-    "desc": "Push copy of A"
+    "mnemonic": "SAA",
+    "desc": "Set X equal to A"
   },
   {
     "opcode": 17,
     "group": "ALU",
-    "mnemonic": "SWAP",
-    "desc": "Push copy of X"
+    "mnemonic": "SXX",
+    "desc": "Set A equal to X"
   },
   {
     "opcode": 18,
     "group": "ALU",
-    "mnemonic": "NOTA",
-    "desc": "Push one's complement of A"
+    "mnemonic": "SXA",
+    "desc": "Swap A and X"
   },
   {
     "opcode": 19,
     "group": "ALU",
-    "mnemonic": "NOTX",
-    "desc": "Push one's complement of X"
+    "mnemonic": "SHL",
+    "desc": "A shifted left, previous MSB in X as LSB"
   },
   {
     "opcode": 20,
     "group": "ALU",
-    "mnemonic": "SLA",
-    "desc": "Push shift left A"
+    "mnemonic": "SHR",
+    "desc": "A shifted right logically, previous LSB in X as MSB"
   },
   {
     "opcode": 21,
     "group": "ALU",
-    "mnemonic": "SLX",
-    "desc": "Push shift left X"
+    "mnemonic": "ASR",
+    "desc": "A shifted right arithmetically, previous LSB in X as MSB"
   },
   {
     "opcode": 22,
     "group": "ALU",
-    "mnemonic": "SRA",
-    "desc": "Push shift right A"
+    "mnemonic": "NOT",
+    "desc": "One's complement of A"
   },
   {
     "opcode": 23,
     "group": "ALU",
-    "mnemonic": "SRX",
-    "desc": "Push shift right X"
+    "mnemonic": "ALX",
+    "desc": "255 if A<X else 0"
   },
   {
     "opcode": 24,
     "group": "ALU",
-    "mnemonic": "AND",
-    "desc": "Push A AND X"
+    "mnemonic": "AEX",
+    "desc": "255 if A=X else 0"
   },
   {
     "opcode": 25,
     "group": "ALU",
-    "mnemonic": "IOR",
-    "desc": "Push A OR X"
+    "mnemonic": "AGX",
+    "desc": "255 if A>X else 0"
   },
   {
     "opcode": 26,
     "group": "ALU",
-    "mnemonic": "EOR",
-    "desc": "PUSH A XOR X"
+    "mnemonic": "OVF",
+    "desc": "Signed ADDITION overflow flag, invert A for subtraction"
   },
   {
     "opcode": 27,
     "group": "ALU",
     "mnemonic": "ADD",
-    "desc": "Push A + X"
+    "desc": "Add A to X (low order 8-bits, CARRY in X)"
   },
   {
     "opcode": 28,
     "group": "ALU",
-    "mnemonic": "OVF",
-    "desc": "PUSH 0 + B6:SIGNED OVERFLOW + B7:CARRY of: A + X"
+    "mnemonic": "SUB",
+    "desc": "Subtract A from X (low order 8-bits, BORROW in X)"
   },
   {
     "opcode": 29,
     "group": "ALU",
-    "mnemonic": "ALX",
-    "desc": "Push A<X flag (0 or 255)"
+    "mnemonic": "AND",
+    "desc": "A AND X"
   },
   {
     "opcode": 30,
     "group": "ALU",
-    "mnemonic": "AEX",
-    "desc": "Push A=X flag (0 or 255)"
+    "mnemonic": "IOR",
+    "desc": "A OR X"
   },
   {
     "opcode": 31,
     "group": "ALU",
-    "mnemonic": "AGX",
-    "desc": "Push A>X flag (0 or 255)"
+    "mnemonic": "EOR",
+    "desc": "A XOR X"
   },
   {
     "opcode": 32,
@@ -1183,7 +1183,7 @@
     "opcode": 196,
     "group": "PAIR",
     "scrounge": "AA",
-    "mnemonic": "INCA",
+    "mnemonic": "INC",
     "desc": "Increment A"
   },
   {
@@ -1286,7 +1286,7 @@
     "opcode": 213,
     "group": "PAIR",
     "scrounge": "EE",
-    "mnemonic": "DECA",
+    "mnemonic": "DEC",
     "desc": "Decrement A"
   },
   {

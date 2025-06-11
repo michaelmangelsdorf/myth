@@ -1,10 +1,10 @@
 
 /////////////////////////////////////////////////////////////////////////////
 //                                                                         //
-//    Verilog sketch for the "Myth" Microcontroller 9-JUNE-2025            //
-//    Mainly for the author as reference for now                           //
+//    Verilog sketch for the "Myth" Microcontroller                        //
+//    Just for reference                                                   //
 //    Project files: https://github.com/michaelmangelsdorf/myth            //
-//    Author: Michael Mangelsdorf <mim@ok-schalter.de>                     //
+//    Author: Michael <mim@ok-schalter.de>                                 //
 //                                                                         //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -505,6 +505,4 @@ always @(posedge clk or posedge rst)
         if (Fx || Mx) data_bus <= q;
 end
 
-
-/////////////////////////////////////////////////////////////////////////////
 

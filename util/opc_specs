@@ -14,22 +14,22 @@
 0x0D: I=BO PC++
 0x0E: BO=S PC++
 0x0F: S=BO PC++
-0x10: X0=A X=X0 PC++
-0x11: X0=A A=X X=X0 PC++
-0x12: X0=A A=NOT(A) X=X0 PC++
-0x13: X0=A A=NOT(X) X=X0 PC++
-0x14: X0=A A=(A<<1) X=X0 PC++
-0x15: X0=A A=(X<<1) X=X0 PC++
-0x16: X0=A A=(A>>1) X=X0 PC++
-0x17: X0=A A=(X>>1) X=X0 PC++
-0x18: X0=A A=(A&X) X=X0 PC++
-0x19: X0=A A=(A|X) X=X0 PC++
-0x1A: X0=A A=(A^X) X=X0 PC++
-0x1B: X0=A A=(A+X) X=X0 PC++
-0x1C: X0=A A=(CARRY-A-plus-B?80h:0)+(OVF-A-plus-B?40h:0) X=X0 PC++
-0x1D: X0=A A=(A<X?FFh:0) X=X0 PC++
-0x1E: X0=A A=(A==X?FFh:0) X=X0 PC++
-0x1F: X0=A A=(A>X?FFh:0) X=X0 PC++
+0x10: X=A PC++
+0x11: A=X PC++
+0x12: X0=A A=X X=X0 PC++
+0x13: X0=A A=(A<<1) X=(X0&80h)?1:0 PC++
+0x14: X0=A A=(X>>1) X=(X0&1h)?80h:0 PC++
+0x15: X0=A A=(X>>1)+(X0&80h) X=(X0&1h)?80h:0 PC++
+0x16: X0=A A=NOT(A) X=X0 PC++
+0x17: X0=A A=(A<X)?255:0 X=X0 PC++
+0x18: X0=A A=(A==X)?255:0 X=X0 PC++
+0x19: X0=A A=(A>X)?255:0 X=X0 PC++
+0x1A: X0=A A=(OVERFLOW-A+X)?255:0 X=X0 PC++
+0x1B: X0=A A=X+A X=CARRY-X-plus-X0 PC++
+0x1C: X0=A A=X-A X=BORROW-X-minus-X0 PC++
+0x1D: X0=A A=(A&X) X=X0 PC++
+0x1E: X0=A A=(A|X) X=X0 PC++
+0x1F: X0=A A=(A^X) X=X0 PC++
 0x20: BUSY=1 B0=C C=0 R=C B=B0 O=PC PC=0
 0x21: B0=C C=1 R=C B=B0 O=PC PC=0
 0x22: B0=C C=2 R=C B=B0 O=PC PC=0

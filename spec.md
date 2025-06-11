@@ -16,22 +16,22 @@ The accumulator is a two element push-down stack representing the input operands
 
 The ALU can compute the following functions (results are pushed):
 
-	0 DUP (Copy of A)
-	1 SWAP (Copy of X)
-	2 NOTA (One's complement of A)
-	3 NOTX (One's complement of X)
-	4 SLA (Shift left A)
-	5 SLX (Shift left X)
-	6 SRA (Shift right A)
-	7 SRX (Shift right X)
-	8 AND (A AND X)
-	9 IOR (A OR X)
-	10 EOR (A XOR X)
-	11 ADD (A plus X)
-	12 OVF (Signed/Unsigned Overflow of: A+B - B6:V, B7:CARRY)
-	13 ALX (Flag - A less than X)
-	14 AEX (Flag - A equals X)
-	15 AGX (Flag - A greater than X)
+     0 SAA   Set X equal to A*/
+     1 SXX   Set A equal to X */
+     2 SXA   Swap A and X */
+     3 SHL   A shifted left, previous MSB in X as LSB */
+     4 SHR   A shifted right logically, previous LSB in X as MSB */
+     5 ASR   A shifted right arithmetically, previous LSB in X as MSB */
+     6 NOT   One's complement of A */
+     7 ALX   255 if A<X else 0 */
+     8 AEX   255 if A=X else 0 */
+     9 AGX   255 if A>X else 0 */
+    10 OVF   Signed addition overflow flag, invert A for subtraction */
+    11 ADD   Add A to X (low order 8-bits, CARRY in X) */
+    12 SUB   Subtract A from X (low order 8-bits, BORROW in X) */
+    13 AND   A AND X */
+    14 IOR   A OR X */
+    15 EOR   A XOR X */
 
 #### Memory Layout
 
@@ -325,7 +325,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
 
            x0    x1    x2    x3    x4    x5    x6    x7    x8    x9    xA    xB    xC    xD    xE    xF
     0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR   RBO   BOR   WBO   BOW   IBO   BOI   SBO   BOS
-    1x    DUP  SWAP  NOTA  NOTX   SLA   SLX   SRA   SRX   AND   IOR   EOR   ADD   OVF   ALX   AEX   AGX
+    1x    SAA   SXX   SXA   SHL   SHR   ASR   NOT   ALX   AEX   AGX   OVF   ADD   SUB   AND   IOR   EOR
     2x     *0    *1    *2    *3    *4    *5    *6    *7    *8    *9   *10   *11   *12   *13   *14   *15
     3x    *16   *17   *18   *19   *20   *21   *22   *23   *24   *25   *26   *27   *28   *29   *30   *31
     4x     1b    2b    3b    4b    5b    6b    7b    8b    b1    b2    b3    b4    b5    b6    b7    b8
@@ -336,8 +336,8 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     9x     mu LOCAL    mb    mo    ma    me    ms    mp    md    mw    mj    mh    mz    mn    mr    mc
     Ax     bu    bm LEAVE    bo    ba    be    bs    bp    bd    bw    bj    bh    bz    bn    br    bc
     Bx     ou    om    ob ENTER    oa    oe    os    op    od    ow    oj    oh    oz    on    or    oc
-    Cx     au    am    ab    ao  INCA    ae    as    ap    ad    aw    aj    ah    az    an    ar    ac
-    Dx     eu    em    eb    eo    ea  DECA    es    ep    ed    ew    ej    eh    ez    en    er    ec
+    Cx     au    am    ab    ao   INC    ae    as    ap    ad    aw    aj    ah    az    an    ar    ac
+    Dx     eu    em    eb    eo    ea   DEC    es    ep    ed    ew    ej    eh    ez    en    er    ec
     Ex     su    sm    sb    so    sa    se    ss    sp    sd    sw    sj    sh    sz    sn    sr    sc
     Fx     pu    pm    pb    po    pa    pe    ps    pp    pd    pw    pj    ph    pz    pn    pr    pc
 
@@ -370,22 +370,22 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     
     Group ALU
     
-    0x10: DUP	Push copy of A
-    0x11: SWAP	Push copy of X
-    0x12: NOTA	Push one's complement of A
-    0x13: NOTX	Push one's complement of X
-    0x14: SLA	Push shift left A
-    0x15: SLX	Push shift left X
-    0x16: SRA	Push shift right A
-    0x17: SRX	Push shift right X
-    0x18: AND	Push A AND X
-    0x19: IOR	Push A OR X
-    0x1A: EOR	PUSH A XOR X
-    0x1B: ADD	Push A + X
-    0x1C: OVF	PUSH 0 + B6:SIGNED OVERFLOW + B7:CARRY of: A + X
-    0x1D: ALX	Push A<X flag (0 or 255)
-    0x1E: AEX	Push A=X flag (0 or 255)
-    0x1F: AGX	Push A>X flag (0 or 255)
+    0x10: SAA	Set X equal to A
+    0x11: SXX	Set A equal to X
+    0x12: SXA	Swap A and X
+    0x13: SHL	A shifted left, previous MSB in X as LSB
+    0x14: SHR	A shifted right logically, previous LSB in X as MSB
+    0x15: ASR	A shifted right arithmetically, previous LSB in X as MSB
+    0x16: NOT	One's complement of A
+    0x17: ALX	255 if A<X else 0
+    0x18: AEX	255 if A=X else 0
+    0x19: AGX	255 if A>X else 0
+    0x1A: OVF	Signed ADDITION overflow flag, invert A for subtraction
+    0x1B: ADD	Add A to X (low order 8-bits, CARRY in X)
+    0x1C: SUB	Subtract A from X (low order 8-bits, BORROW in X)
+    0x1D: AND	A AND X
+    0x1E: IOR	A OR X
+    0x1F: EOR	A XOR X
     
     Group TRAP
     
@@ -570,7 +570,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xC1: AM	Take A into M[B_O]
     0xC2: AB	Take A into B
     0xC3: AO	Take A into O
-    0xC4: INCA	Increment A
+    0xC4: INC	Increment A
     0xC5: AE	Take A into E
     0xC6: AS	Take A into SOR
     0xC7: AP	Take A into POR
@@ -588,7 +588,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xD2: EB	Take E into B
     0xD3: EO	Take E into O
     0xD4: EA	Take E into A
-    0xD5: DECA	Decrement A
+    0xD5: DEC	Decrement A
     0xD6: ES	Take E into SOR
     0xD7: EP	Take E into POR
     0xD8: ED	Take E into D
@@ -627,7 +627,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xF7: PP	Take PIR into POR
     0xF8: PD	Take PIR into D
     0xF9: PW	Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xFA: PJ	Take PIR as page offset and store it into PC - always
+    0xFA: PJ	Take PIR as page offset sand store it into PC - always
     0xFB: PH	Take PIR as page offset and store it into PC - if A is not equal to zero
     0xFC: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
     0xFD: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)

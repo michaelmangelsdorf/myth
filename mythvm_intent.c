@@ -103,22 +103,24 @@ static void call( uint8_t dstpage);
 /*ALU Instructions
 */
 
-#define DUP 0 /* Copy of A */
-#define SWAP 1 /* Copy of X */
-#define NOTA 2 /* Ones' complement of A */
-#define NOTX 3 /* Ones' complement of X */
-#define SLA 4 /* A shifted left */
-#define SLX 5 /* X shifted left */
-#define SRA 6 /* A shifted right*/
-#define SRX 7 /* X shifted right*/
-#define AND 8 /* A AND X */
-#define IOR 9 /* A OR X */
-#define EOR 10 /* A XOR X */
-#define ADD 11 /* Add X to A (low order 8-bits) */
-#define OVF 12 /* Overflow bits of: A+B - B6:V, B7:CARRY */
-#define ALX 13 /* 255 if A<X else 0 */
-#define AEX 14 /* 255 if A=X else 0 */
-#define AGX 15 /* 255 if A>X else 0 */
+#define SAA 0 /* Set X equal to A*/
+#define SXX 1 /* Set A equal to X */
+#define SXA 2 /* Swap A and X */
+#define SHL 3 /* A shifted left, previous MSB in X as LSB */
+#define SHR 4 /* A shifted right logically, previous LSB in X as MSB */
+#define ASR 5 /* A shifted right arithmetically, previous LSB in X as MSB */
+#define NOT 6 /* One's complement of A */
+#define ALX 7 /* 255 if A<X else 0 */
+#define AEX 8 /* 255 if A=X else 0 */
+#define AGX 9 /* 255 if A>X else 0 */
+#define OVF 10 /* Sign ADDITION overflow flag */
+#define ADD 11 /* Add A to X (low order 8-bits, CARRY in X) */
+#define SUB 12 /* Subtract A from X (low order 8-bits, BORROW in X) */
+#define AND 13 /* A AND X */
+#define IOR 14 /* A OR X */
+#define EOR 15 /* A XOR X */
+
+
 
 
 /*SYS Instructions
@@ -267,11 +269,11 @@ scrounge( uint8_t opcode)
                                  l--;
                                  break;
 
-                case 16*Ax + xA: /*INCA*/
+                case 16*Ax + xA: /*INC*/
                                  a++;
                                  break;
 
-                case 16*Ex + xE: /*DECA*/
+                case 16*Ex + xE: /*DEC*/
                                  a--;
                                  break;
         }
@@ -365,33 +367,28 @@ void
 alu( uint8_t opcode)
 {
         int i;
-        uint8_t a0 = a, carry, overflow;
+        uint8_t a0 = a;
 
         switch(opcode & 15){
-                case DUP:                break;
-                case SWAP: a=x;           break;
-                case NOTA: a = ~a;        break;
-                case NOTX: a = ~x;        break;
-                case SLA: a = a << 1;    break;
-                case SLX: a = x << 1;    break;
-                case SRA: a = a >> 1;    break;
-                case SRX: a = x >> 1;    break;
-                
-                case AND: a = a & x;  break;
-                case IOR: a = a | x;  break;
-                case EOR: a = a ^ x;  break;
-                case ADD: a = a + x;  break;
-                
-                case OVF: i = a + x; // Compute signed/unsigned overflow flags
-                          carry =  (i > 255) ? 1 : 0;
-                          overflow = ((a&0x80) ^ (x&0x80)) == 0 /* Addends have same sign */
-                                   && ((i&0x80) != (a&0x80)); /* But result has different sign */
-                          a = (carry ? 0x80 : 0) + (overflow ? 0x40 : 0); /* Bit 7=Carry, Bit 6=Overflow */
-                          break;
-
+                case SAA: x=a;            break;
+                case SXX: a=x; a0=x;      break;
+                case SXA: a=x; x=a0;      break;
+                case SHL: a<<=1; x=(a0 & 0x80)? 1:0; break;
+                case SHR: a>>=1; x=(a0 & 1)? 0x80:0;  break;
+                case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0; break;
+                case NOT: a = ~a;        break;
                 case ALX: a = (a<x)  ? 255 : 0; break;
                 case AEX: a = (a==x) ? 255 : 0; break;
                 case AGX: a = (a>x)  ? 255 : 0; break;
+                case OVF: i = x+a;
+                          a = ((a&0x80) ^ (x&0x80)) == 0 /* Addends have same sign */
+                               && ((i&0x80) ^ (a&0x80)); /* But result has different sign */
+                          break;
+                case ADD: i = x+a; x=(i > 255) ? 1 : 0; break;
+                case SUB: i = x-a; x=(i < 0) ? 0 : 1; break;
+                case AND: a = a & x;  break;
+                case IOR: a = a | x;  break;
+                case EOR: a = a ^ x;  break;
         }
         x = a0;
 }
