@@ -17,3 +17,4 @@ The C file is also for reference. It shows the intended workings of the CPU. For
 
 ![PCB with working Sonne8 micro-controller](https://github.com/michaelmangelsdorf/myth/blob/main/mythkicad.png)
 
+The component count is now higher than for the prototype, because I've implemented the ALU in discrete logic, where it used to be just look-up tables in a big PROM.
