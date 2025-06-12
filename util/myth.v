@@ -15,8 +15,8 @@ reg NOP, SSI, SSO, SCL, SCH, RTS, RTI, COR;         // SYS
 
 reg RBO, BOR, WBO, BOW, IBO, BOI, SBO, BOS;         // BOP
 
-reg SAA, SXX, SXA, SHL, SHR, ASR, NOT, ALX;         // ALU
-reg AEX, AGX, OVF, ADD, SUB, AND, IOR, EOR;
+reg NOT, ALX,  AEX, AGX, AND, IOR,  EOR,  XA;       // ALU
+reg AX,  SWAP, SHL, SHR, ASR, ADDC, ADDV, SUBB;
 
 reg TRAP;                                           // TRAP
 
@@ -111,8 +111,8 @@ always @* begin
     
     RBO=0; BOR=0;  WBO=0;  BOW=0;  IBO=0; BOI=0; SBO=0; BOS=0;   // Clear BOP
     
-    SAA=0; SXX=0; SXA=0; SHL=0; SHR=0; ASR=0; NOT=0; ALX=0;      // Clear ALU
-    AEX=0; AGX=0; OVF=0; ADD=0; SUB=0; AND=0; IOR=0; EOR=0;
+    NOT=0; ALX=0;  AEX=0; AGX=0; AND=0; IOR=0;  EOR=0;  XA=0;    // Clear ALU
+    AX=0;  SWAP=0; SHL=0; SHR=0; ASR=0; ADDC=0; ADDV=0; SUBB=0;
     
     TRAP=0;                                                     // Clear TRAP
     
@@ -153,22 +153,22 @@ always @* begin
 
     if (OPC_ALU) begin
         case (I[3:0])
-            4'd0:  DUP = 1;
-            4'd1:  SWAP = 1;
-            4'd2:  NOTA = 1;
-            4'd3:  NOTX = 1;
-            4'd4:  SLA = 1;
-            4'd5:  SLX = 1;
-            4'd6:  SRA = 1;
-            4'd7:  SRX = 1;
-            4'd8:  AND = 1;
-            4'd9:  IOR = 1;
-            4'd10: EOR = 1;
-            4'd11: ADD = 1;
-            4'd12: OVF = 1;
-            4'd13: ALX = 1;
-            4'd14: AEX = 1;
-            4'd15: AGX = 1;
+            4'd0:  NOT  = 1;
+            4'd1:  ALX  = 1;
+            4'd2:  AEX  = 1;
+            4'd3:  AGX  = 1;
+            4'd4:  AND  = 1;
+            4'd5:  IOR  = 1;
+            4'd6:  EOR  = 1;
+            4'd7:  XA   = 1;
+            4'd8:  AX   = 1;
+            4'd9:  SWAP = 1;
+            4'd10: SHL  = 1;
+            4'd11: SHR  = 1;
+            4'd12: ASR  = 1;
+            4'd13: ADDC = 1;
+            4'd14: ADDV = 1;
+            4'd15: SUBB = 1;
         endcase
     end
 
@@ -249,15 +249,15 @@ always @(posedge clk or posedge rst) begin
 end
 
 
-//ALU and ACCUMULATOR////////////////////////////////////////////////////////
+//ALU and ACCUMULATOR:A,X////////////////////////////////////////////////////
 
 // ALU auxilliary logic
 reg [7:0] alu_result;
 reg [8:0] full_sum;
-reg carry, overflow;
+reg [8:0] full_diff;
 always @(*) begin
-    full_sum = A + X;                                    // 9-bit result
-    carry    = full_sum[8];                              // Carry out bit
+    full_sum = A+ X; // 9-bit result
+    full_diff = A-X;
     overflow = (~(A[7] ^ X[7]) & (full_sum[7] ^ A[7]));  // Signed overflow
 end
 
@@ -265,31 +265,53 @@ always @(posedge clk or posedge rst) begin
     if (reset) begin
         A <= 8'd0;
         X <= 8'd0;
-    end else begin
-        if ((xA || GETA) && READY) A <= data_bus; // Load from data bus
-        else if (SETUP && OPC_ALU) begin
-            case (1'b1)
-                SAA:  alu_result = A;
-                SXX:  alu_result = X; // Not pushed
-                SXA:  alu_result = X;
-                SHL:  alu_result = A << 1;
-                SHR:  alu_result = A << 1;
-                ASR:  alu_result = X >> 1;
-                NOT:  alu_result = ~A;
-                ALX:  alu_result = (A < X)  ? 8'hFF : 8'h00; 
-                AEX:  alu_result = (A == X) ? 8'hFF : 8'h00;
-                AGX:  alu_result = (A > X)  ? 8'hFF : 8'h00;
-                OVF:  alu_result = ; // {carry, overflow, 6'b000000};
-                ADD:  alu_result = X + A;
-                SUB:  alu_result = X - A; 
-                AND:  alu_result = A & X;
-                IOR   alu_result = A | X;
-                EOR:  alu_result = A ^ X;
-                default: alu_result = A;
-            endcase
-            if (!SXX) X <= A; // Update X with previous A or flags
-            A <= alu_result;  // Update A with ALU result
+    end
+    else begin
+        if (READY) begin
+            if (xA || GETA) A <= data_bus;
+            else            A <= alu_result;
         end
+        else if (SETUP && OPC_ALU)
+        case (1'b1)
+               NOT:  alu_result <= ~A;
+               ALX:  alu_result <= (A<X)  ? 8'hFF : 8'h00; 
+               AEX:  alu_result <= (A==X) ? 8'hFF : 8'h00;
+               AGX:  alu_result <= (A>X)  ? 8'hFF : 8'h00;
+               AND:  alu_result <= A & X;
+               IOR:  alu_result <= A | X;
+               EOR:  alu_result <= A ^ X;
+                XA:  alu_result <= X;
+                AX:  X <= A;
+              SWAP:  begin
+                        alu_result <= X;
+                        X <= A;
+                     end
+               SHL:  begin
+                        alu_result = A << 1;
+                        X <= (A&8'h80) ? 1:0;
+                     end
+               SHR:  begin
+                        alu_result = A >> 1;
+                        X <= (A&8'd1) ? 8'h80:0;
+                     end
+               ASR:  begin
+                        alu_result = X >>> 1;
+                        X <= (A&8'd1) ? 8'h80:0;
+                     end
+              ADDC:  begin
+                        alu_result <= full_sum[7:0];
+                        X <= {7'd0,full_sum[8]}; // Carry bit
+                     end
+              ADDV:  begin
+                        alu_result <= full_sum[7:0]; // Overflow bit in X
+                        X <= (~(A[7] ^ X[7]) & (full_sum[7] ^ A[7]));
+                     end
+              SUBB:  begin
+                        alu_result <= full_diff[7:0];
+                        X <= {7'd0,~full_sum[8]}; // Borrow bit
+                     end
+           default:;
+        endcase
     end
 end
 

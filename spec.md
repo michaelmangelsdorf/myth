@@ -12,28 +12,58 @@ https://github.com/michaelmangelsdorf/Sonne8
 
 ### Computations
 
-The accumulator is a two element push-down stack representing the input operands to the ALU. The stack is formed by registers A (for Accumulator) and X. Writing a value into A pushes this value onto the accumulator stack. This operation is a two-step process: (1) Store the previous value of A into X, overwriting X. (2) Store the new value into A. Some ALU functions produce
-one result byte (for instance NOT), in which case the result is pushed onto
-the stack as described. Other ALU functions produce two results, in which case the primary result value overwrites A, and the secondary result overwrites X. The ADD instruction for example stores the addition result in A, and the carry bit of the operation in X.
+The two registers A and X are called the accumulator. A holds the primary result of ALU (Arithmetic Logic Unit) operations. X holds the secondary result. When writing a value into A (instructions xA and GETA), the accumulator functions as a two-element push-down stack: The old value of A is saved into X before overwriting it with the new value.
 
-The ALU can compute the following functions (results are pushed):
+The ALU can run the following opcodes:
 
-     0 SAA   Set X equal to A
-     1 SXX   Set A equal to X
-     2 SXA   Swap A and X
-     3 SHL   A shifted left, previous MSB in X as LSB
-     4 SHR   A shifted right logically, previous LSB in X as MSB
-     5 ASR   A shifted right arithmetically, previous LSB in X as MSB
-     6 NOT   One's complement of A
-     7 ALX   255 if A<X else 0
-     8 AEX   255 if A=X else 0
-     9 AGX   255 if A>X else 0
-    10 OVF   Signed addition overflow flag, invert A for subtraction
-    11 ADD   Add A to X (low order 8-bits, CARRY in X)
-    12 SUB   Subtract A from X (low order 8-bits, BORROW in X)
-    13 AND   A AND X
-    14 IOR   A OR X
-    15 EOR   A XOR X
+     0 NOT   Set A to one's complement of A, X unchanged
+     1 ALX   Flag (A<X) in A (255 if true, 0 if false), X unchanged
+     2 AEX   Flag (A==X) in A (255 if true, 0 if false), X unchanged
+     3 AGX   Flag (A>X) in A (255 if true, 0 if false), X unchanged
+     4 AND   Set A to (A AND X), X unchanged
+     5 IOR   Set A to (A OR X), X unchanged
+     6 EOR   Set A to (A XOR X), X unchanged
+     7 XA    Set A equal to X, X unchanged
+     8 AX    Set X equal to A
+     9 SWAP  Swap A and X
+    10 SHL   Shift A left, result in A, set X to previous MSB of A as LSB (0 or 1)
+    11 SHR   Shift A right logically, result in A, set X to previous LSB of A as MSB (0 or 80h)
+    12 ASR   Shift A right arithmetically, set X to previous LSB of A as MSB (0 or 80h)
+    13 ADDC  Add A to X, result in A, CARRY bit in X (0 or 1)
+    14 ADDV  Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0)
+    15 SUBB  Subtract A from X, result in A, BORROW bit in X (0 or 1)
+
+In C, this presents as follows:
+    
+    /* Execute ALU instruction
+    */
+    void
+    alu( uint8_t opcode)
+    {
+            int i;
+            uint8_t a0 = a;
+            uint8_t ovf = ((a&0x80)^(x&0x80))==0    /* Addends have same sign */
+                            && ((i&0x80)^(a&0x80)); /* But result has different sign */
+            
+            switch(opcode & 15){
+                    case NOT: a = ~a;                                   break;
+                    case ALX: a = (a<x)  ? 255:0;                       break;
+                    case AEX: a = (a==x) ? 255:0;                       break;
+                    case AGX: a = (a>x)  ? 255:0;                       break;
+                    case AND: a = a & x;                                break;
+                    case IOR: a = a | x;                                break;
+                    case EOR: a = a ^ x;                                break;
+                    case XA: a=x;                                       break;
+                    case AX: x=a;                                       break;
+                    case SWAP: a=x; x=a0;                               break;
+                    case SHL: a<<=1; x=(a0 & 0x80)? 1:0;                break;
+                    case SHR: a>>=1; x=(a0 & 1)? 0x80:0;                break;
+                    case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0; break;
+                    case ADDC: i = x+a; a=i&0xFF; x=(i>255)? 1:0;       break;
+                    case ADDV: i = x+a; a=i&0xFF; x=ovf?255:0;          break;
+                    case SUBB: i = x-a; x=(i<0)? 0:1;                   break;
+            }
+    }
 
 #### Memory Layout
 
@@ -327,7 +357,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
 
            x0    x1    x2    x3    x4    x5    x6    x7    x8    x9    xA    xB    xC    xD    xE    xF
     0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR   RBO   BOR   WBO   BOW   IBO   BOI   SBO   BOS
-    1x    SAA   SXX   SXA   SHL   SHR   ASR   NOT   ALX   AEX   AGX   OVF   ADD   SUB   AND   IOR   EOR
+    1x    NOT   ALX   AEX   AGX   AND   IOR   EOR    XA    AX  SWAP   SHL   SHR   ASR  ADDC  ADDV  SUBB
     2x     *0    *1    *2    *3    *4    *5    *6    *7    *8    *9   *10   *11   *12   *13   *14   *15
     3x    *16   *17   *18   *19   *20   *21   *22   *23   *24   *25   *26   *27   *28   *29   *30   *31
     4x     1b    2b    3b    4b    5b    6b    7b    8b    b1    b2    b3    b4    b5    b6    b7    b8
@@ -372,22 +402,22 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     
     Group ALU
     
-    0x10: SAA	Set X equal to A
-    0x11: SXX	Set A equal to X
-    0x12: SXA	Swap A and X
-    0x13: SHL	A shifted left, previous MSB in X as LSB
-    0x14: SHR	A shifted right logically, previous LSB in X as MSB
-    0x15: ASR	A shifted right arithmetically, previous LSB in X as MSB
-    0x16: NOT	One's complement of A
-    0x17: ALX	255 if A<X else 0
-    0x18: AEX	255 if A=X else 0
-    0x19: AGX	255 if A>X else 0
-    0x1A: OVF	Signed ADDITION overflow flag, invert A for subtraction
-    0x1B: ADD	Add A to X (low order 8-bits, CARRY in X)
-    0x1C: SUB	Subtract A from X (low order 8-bits, BORROW in X)
-    0x1D: AND	A AND X
-    0x1E: IOR	A OR X
-    0x1F: EOR	A XOR X
+    0x10: NOT	Set A to one's complement of A , X unchanged
+    0x11: ALX	Flag (A<X) in A (255 if true, 0 if false), X unchanged
+    0x12: AEX	Flag (A==X) in A (255 if true, 0 if false), X unchanged
+    0x13: AGX	Flag (A>X) in A (255 if true, 0 if false), X unchanged
+    0x14: AND	Set A to (A AND X), X unchanged
+    0x15: IOR	Set A to (A OR X), X unchanged
+    0x16: EOR	Set A to (A XOR X), X unchanged
+    0x17: XA	Set A equal to X, X unchanged
+    0x18: AX	Set X equal to A
+    0x19: SWAP	Swap A and X
+    0x1A: SHL	Shift A left, result in A, set X to previous MSB of A as LSB (0 or 1)
+    0x1B: SHR	Shift A right logically, result in A, set X to previous LSB of A as MSB (0 or 80h)
+    0x1C: ASR	Shift A right arithmetically, set X to previous LSB of A as MSB (0 or 80h)
+    0x1D: ADD	Add A to X, result in A, CARRY bit in X (0 or 1)
+    0x1E: OVF	Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0)
+    0x1F: SUB	Subtract A from X, result in A, BORROW bit in X (0 or 1)
     
     Group TRAP
     
@@ -629,9 +659,10 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xF7: PP	Take PIR into POR
     0xF8: PD	Take PIR into D
     0xF9: PW	Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xFA: PJ	Take PIR as page offset sand store it into PC - always
+    0xFA: PJ	Take PIR as page offset and store it into PC - always
     0xFB: PH	Take PIR as page offset and store it into PC - if A is not equal to zero
     0xFC: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
     0xFD: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
     0xFE: PR	Take PIR as page-index, load the index into R, set PC to 80h
     0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
+
