@@ -64,10 +64,10 @@ static void call( uint8_t dstpage);
 
 
 
-/* The 'REGx' notation means: REG into (something)
+/* PAIR Sources
+   The 'REGx' notation means: REG into (something)
    i.e. REG is a source
 */
-
 #define Fx 0 /*from FETCH literal*/
 #define Mx 1 /*from MEMORY @ B:O*/
 #define Bx 2 /*from BASE register*/
@@ -78,7 +78,8 @@ static void call( uint8_t dstpage);
 #define Px 7 /*from PARALLEL input*/
 
 
-/* The 'xREG' notation means: (something) into REG
+/* PAIR Destinations
+   The 'xREG' notation means: (something) into REG
    i.e. REG is a destination
 */
 #define xU 0  /* UPDATE - add signed byte into 16-bit pair B:O) */
@@ -100,9 +101,18 @@ static void call( uint8_t dstpage);
 #define xC 15 /* CALL - write into C, call C:0, store return pointer in B:O */
 
 
+/*Scrounged Pairs
+*/
+#define CODE  16*Fx+xM
+#define LOCAL 16*Mx+xM
+#define LEAVE 16*Bx+xB
+#define ENTER 16*Ox+xO
+#define INC   16*Ax+xA
+#define DEC   16*Ex+xE
+
+
 /*ALU Instructions
 */
-
 #define NOT   0 /* Set A to one's complement of A , X unchanged */
 #define ALX   1 /* Flag (A<X) in A (255 if true, 0 if false), X unchanged */
 #define AEX   2 /* Flag (A==X) in A (255 if true, 0 if false), X unchanged */
@@ -123,7 +133,6 @@ static void call( uint8_t dstpage);
 
 /*SYS Instructions
 */
-
 #define NOP 0 /* No Operation */
 #define SSI 1 /* Serial Shift In */
 #define SSO 2 /* Serial Shift Out */
@@ -136,7 +145,6 @@ static void call( uint8_t dstpage);
 
 /*BOP Instructions
 */
-
 #define RBO 0 /* Store RP into B:O */
 #define BOR 1 /* Store B:O into RP */
 #define WBO 2
@@ -177,9 +185,8 @@ fetch_opcode()
         uint8_t pc0 = pc;
         if (irq && c>0 && !busy) {
                 return 32; /* TRAP0 */
-        } else
+        } else return ram[ pc0 & 0x80 ? r:c ][pc++];
         /* Instruction byte page offset high: map "resident" routine */
-                return ram[ pc0 & 0x80 ? r:c ][pc++];
 }
 
 
@@ -203,6 +210,7 @@ cor()
 void
 call( uint8_t dstpage)
 {
+        if (dstpage==0) busy = 1;
         o = pc; /* Save offset of return instruction */
         pc = 0; /*Branch to page head, offset 0*/
 
@@ -219,8 +227,7 @@ void
 trap( uint8_t opcode)
 {
         uint8_t dstpage = opcode & 31; /*Zero except low order 5 bits*/
-        if (dstpage==0) busy = 1;
-        call(dstpage);
+        call( dstpage);
 }
 
 
@@ -248,31 +255,25 @@ srcval( uint8_t srcreg)
 void
 scrounge( uint8_t opcode)
 {
-        switch(opcode & 0x7F /*0111_1111*/){
-                case 16*Fx + xM: /*CODE*/
-                                 b = pc & 0x80 ? r:c;
+        switch(opcode & 0x7F){
+                case CODE:       b = pc & 0x80 ? r:c;
                                  o = pc;
                                  break;
 
-                case 16*Mx + xM: /*LOCAL*/
-                                 b = l;
+                case LOCAL:      b = l;
                                  o = 0xF7; //L0
                                  break;
 
-                case 16*Bx + xB: /*LEAVE*/
-                                 l++;
+                case LEAVE:      l++;
                                  break;
 
-                case 16*Ox + xO: /*ENTER*/
-                                 l--;
+                case ENTER:      l--;
                                  break;
 
-                case 16*Ax + xA: /*INC*/
-                                 a++;
+                case INC:        a++;
                                  break;
 
-                case 16*Ex + xE: /*DEC*/
-                                 a--;
+                case DEC:        a--;
                                  break;
         }
 }
@@ -447,8 +448,8 @@ sys( uint8_t opcode)
 int
 main(int argc, char *argv[])
 {       
-        // Set all regs and BUSY to 0 - match schematics
-        // Run fetch() n times
+        // RESET: Set all regs and BUSY to 0 - match schematics
+        // Run myth_step() n times
         exit(0);
 }
 
