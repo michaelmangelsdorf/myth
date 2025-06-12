@@ -308,6 +308,8 @@ To re-enable interrupts, the software must execute an RTI instruction (Return fr
 
 The interrupt service subroutine once it returns resumes execution at the point in code where the interrupt occurred.
 
+You can manually set BUSY by executing TRAP 0. Other calls to page 0 do not have this side effect.
+
 ## Opcode Format
 
 Operation codes fall into 6 format groups, which are decodable using a priority encoder. 

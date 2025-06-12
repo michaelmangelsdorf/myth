@@ -210,7 +210,6 @@ cor()
 void
 call( uint8_t dstpage)
 {
-        if (dstpage==0) busy = 1;
         o = pc; /* Save offset of return instruction */
         pc = 0; /*Branch to page head, offset 0*/
 
@@ -227,7 +226,11 @@ void
 trap( uint8_t opcode)
 {
         uint8_t dstpage = opcode & 31; /*Zero except low order 5 bits*/
-        call( dstpage);
+
+         /* Don't move this line inside call(): Only TRAP 0 sets BUSY! */
+        if (dstpage==0) busy = 1;
+
+       call( dstpage);
 }
 
 
