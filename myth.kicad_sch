@@ -24056,6 +24056,17 @@
 		)
 		(uuid "84a0bd68-4e26-4b7f-945e-cd0c696a0a68")
 	)
+	(text "An \"Enable Interrupts\" instruction\nreplacing RTI would be cleaner, but\nwould have the disadvantage\nthat an IRQ could occur between it\nand the RTS instruction for leaving\nthe interrupt service handler."
+		(exclude_from_sim no)
+		(at 289.052 557.022 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "854a7730-0547-40b4-9a3f-6e18cd6b6dcc")
+	)
 	(text "Primary\nResult"
 		(exclude_from_sim no)
 		(at 979.424 212.852 0)

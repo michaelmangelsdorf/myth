@@ -227,7 +227,7 @@ trap( uint8_t opcode)
 {
         uint8_t dstpage = opcode & 31; /*Zero except low order 5 bits*/
 
-         /* Don't move this line inside call(): Only TRAP 0 sets BUSY! */
+         /* Don't move this line inside call() Only TRAP 0 sets BUSY! */
         if (dstpage==0) busy = 1;
 
        call( dstpage);
