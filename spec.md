@@ -151,8 +151,8 @@ Inherent NOP instructions such as BB, OO, AA, and EE, and impractical instructio
 	MM routed to: LOCAL (set B:O to L:0xF7 - "L0")
 	BB routed to: LEAVE (increment L)
 	OO routed to: ENTER (decrement L)
-	AA routed to: INCA (increment A)
-	EE routed to: DECA (decrement A)
+	AA routed to: INC (increment A)
+	EE routed to: DEC (decrement A)
 
 
 #### B:O Pointer Registers (BOPs)
