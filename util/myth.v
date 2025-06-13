@@ -11,23 +11,23 @@
 
 //Decoder driven control signals/////////////////////////////////////////////
 
-reg NOP, SSI, SSO, SCL, SCH, RTS, RTI, COR;         // SYS
+reg NOP, SSI, SSO, SCL, SCH, RTS, RTI, COR;                            // SYS
 
-reg RBO, BOR, WBO, BOW, IBO, BOI, SBO, BOS;         // BOP
+reg GRP, SRP, GIP, SIP, GTP, STP, GSP, SSP;                            // BOP
 
-reg NOT, ALX,  AEX, AGX, AND, IOR,  EOR,  XA;       // ALU
+reg NOT, ALX,  AEX, AGX, AND, IOR,  EOR,  XA;                          // ALU
 reg AX,  SWAP, SHL, SHR, ASR, ADDC, ADDV, SUBB;
 
-reg TRAP;                                           // TRAP
+reg TRAP;                                                             // TRAP
 
-reg GETB, GETO, GETA, GETD, PUTB, PUTO, PUTA, PUTD; // GETPUT
+reg GETB, GETO, GETA, GETD, PUTB, PUTO, PUTA, PUTD;                 // GETPUT
 
-reg Fx, Mx, Bx, Ox, Ax, Ex, Sx, Px;                 // PAIR SRC
+reg Fx, Mx, Bx, Ox, Ax, Ex, Sx, Px;                               // PAIR SRC
 
-reg xU, xM, xB, xO, xA, xE, xS, xP;                 // PAIR DST
+reg xU, xM, xB, xO, xA, xE, xS, xP;                               // PAIR DST
 reg xD, xW, xJ, xH, xZ, xN, xR, xC;
 
-reg CODE, LOCAL, LEAVE, ENTER, INC, DEC;          // PAIR SCROUNGE
+reg CODE, LOCAL, LEAVE, ENTER, INC, DEC;                     // PAIR SCROUNGE
 
 
 //Register declarations//////////////////////////////////////////////////////
@@ -109,7 +109,8 @@ always @* begin
     
     NOP=0; SSI=0;  SSO=0;  SCL=0;  SCH=0; RTS=0; RTI=0; COR=0;   // Clear SYS
     
-    RBO=0; BOR=0;  WBO=0;  BOW=0;  IBO=0; BOI=0; SBO=0; BOS=0;   // Clear BOP
+
+    GRP=0; SRP=0; GIP=0; SIP=0; GTP=0; STP=0; GSP=0; SSP=0;      // Clear BOP
     
     NOT=0; ALX=0;  AEX=0; AGX=0; AND=0; IOR=0;  EOR=0;  XA=0;    // Clear ALU
     AX=0;  SWAP=0; SHL=0; SHR=0; ASR=0; ADDC=0; ADDV=0; SUBB=0;
@@ -140,14 +141,14 @@ always @* begin
 
     if (OPC_BOP) begin
         case (I[2:0])
-            3'd0: RBO = 1;
-            3'd1: BOR = 1;
-            3'd2: WBO = 1;
-            3'd3: BOW = 1;
-            3'd4: IBO = 1;
-            3'd5: BOI = 1;
-            3'd6: SBO = 1;
-            3'd7: BOS = 1;
+            3'd0: GRP = 1;
+            3'd1: SRP = 1;
+            3'd2: GIP = 1;
+            3'd3: SIP = 1;
+            3'd4: GTP = 1;
+            3'd5: STP = 1;
+            3'd6: GSP = 1;
+            3'd7: SSP = 1;
         endcase
     end
 
@@ -324,20 +325,20 @@ reg [7:0] B_old;
 
 // Pointer registers:
 reg [15:0] RP;
-reg [15:0] WP;
 reg [15:0] IP;
+reg [15:0] TP;
 reg [15:0] SP;
 
 wire [15:0] BO = {B,O};  // Combined Base-Offset pointer for BOP instructions
 
 always @(posedge clk or posedge rst) begin
     if (rst) begin
-        B <=  8'b0;
-        O <=  8'b0;
-        R <= 16'b0;
-        W <= 16'b0;
-        I <= 16'b0;
-        S <= 16'b0;
+         B <=  8'b0;
+         O <=  8'b0;
+        RP <= 16'b0;
+        IP <= 16'b0;
+        TP <= 16'b0;
+        SP <= 16'b0;
     end
     else if (SETUP) case (1'b1)
         xC:   B_old <= B;
@@ -353,15 +354,15 @@ always @(posedge clk or posedge rst) begin
             RTS:
             RTI:
 
-            BOW: W <= BO;
-            BOR: R <= BO;
-            BOI: I <= BO;
-            BOS: S <= BO;
+            GRP: RP <= BO;
+            GIP: IP <= BO;
+            GTP: TP <= BO;
+            GSP: SP <= BO;
 
-            RBO: {B, O} <= R;
-            WBO: {B, O} <= W;
-            IBO: {B, O} <= I;
-            SBO: {B, O} <= S;
+            SRP: {B, O} <= RP;
+            SIP: {B, O} <= IP;
+            STP: {B, O} <= TP;
+            SSP: {B, O} <= SP;
             
             CODE: {B, O} <= {PC[7] ? R:C, PC};
             default:;

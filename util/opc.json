@@ -50,49 +50,49 @@
   {
     "opcode": 8,
     "group": "BOP",
-    "mnemonic": "RBO",
+    "mnemonic": "GRP",
     "desc": "Copy pointer R into B_O"
   },
   {
     "opcode": 9,
     "group": "BOP",
-    "mnemonic": "BOR",
-    "desc": "Copy B_O into pointer RP"
+    "mnemonic": "SRP",
+    "desc": "Copy B_O into pointer R"
   },
   {
     "opcode": 10,
     "group": "BOP",
-    "mnemonic": "WBO",
-    "desc": "Copy pointer W into B_O"
+    "mnemonic": "GIP",
+    "desc": "Copy pointer I into B_O"
   },
   {
     "opcode": 11,
     "group": "BOP",
-    "mnemonic": "BOW",
-    "desc": "Copy B_O into pointer WP"
+    "mnemonic": "SIP",
+    "desc": "Copy B_O into pointer I"
   },
   {
     "opcode": 12,
     "group": "BOP",
-    "mnemonic": "IBO",
-    "desc": "Copy pointer I into B_O"
+    "mnemonic": "GTP",
+    "desc": "Copy pointer T into B_O"
   },
   {
     "opcode": 13,
     "group": "BOP",
-    "mnemonic": "BOI",
-    "desc": "Copy B_O into pointer IP"
+    "mnemonic": "STP",
+    "desc": "Copy B_O into pointer T"
   },
   {
     "opcode": 14,
     "group": "BOP",
-    "mnemonic": "SBO",
+    "mnemonic": "GSP",
     "desc": "Copy pointer S into B_O"
   },
   {
     "opcode": 15,
     "group": "BOP",
-    "mnemonic": "BOS",
+    "mnemonic": "SSP",
     "desc": "Copy B_O into pointer S"
   },
   {
