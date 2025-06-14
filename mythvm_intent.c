@@ -4,13 +4,14 @@
 
 
 /*
-** C program as reference on how Myth CPU is supposed to work.
-** Schematics see https://github.com/michaelmangelsdorf/myth
-** Author: Michael Mangelsdorf <mim@ok-schalter.de>
+** C program as reference on how Myth CPU is intended to work.
+** Use in conjunction with Verilog file and KiCad schematics.
+** Project files see: https://github.com/michaelmangelsdorf/myth
+** Author: 2025 Michael Mangelsdorf <mim@ok-schalter.de>
 **/
 
 
-uint8_t ram[256][256];
+uint8_t ram[256][256]; /* Organised as [PAGE-INDEX][BYTE-OFFSET] */
 
 uint8_t e_old;
 uint8_t e_new;
@@ -66,7 +67,6 @@ static void call( uint8_t dstpage);
 
 /* PAIR Sources
    The 'REGx' notation means: REG into (something)
-   i.e. REG is a source
 */
 #define Fx 0 /*from FETCH literal*/
 #define Mx 1 /*from MEMORY @ B:O*/
@@ -80,7 +80,6 @@ static void call( uint8_t dstpage);
 
 /* PAIR Destinations
    The 'xREG' notation means: (something) into REG
-   i.e. REG is a destination
 */
 #define xU 0  /* UPDATE - add signed byte into 16-bit pair B:O) */
 #define xM 1  /* into MEMORY @ B:O */
@@ -163,6 +162,17 @@ static void call( uint8_t dstpage);
 void
 myth_step()
 {
+
+/*                    -- Opcode Bits --
+                         MSB     LSB
+    all 0: OPC_SYS       00000   xxx    b0-2: Index of SYS Instruction
+     else: OPC_BOP       00001   xxx    b0-2: Index of BOP Instruction
+           OPC_ALU       0001   xxxx    b0-3: Index of ALU Instruction
+           OPC_TRAP      001   xxxxx    b0-4: DESTPAGE
+           OPC_GETPUT    01 xx x xxx    b0-2: OFFS, b3: GET/PUT, b4-5: REG
+           OPC_PAIR      1  xxx xxxx    b0-3: DST, b4-6: SRC
+*/
+
         uint8_t opcode = fetch_opcode();
 
         /*Decode priority encoded opcode
@@ -394,24 +404,35 @@ alu( uint8_t opcode)
 }
 
 
-/* Execute BOPS instruction
+/* Execute BOP instruction
 */
 void
 bop( uint8_t opcode)
 {
         switch(opcode & 7){
-                case KBO: b=kp_b; o=kp_o; break;
-                case BOK: kp_b=b; kp_o=o; break;
+                case KBO: b = kp_b;
+                          o = kp_o; break;
+
+                case BOK: kp_b = b;
+                          kp_o = o; break;
         
-                case QBO: b=qp_b; o=qp_o; break;
-                case BOQ: qp_b=b; qp_o=o; break;
+                case QBO: b = qp_b;
+                          o = qp_o; break;
+
+                case BOQ: qp_b = b;
+                          qp_o = o; break;
         
-                case IBO: b=ip_b; o=ip_o; break;
-                case BOI: ip_b=b; ip_o=o; break;
+                case IBO: b = ip_b;
+                          o = ip_o; break;
+
+                case BOI: ip_b = b;
+                          ip_o = o; break;
         
-                case TBO: b=tp_b; o=tp_o; break;
-                case BOT: tp_b=b; tp_o=o; break;
-                default: break;
+                case TBO: b = tp_b;
+                          o = tp_o; break;
+
+                case BOT: tp_b = b;
+                          tp_o = o; break;
         }
 }
 
@@ -443,7 +464,6 @@ sys( uint8_t opcode)
                         l++;
                         break;
                 case COR: cor(); break;
-                default: break;
         }
 }
 

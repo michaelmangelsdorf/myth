@@ -23352,9 +23352,9 @@
 		)
 		(uuid "35396a44-9854-403c-81cf-d2fbd4dcd0cb")
 	)
-	(text "These instructions\nprevent updating X"
+	(text "Any of these disable\nthe updating of X with\npushed values or flags\nfrom A"
 		(exclude_from_sim no)
-		(at 1052.322 303.53 0)
+		(at 1015.238 314.706 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -24232,7 +24232,7 @@
 	)
 	(text "ALU Instructions"
 		(exclude_from_sim no)
-		(at 529.336 196.596 0)
+		(at 525.78 192.024 0)
 		(effects
 			(font
 				(face "Courier New")
@@ -24286,7 +24286,7 @@
 		)
 		(uuid "96025121-071a-4448-8013-ed708a2d242b")
 	)
-	(text "Parameter Queue Pointer (System Use)"
+	(text "Parameter Queue/Stack Pointer (System Use)"
 		(exclude_from_sim no)
 		(at 290.83 585.978 0)
 		(effects
@@ -25613,6 +25613,12 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "503fdde7-bbd8-405f-b1fa-c83274e2f961")
+	)
+	(junction
+		(at 963.93 248.92)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "54ad6894-a5b6-41a9-93f3-a9d4086b1dde")
 	)
 	(junction
 		(at 373.38 447.04)
@@ -29594,7 +29600,7 @@
 	)
 	(wire
 		(pts
-			(xy 970.28 275.59) (xy 974.09 275.59)
+			(xy 963.93 276.86) (xy 967.74 276.86)
 		)
 		(stroke
 			(width 0)
@@ -32314,7 +32320,7 @@
 	)
 	(wire
 		(pts
-			(xy 970.28 247.65) (xy 970.28 275.59)
+			(xy 963.93 248.92) (xy 963.93 276.86)
 		)
 		(stroke
 			(width 0)
@@ -71083,7 +71089,7 @@
 	)
 	(symbol
 		(lib_id "74xx:74HC04")
-		(at 981.71 275.59 0)
+		(at 975.36 276.86 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -71091,7 +71097,7 @@
 		(dnp no)
 		(uuid "5313b2fb-91fa-466f-86d0-ee2ef2ed0cda")
 		(property "Reference" "U124"
-			(at 981.71 267.5382 0)
+			(at 975.36 268.8082 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -71100,7 +71106,7 @@
 			)
 		)
 		(property "Value" "74AHC04"
-			(at 981.71 269.8496 0)
+			(at 975.36 271.1196 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -71108,7 +71114,7 @@
 			)
 		)
 		(property "Footprint" "Package_DIP:DIP-14_W7.62mm_Socket_LongPads"
-			(at 981.71 275.59 0)
+			(at 975.36 276.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -71117,7 +71123,7 @@
 			)
 		)
 		(property "Datasheet" "https://assets.nexperia.com/documents/data-sheet/74HC_HCT04.pdf"
-			(at 981.71 275.59 0)
+			(at 975.36 276.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -71126,7 +71132,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 981.71 275.59 0)
+			(at 975.36 276.86 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -71258,10 +71264,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "544f3601-59f8-4e5f-b65b-1bc76e7a9d1d")
 		(property "Reference" "U168"
-			(at 662.9317 49.53 0)
+			(at 670.052 51.308 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -71269,7 +71274,7 @@
 			)
 		)
 		(property "Value" "74AHC08"
-			(at 662.9317 52.07 0)
+			(at 670.052 53.848 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -74484,10 +74489,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "7265737c-f73a-4754-afe6-619c1aa70871")
 		(property "Reference" "U159"
-			(at 689.6017 49.53 0)
+			(at 697.484 51.308 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -74495,7 +74499,7 @@
 			)
 		)
 		(property "Value" "74AHC08"
-			(at 689.6017 52.07 0)
+			(at 697.484 53.848 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -84594,7 +84598,7 @@
 		(dnp no)
 		(uuid "d4cdbe64-9d09-4fa2-9c5c-8e784011e3f7")
 		(property "Reference" "U180"
-			(at 232.41 65.2526 0)
+			(at 232.156 64.262 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -84602,7 +84606,7 @@
 			)
 		)
 		(property "Value" "74HC157"
-			(at 232.41 67.564 0)
+			(at 232.156 66.5734 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -85011,10 +85015,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "d97a2e79-2807-41aa-a14c-fc68678e0e81")
 		(property "Reference" "U153"
-			(at 1020.7752 46.99 0)
+			(at 1027.7348 49.53 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -85022,7 +85025,7 @@
 			)
 		)
 		(property "Value" "4070"
-			(at 1020.7752 49.53 0)
+			(at 1027.43 51.816 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -87714,10 +87717,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "ec0fd2cb-4f26-435e-ab09-a7302a954b9c")
 		(property "Reference" "U151"
-			(at 994.1052 46.99 0)
+			(at 999.744 49.276 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -87725,7 +87727,7 @@
 			)
 		)
 		(property "Value" "4070"
-			(at 994.1052 49.53 0)
+			(at 999.744 51.816 0)
 			(effects
 				(font
 					(size 1.27 1.27)
