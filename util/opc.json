@@ -771,98 +771,98 @@
     "opcode": 128,
     "group": "PAIR",
     "mnemonic": "FU",
-    "desc": "Take M[C:R_PC++] as 8-bit signed number and add it to 16-bit pointer B_O"
+    "desc": "Take M[CG_PC++] as 8-bit signed number and add it to 16-bit pointer B_O"
   },
   {
     "opcode": 129,
     "group": "PAIR",
     "scrounge": "FM",
     "mnemonic": "CODE",
-    "desc": "Set pointer B_O to C:R_PC"
+    "desc": "Set pointer B_O to CG_PC"
   },
   {
     "opcode": 130,
     "group": "PAIR",
     "mnemonic": "FB",
-    "desc": "Take M[C:R_PC++] into B"
+    "desc": "Take M[CG_PC++] into B"
   },
   {
     "opcode": 131,
     "group": "PAIR",
     "mnemonic": "FO",
-    "desc": "Take M[C:R_PC++] into O"
+    "desc": "Take M[CG_PC++] into O"
   },
   {
     "opcode": 132,
     "group": "PAIR",
     "mnemonic": "FA",
-    "desc": "Take M[C:R_PC++] into A"
+    "desc": "Take M[CG_PC++] into A"
   },
   {
     "opcode": 133,
     "group": "PAIR",
     "mnemonic": "FE",
-    "desc": "Take M[C:R_PC++] into E"
+    "desc": "Take M[CG_PC++] into E"
   },
   {
     "opcode": 134,
     "group": "PAIR",
     "mnemonic": "FS",
-    "desc": "Take M[C:R_PC++] into SOR"
+    "desc": "Take M[CG_PC++] into SOR"
   },
   {
     "opcode": 135,
     "group": "PAIR",
     "mnemonic": "FP",
-    "desc": "Take M[C:R_PC++] into POR"
+    "desc": "Take M[CG_PC++] into POR"
   },
   {
     "opcode": 136,
     "group": "PAIR",
     "mnemonic": "FD",
-    "desc": "Take M[C:R_PC++] into D"
+    "desc": "Take M[CG_PC++] into D"
   },
   {
     "opcode": 137,
     "group": "PAIR",
     "mnemonic": "FW",
-    "desc": "Take M[C:R_PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "desc": "Take M[CG_PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D"
   },
   {
     "opcode": 138,
     "group": "PAIR",
     "mnemonic": "FJ",
-    "desc": "Take M[C:R_PC++] as page offset and store it into PC - always"
+    "desc": "Take M[CG_PC++] as page offset and store it into PC - always"
   },
   {
     "opcode": 139,
     "group": "PAIR",
     "mnemonic": "FH",
-    "desc": "Take M[C:R_PC++] as page offset and store it into PC - if A is not equal to zero"
+    "desc": "Take M[CG_PC++] as page offset and store it into PC - if A is not equal to zero"
   },
   {
     "opcode": 140,
     "group": "PAIR",
     "mnemonic": "FZ",
-    "desc": "Take M[C:R_PC++] as page offset and store it into PC - if A is equal to zero"
+    "desc": "Take M[CG_PC++] as page offset and store it into PC - if A is equal to zero"
   },
   {
     "opcode": 141,
     "group": "PAIR",
     "mnemonic": "FN",
-    "desc": "Take M[C:R_PC++] as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "desc": "Take M[CG_PC++] as page offset and store it into PC - if A is negative (has bit 7 set)"
   },
   {
     "opcode": 142,
     "group": "PAIR",
-    "mnemonic": "FR",
-    "desc": "Take M[C:R_PC++] as page-index, load the index into R, set PC to 80h"
+    "mnemonic": "FG",
+    "desc": "Take M[CG_PC++] as page-index, load the index into G, set PC to 80h"
   },
   {
     "opcode": 143,
     "group": "PAIR",
     "mnemonic": "FC",
-    "desc": "Take M[C:R_PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "desc": "Take M[CG_PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
   },
   {
     "opcode": 144,
@@ -952,8 +952,8 @@
   {
     "opcode": 158,
     "group": "PAIR",
-    "mnemonic": "MR",
-    "desc": "Take M[B_O] as page-index, load the index into R, set PC to 80h"
+    "mnemonic": "MG",
+    "desc": "Take M[B_O] as page-index, load the index into G, set PC to 80h"
   },
   {
     "opcode": 159,
@@ -1049,8 +1049,8 @@
   {
     "opcode": 174,
     "group": "PAIR",
-    "mnemonic": "BR",
-    "desc": "Take B as page-index, load the index into R, set PC to 80h"
+    "mnemonic": "BG",
+    "desc": "Take B as page-index, load the index into G, set PC to 80h"
   },
   {
     "opcode": 175,
@@ -1146,8 +1146,8 @@
   {
     "opcode": 190,
     "group": "PAIR",
-    "mnemonic": "OR",
-    "desc": "Take O as page-index, load the index into R, set PC to 80h"
+    "mnemonic": "OG",
+    "desc": "Take O as page-index, load the index into G, set PC to 80h"
   },
   {
     "opcode": 191,
@@ -1243,8 +1243,8 @@
   {
     "opcode": 206,
     "group": "PAIR",
-    "mnemonic": "AR",
-    "desc": "Take A as page-index, load the index into R, set PC to 80h"
+    "mnemonic": "AG",
+    "desc": "Take A as page-index, load the index into G, set PC to 80h"
   },
   {
     "opcode": 207,
@@ -1340,8 +1340,8 @@
   {
     "opcode": 222,
     "group": "PAIR",
-    "mnemonic": "ER",
-    "desc": "Take E as page-index, load the index into R, set PC to 80h"
+    "mnemonic": "EG",
+    "desc": "Take E as page-index, load the index into G, set PC to 80h"
   },
   {
     "opcode": 223,
@@ -1436,8 +1436,8 @@
   {
     "opcode": 238,
     "group": "PAIR",
-    "mnemonic": "SR",
-    "desc": "Take SIR as page-index, load the index into R, set PC to 80h"
+    "mnemonic": "SG",
+    "desc": "Take SIR as page-index, load the index into G, set PC to 80h"
   },
   {
     "opcode": 239,
@@ -1532,8 +1532,8 @@
   {
     "opcode": 254,
     "group": "PAIR",
-    "mnemonic": "PR",
-    "desc": "Take PIR as page-index, load the index into R, set PC to 80h"
+    "mnemonic": "PG",
+    "desc": "Take PIR as page-index, load the index into G, set PC to 80h"
   },
   {
     "opcode": 255,

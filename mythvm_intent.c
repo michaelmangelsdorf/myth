@@ -35,7 +35,7 @@ uint8_t d; /* Down-Counter / Decrement Register */
 uint8_t pc; /* Program Counter Register */
 
 uint8_t c; /* Code-Page Index register */
-uint8_t r; /* Resident-Page Index register */
+uint8_t g; /* Resident-Page Index register */
 uint8_t b; /* Base Page-Index Register */
 uint8_t l; /* Local-Page Index Register */
 
@@ -97,7 +97,7 @@ static void call( uint8_t dstpage);
 #define xH 11 /* JUMP IF HOT (NOT ZERO) - write into PC if D not zero*/
 #define xZ 12 /* JUMP IF ZERO - write into PC if A zero */
 #define xN 13 /* JUMP IF NEGATIVE - write into PC if A has bit 7 set */
-#define xR 14 /* JUMP to RESIDENT segment - write into R, set PC to 80h */
+#define xG 14 /* JUMP to GUEST segment - write into G, set PC to 80h */
 #define xC 15 /* CALL - write into C, call C:0, store return pointer in B:O */
 
 
@@ -185,8 +185,8 @@ fetch_opcode()
         uint8_t pc0 = pc;
         if (irq && c>0 && !busy) {
                 return 32; /* TRAP0 */
-        } else return ram[ pc0 & 0x80 ? r:c ][pc++];
-        /* Instruction byte page offset high: map "resident" routine */
+        } else return ram[ pc0 & 0x80 ? g:c ][pc++];
+        /* Instruction byte page offset high: map "guest" page */
 }
 
 
@@ -203,7 +203,7 @@ cor()
         temp = b;
         b = c; /* Save page index of return instruction */
         c = temp;
-        r = temp; /* ! */
+        g = temp; /* ! */
 }
 
 
@@ -215,7 +215,7 @@ call( uint8_t dstpage)
 
         b = c; /* Save page index of return instruction */
         c = dstpage;
-        r = dstpage; /* ! */
+        g = dstpage; /* ! */
 
         /*Create stack frame*/
         l--;
@@ -242,7 +242,7 @@ srcval( uint8_t srcreg)
 {
         uint8_t pc0 = pc;
         switch(srcreg){
-                case Fx: return ram[ pc0 & 0x80 ? r:c ][pc++];
+                case Fx: return ram[ pc0 & 0x80 ? g:c ][pc++];
                 case Mx: return ram[b][o];
                 case Bx: return b;
                 case Ox: return o;
@@ -259,7 +259,7 @@ void
 scrounge( uint8_t opcode)
 {
         switch(opcode & 0x7F){
-                case CODE:       b = pc & 0x80 ? r:c;
+                case CODE:       b = pc & 0x80 ? g:c;
                                  o = pc;
                                  break;
 
@@ -323,7 +323,7 @@ pair( uint8_t opcode)
                 case xH: if (a) pc = v;     break;
                 case xZ: if (!a) pc = v;    break;
                 case xN: if (a&128) pc = v; break;
-                case xR: r = v; pc=0x80;    break;
+                case xG: g = v; pc=0x80;    break;
                 case xC: call(v);           break;
         }
 }
@@ -438,7 +438,7 @@ sys( uint8_t opcode)
                           /* Fall through */
                 case RTS:
                         c = b;
-                        r = b; /* ! */
+                        g = b; /* ! */
                         pc = o;
                         l++;
                         break;

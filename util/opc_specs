@@ -3,9 +3,9 @@
 0x02: MOSI=(SOR&80h)?1:0 SOR<<=1 PC++
 0x03: SCLK=0 PC++
 0x04: SCLK=1 PC++
-0x05: C=B R=C PC=O L++
-0x06: BUSY=0 C=B R=C PC=O L++
-0x07: B0=C C=B B=B0 R=C O0=PC PC=O O=O0
+0x05: C=B G=C PC=O L++
+0x06: BUSY=0 C=B G=C PC=O L++
+0x07: B0=C C=B B=B0 G=C O0=PC PC=O O=O0
 0x08: BO=RP PC++
 0x09: RP=BO PC++
 0x0A: BO=IP PC++
@@ -30,38 +30,38 @@
 0x1D: A0=A A=X+A X=CARRY-X-plus-A0 PC++
 0x1E: A0=A A=X+A X=(OVERFLOW-A0+X)?255:0 PC++
 0x1F: A0=A A=X-A X=BORROW-X-minus-A0 PC++
-0x20: BUSY=1 B0=C C=0 R=C B=B0 O=PC PC=0
-0x21: B0=C C=1 R=C B=B0 O=PC PC=0
-0x22: B0=C C=2 R=C B=B0 O=PC PC=0
-0x23: B0=C C=3 R=C B=B0 O=PC PC=0
-0x24: B0=C C=4 R=C B=B0 O=PC PC=0
-0x25: B0=C C=5 R=C B=B0 O=PC PC=0
-0x26: B0=C C=6 R=C B=B0 O=PC PC=0
-0x27: B0=C C=7 R=C B=B0 O=PC PC=0
-0x28: B0=C C=8 R=C B=B0 O=PC PC=0
-0x29: B0=C C=9 R=C B=B0 O=PC PC=0
-0x2A: B0=C C=10 R=C B=B0 O=PC PC=0
-0x2B: B0=C C=11 R=C B=B0 O=PC PC=0
-0x2C: B0=C C=12 R=C B=B0 O=PC PC=0
-0x2D: B0=C C=13 R=C B=B0 O=PC PC=0
-0x2E: B0=C C=14 R=C B=B0 O=PC PC=0
-0x2F: B0=C C=15 R=C B=B0 O=PC PC=0
-0x30: B0=C C=16 R=C B=B0 O=PC PC=0
-0x31: B0=C C=17 R=C B=B0 O=PC PC=0
-0x32: B0=C C=18 R=C B=B0 O=PC PC=0
-0x33: B0=C C=19 R=C B=B0 O=PC PC=0
-0x34: B0=C C=20 R=C B=B0 O=PC PC=0
-0x35: B0=C C=21 R=C B=B0 O=PC PC=0
-0x36: B0=C C=22 R=C B=B0 O=PC PC=0
-0x37: B0=C C=23 R=C B=B0 O=PC PC=0
-0x38: B0=C C=24 R=C B=B0 O=PC PC=0
-0x39: B0=C C=25 R=C B=B0 O=PC PC=0
-0x3A: B0=C C=26 R=C B=B0 O=PC PC=0
-0x3B: B0=C C=27 R=C B=B0 O=PC PC=0
-0x3C: B0=C C=28 R=C B=B0 O=PC PC=0
-0x3D: B0=C C=29 R=C B=B0 O=PC PC=0
-0x3E: B0=C C=30 R=C B=B0 O=PC PC=0
-0x3F: B0=C C=31 R=C B=B0 O=PC PC=0
+0x20: BUSY=1 B0=C C=0 G=C B=B0 O=PC PC=0
+0x21: B0=C C=1 G=C B=B0 O=PC PC=0
+0x22: B0=C C=2 G=C B=B0 O=PC PC=0
+0x23: B0=C C=3 G=C B=B0 O=PC PC=0
+0x24: B0=C C=4 G=C B=B0 O=PC PC=0
+0x25: B0=C C=5 G=C B=B0 O=PC PC=0
+0x26: B0=C C=6 G=C B=B0 O=PC PC=0
+0x27: B0=C C=7 G=C B=B0 O=PC PC=0
+0x28: B0=C C=8 G=C B=B0 O=PC PC=0
+0x29: B0=C C=9 G=C B=B0 O=PC PC=0
+0x2A: B0=C C=10 G=C B=B0 O=PC PC=0
+0x2B: B0=C C=11 G=C B=B0 O=PC PC=0
+0x2C: B0=C C=12 G=C B=B0 O=PC PC=0
+0x2D: B0=C C=13 G=C B=B0 O=PC PC=0
+0x2E: B0=C C=14 G=C B=B0 O=PC PC=0
+0x2F: B0=C C=15 G=C B=B0 O=PC PC=0
+0x30: B0=C C=16 G=C B=B0 O=PC PC=0
+0x31: B0=C C=17 G=C B=B0 O=PC PC=0
+0x32: B0=C C=18 G=C B=B0 O=PC PC=0
+0x33: B0=C C=19 G=C B=B0 O=PC PC=0
+0x34: B0=C C=20 G=C B=B0 O=PC PC=0
+0x35: B0=C C=21 G=C B=B0 O=PC PC=0
+0x36: B0=C C=22 G=C B=B0 O=PC PC=0
+0x37: B0=C C=23 G=C B=B0 O=PC PC=0
+0x38: B0=C C=24 G=C B=B0 O=PC PC=0
+0x39: B0=C C=25 G=C B=B0 O=PC PC=0
+0x3A: B0=C C=26 G=C B=B0 O=PC PC=0
+0x3B: B0=C C=27 G=C B=B0 O=PC PC=0
+0x3C: B0=C C=28 G=C B=B0 O=PC PC=0
+0x3D: B0=C C=29 G=C B=B0 O=PC PC=0
+0x3E: B0=C C=30 G=C B=B0 O=PC PC=0
+0x3F: B0=C C=31 G=C B=B0 O=PC PC=0
 0x40: b=M[L_F8h] PC++
 0x41: b=M[L_F9h] PC++
 0x42: b=M[L_FAh] PC++
@@ -126,22 +126,22 @@
 0x7D: M[L_FDh]=d PC++
 0x7E: M[L_FEh]=d PC++
 0x7F: M[L_FFh]=d PC++
-0x80: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ BO+=T(signed) PC++
-0x81: B=C O=PC PC++
-0x82: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ B=T PC++
-0x83: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ O=T PC++
-0x84: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ A=T PC++
-0x85: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ E=T PC++
-0x86: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ SOR=T PC++
-0x87: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ POR=T PC++
-0x88: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ D=T PC++
-0x89: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ PC=(D?T:PC+1) D--
-0x8A: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ PC=T
-0x8B: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ PC=(A?T:PC+1)
-0x8C: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ PC=(A?PC+1:T)
-0x8D: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ PC=(A&80h?T:PC+1)
-0x8E: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ R=T PC=80h PC++
-0x8F: T=(PC<80h?M[C_PC]:M[R_PC]) PC++ B=C C=T R=C O=PC PC=0 L--
+0x80: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ BO+=T(signed) PC++
+0x81: B=CG O=PC PC++
+0x82: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ B=T PC++
+0x83: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ O=T PC++
+0x84: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ A=T PC++
+0x85: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ E=T PC++
+0x86: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ SOR=T PC++
+0x87: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ POR=T PC++
+0x88: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ D=T PC++
+0x89: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ PC=(D?T:PC+1) D--
+0x8A: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ PC=T
+0x8B: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ PC=(A?T:PC+1)
+0x8C: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ PC=(A?PC+1:T)
+0x8D: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ PC=(A&80h?T:PC+1)
+0x8E: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ G=T PC=80h PC++
+0x8F: T=(PC<80h?M[C_PC]:M[G_PC]) PC++ B=C C=T G=C O=PC PC=0 L--
 0x90: T=M[BO] BO+=T(signed) PC++
 0x91: B=L O=F7h PC++
 0x92: T=M[BO] B=T PC++
@@ -156,8 +156,8 @@
 0x9B: T=M[BO] PC=(A?T:PC+1)
 0x9C: T=M[BO] PC=(A?PC+1:T)
 0x9D: T=M[BO] PC=(A&80h?T:PC+1)
-0x9E: T=M[BO] R=T PC=80h PC++
-0x9F: T=M[BO] B=C C=T R=C O=PC PC=0 L--
+0x9E: T=M[BO] G=T PC=80h PC++
+0x9F: T=M[BO] B=C C=T G=C O=PC PC=0 L--
 0xA0: T=B BO+=T(signed) PC++
 0xA1: T=B M[BO]=T PC++
 0xA2: L++ PC++
@@ -172,8 +172,8 @@
 0xAB: T=B PC=(A?T:PC+1)
 0xAC: T=B PC=(A?PC+1:T)
 0xAD: T=B PC=(A&80h?T:PC+1)
-0xAE: T=B R=T PC=80h PC++
-0xAF: T=B B=C C=T R=C O=PC PC=0 L--
+0xAE: T=B G=T PC=80h PC++
+0xAF: T=B B=C C=T G=C O=PC PC=0 L--
 0xB0: T=O BO+=T(signed) PC++
 0xB1: T=O M[BO]=T PC++
 0xB2: T=O B=T PC++
@@ -188,8 +188,8 @@
 0xBB: T=O PC=(A?T:PC+1)
 0xBC: T=O PC=(A?PC+1:T)
 0xBD: T=O PC=(A&80h?T:PC+1)
-0xBE: T=O R=T PC=80h PC++
-0xBF: T=O B=C C=T R=C O=PC PC=0 L--
+0xBE: T=O G=T PC=80h PC++
+0xBF: T=O B=C C=T G=C O=PC PC=0 L--
 0xC0: T=A BO+=T(signed) PC++
 0xC1: T=A M[BO]=T PC++
 0xC2: T=A B=T PC++
@@ -204,8 +204,8 @@
 0xCB: T=A PC=(A?T:PC+1)
 0xCC: T=A PC=(A?PC+1:T)
 0xCD: T=A PC=(A&80h?T:PC+1)
-0xCE: T=A R=T PC=80h PC++
-0xCF: T=A B=C C=T R=C O=PC PC=0 L--
+0xCE: T=A G=T PC=80h PC++
+0xCF: T=A B=C C=T G=C O=PC PC=0 L--
 0xD0: T=E BO+=T(signed) PC++
 0xD1: T=E M[BO]=T PC++
 0xD2: T=E B=T PC++
@@ -220,8 +220,8 @@
 0xDB: T=E PC=(A?T:PC+1)
 0xDC: T=E PC=(A?PC+1:T)
 0xDD: T=E PC=(A&80h?T:PC+1)
-0xDE: T=E R=T PC=80h PC++
-0xDF: T=E B=C C=T R=C O=PC PC=0 L--
+0xDE: T=E G=T PC=80h PC++
+0xDF: T=E B=C C=T G=C O=PC PC=0 L--
 0xE0: T=SIR BO+=T(signed) PC++
 0xE1: T=SIR M[BO]=T PC++
 0xE2: T=SIR B=T PC++
@@ -236,8 +236,8 @@
 0xEB: T=SIR PC=(A?T:PC+1)
 0xEC: T=SIR PC=(A?PC+1:T)
 0xED: T=SIR PC=(A&80h?T:PC+1)
-0xEE: T=SIR R=T PC=80h PC++
-0xEF: T=SIR B=C C=T R=C O=PC PC=0 L--
+0xEE: T=SIR G=T PC=80h PC++
+0xEF: T=SIR B=C C=T G=C O=PC PC=0 L--
 0xF0: T=PIR BO+=T(signed) PC++
 0xF1: T=PIR M[BO]=T PC++
 0xF2: T=PIR B=T PC++
@@ -252,5 +252,5 @@
 0xFB: T=PIR PC=(A?T:PC+1)
 0xFC: T=PIR PC=(A?PC+1:T)
 0xFD: T=PIR PC=(A&80h?T:PC+1)
-0xFE: T=PIR R=T PC=80h PC++
-0xFF: T=PIR B=C C=T R=C O=PC PC=0 L--
+0xFE: T=PIR G=T PC=80h PC++
+0xFF: T=PIR B=C C=T G=C O=PC PC=0 L--

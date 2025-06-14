@@ -89,13 +89,15 @@ When reading memory data, the B:O register pair must be set to a suitable memory
 
 The 16-bit value B:O is called the Base Pointer.
 
-###### C and R
+###### C and G
 
-When code is running, the byte offset of the current instruction is invariably stored in the program counter register (PC). The page number where this offset applies, however, is stored in either C (Code) or R (Resident). Which register is used depends on the most significant bit of the program counter value: If the MSB of PC is set (offset of the instruction byte in the page is 128 or higher), the page-index in R is used. Otherwise (the offset of the instruction byte is below 128), the page-index in C is used.
+When code is running, the byte offset of the current instruction is invariably stored in the program counter register (PC). The page number where this offset applies, however, is stored in either C (Code) or G (Guest). Every page has a "guest" page, the upper half of which appears at the upper half (offset 128) of the (host) page. A page can be its own guest: initially, and after each subroutine or coroutine call or return instruction, the guest page index stored in G is set to the current code page index stored in C. Thus the guest-page setting is volatile.
 
-Conceptually, this creates two independent code segments, a lower segment (offsets < 128) and an upper segment. The dedicated instruction "xR" sets R to a given page number and jumps to offset 80h. The page-index in R gets reset to C during interpage jumps: Subroutine and coroutine calls or return instructions set R equal to C again.
+As has been said, the guest page appears at offset 128. Hence the most significant bit of the program counter value determines, whether an instruction's page-index is read from C or from G: If the MSB of PC is set (offset of the instruction byte in the page is 128 or higher), the page-index in G is used. Otherwise (the offset of the instruction byte is below 128), the page-index in C is used.
 
-Note that the lower portion of the page whose index number is stored in R, and which thus provides the upper code segment, is not available to the running code, if R is different from C. The reason for this is that when an intrapage jump to an address below 0x80 (the lower segment) occurs, bit 7 of the program counter toggles to zero, enabling the page-index in C to take over: Any instruction fetch in the lower segment occurs at C:PC, not at R:PC.
+Conceptually, this creates two independent code segments, a lower segment (offsets < 128) and an upper (guest) segment. The dedicated instruction "xG" sets G to a given page number and jumps to offset 128. The page-index in G gets reset to C during interpage jumps: Subroutine and coroutine calls or return instructions set G equal to C again.
+
+Note that the __lower__ half of the page whose index number is stored in G, and which thus provides the upper code segment, is not available to the running code, if G is different from C. The reason for this is that when an intrapage jump to an address below 128 (the lower segment) occurs, bit 7 of the program counter toggles to zero, enabling the page-index in C to take over: Any instruction fetch in the lower segment occurs at C:PC, not at G:PC.
 
 ###### L
 
@@ -366,14 +368,14 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     5x     1o    2o    3o    4o    5o    6o    7o    8o    o1    o2    o3    o4    o5    o6    o7    o8
     6x     1a    2a    3a    4a    5a    6a    7a    8a    a1    a2    a3    a4    a5    a6    a7    a8
     7x     1d    2d    3d    4d    5d    6d    7d    8d    d1    d2    d3    d4    d5    d6    d7    d8
-    8x     fu  CODE    fb    fo    fa    fe    fs    fp    fd    fw    fj    fh    fz    fn    fr    fc
-    9x     mu LOCAL    mb    mo    ma    me    ms    mp    md    mw    mj    mh    mz    mn    mr    mc
-    Ax     bu    bm LEAVE    bo    ba    be    bs    bp    bd    bw    bj    bh    bz    bn    br    bc
-    Bx     ou    om    ob ENTER    oa    oe    os    op    od    ow    oj    oh    oz    on    or    oc
-    Cx     au    am    ab    ao   INC    ae    as    ap    ad    aw    aj    ah    az    an    ar    ac
-    Dx     eu    em    eb    eo    ea   DEC    es    ep    ed    ew    ej    eh    ez    en    er    ec
-    Ex     su    sm    sb    so    sa    se    ss    sp    sd    sw    sj    sh    sz    sn    sr    sc
-    Fx     pu    pm    pb    po    pa    pe    ps    pp    pd    pw    pj    ph    pz    pn    pr    pc
+    8x     fu  CODE    fb    fo    fa    fe    fs    fp    fd    fw    fj    fh    fz    fn    fg    fc
+    9x     mu LOCAL    mb    mo    ma    me    ms    mp    md    mw    mj    mh    mz    mn    mg    mc
+    Ax     bu    bm LEAVE    bo    ba    be    bs    bp    bd    bw    bj    bh    bz    bn    bg    bc
+    Bx     ou    om    ob ENTER    oa    oe    os    op    od    ow    oj    oh    oz    on    og    oc
+    Cx     au    am    ab    ao   INC    ae    as    ap    ad    aw    aj    ah    az    an    ag    ac
+    Dx     eu    em    eb    eo    ea   DEC    es    ep    ed    ew    ej    eh    ez    en    eg    ec
+    Ex     su    sm    sb    so    sa    se    ss    sp    sd    sw    sj    sh    sz    sn    sg    sc
+    Fx     pu    pm    pb    po    pa    pe    ps    pp    pd    pw    pj    ph    pz    pn    pg    pc
 
 ### Opcode Descriptions
 
@@ -532,22 +534,22 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     
     Group PAIR
     
-    0x80: FU	Take M[C:R_PC++] as 8-bit signed number and add it to 16-bit pointer B_O
-    0x81: CODE	Set pointer B_O to C:R_PC
-    0x82: FB	Take M[C:R_PC++] into B
-    0x83: FO	Take M[C:R_PC++] into O
-    0x84: FA	Take M[C:R_PC++] into A
-    0x85: FE	Take M[C:R_PC++] into E
-    0x86: FS	Take M[C:R_PC++] into SOR
-    0x87: FP	Take M[C:R_PC++] into POR
-    0x88: FD	Take M[C:R_PC++] into D
-    0x89: FW	Take M[C:R_PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0x8A: FJ	Take M[C:R_PC++] as page offset and store it into PC - always
-    0x8B: FH	Take M[C:R_PC++] as page offset and store it into PC - if A is not equal to zero
-    0x8C: FZ	Take M[C:R_PC++] as page offset and store it into PC - if A is equal to zero
-    0x8D: FN	Take M[C:R_PC++] as page offset and store it into PC - if A is negative (has bit 7 set)
-    0x8E: FR	Take M[C:R_PC++] as page-index, load the index into R, set PC to 80h
-    0x8F: FC	Take M[C:R_PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
+    0x80: FU	Take M[CG_PC++] as 8-bit signed number and add it to 16-bit pointer B_O
+    0x81: CODE	Set pointer B_O to CG_PC
+    0x82: FB	Take M[CG_PC++] into B
+    0x83: FO	Take M[CG_PC++] into O
+    0x84: FA	Take M[CG_PC++] into A
+    0x85: FE	Take M[CG_PC++] into E
+    0x86: FS	Take M[CG_PC++] into SOR
+    0x87: FP	Take M[CG_PC++] into POR
+    0x88: FD	Take M[CG_PC++] into D
+    0x89: FW	Take M[CG_PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D
+    0x8A: FJ	Take M[CG_PC++] as page offset and store it into PC - always
+    0x8B: FH	Take M[CG_PC++] as page offset and store it into PC - if A is not equal to zero
+    0x8C: FZ	Take M[CG_PC++] as page offset and store it into PC - if A is equal to zero
+    0x8D: FN	Take M[CG_PC++] as page offset and store it into PC - if A is negative (has bit 7 set)
+    0x8E: FG	Take M[CG_PC++] as page-index, load the index into G, set PC to 80h
+    0x8F: FC	Take M[CG_PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
     
     0x90: MU	Take M[B_O] as 8-bit signed number and add it to 16-bit pointer B_O
     0x91: LOCAL	Set pointer B_O to L_F7h (L0)
@@ -563,7 +565,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0x9B: MH	Take M[B_O] as page offset and store it into PC - if A is not equal to zero
     0x9C: MZ	Take M[B_O] as page offset and store it into PC - if A is equal to zero
     0x9D: MN	Take M[B_O] as page offset and store it into PC - if A is negative (has bit 7 set)
-    0x9E: MR	Take M[B_O] as page-index, load the index into R, set PC to 80h
+    0x9E: MG	Take M[B_O] as page-index, load the index into G, set PC to 80h
     0x9F: MC	Take M[B_O] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
     
     0xA0: BU	Take B as 8-bit signed number and add it to 16-bit pointer B_O
@@ -580,7 +582,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xAB: BH	Take B as page offset and store it into PC - if A is not equal to zero
     0xAC: BZ	Take B as page offset and store it into PC - if A is equal to zero
     0xAD: BN	Take B as page offset and store it into PC - if A is negative (has bit 7 set)
-    0xAE: BR	Take B as page-index, load the index into R, set PC to 80h
+    0xAE: BG	Take B as page-index, load the index into G, set PC to 80h
     0xAF: BC	Take B as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
     
     0xB0: OU	Take O as 8-bit signed number and add it to 16-bit pointer B_O
@@ -597,7 +599,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xBB: OH	Take O as page offset and store it into PC - if A is not equal to zero
     0xBC: OZ	Take O as page offset and store it into PC - if A is equal to zero
     0xBD: ON	Take O as page offset and store it into PC - if A is negative (has bit 7 set)
-    0xBE: OR	Take O as page-index, load the index into R, set PC to 80h
+    0xBE: OG	Take O as page-index, load the index into G, set PC to 80h
     0xBF: OC	Take O as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
     
     0xC0: AU	Take A as 8-bit signed number and add it to 16-bit pointer B_O
@@ -614,7 +616,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xCB: AH	Take A as page offset and store it into PC - if A is not equal to zero
     0xCC: AZ	Take A as page offset and store it into PC - if A is equal to zero
     0xCD: AN	Take A as page offset and store it into PC - if A is negative (has bit 7 set)
-    0xCE: AR	Take A as page-index, load the index into R, set PC to 80h
+    0xCE: AG	Take A as page-index, load the index into G, set PC to 80h
     0xCF: AC	Take A as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
     
     0xD0: EU	Take E as 8-bit signed number and add it to 16-bit pointer B_O
@@ -631,7 +633,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xDB: EH	Take E as page offset and store it into PC - if A is not equal to zero
     0xDC: EZ	Take E as page offset and store it into PC - if A is equal to zero
     0xDD: EN	Take E as page offset and store it into PC - if A is negative (has bit 7 set)
-    0xDE: ER	Take E as page-index, load the index into R, set PC to 80h
+    0xDE: EG	Take E as page-index, load the index into G, set PC to 80h
     0xDF: EC	Take E as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
     
     0xE0: SU	Take SIR as 8-bit signed number and add it to 16-bit pointer B_O
@@ -648,7 +650,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xEB: SH	Take SIR as page offset and store it into PC - if A is not equal to zero
     0xEC: SZ	Take SIR as page offset and store it into PC - if A is equal to zero
     0xED: SN	Take SIR as page offset and store it into PC - if A is negative (has bit 7 set)
-    0xEE: SR	Take SIR as page-index, load the index into R, set PC to 80h
+    0xEE: SG	Take SIR as page-index, load the index into G, set PC to 80h
     0xEF: SC	Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
     
     0xF0: PU	Take PIR as 8-bit signed number and add it to 16-bit pointer B_O
@@ -665,5 +667,5 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xFB: PH	Take PIR as page offset and store it into PC - if A is not equal to zero
     0xFC: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
     0xFD: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
-    0xFE: PR	Take PIR as page-index, load the index into R, set PC to 80h
+    0xFE: PG	Take PIR as page-index, load the index into G, set PC to 80h
     0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L

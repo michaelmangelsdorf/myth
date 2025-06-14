@@ -25,7 +25,7 @@ reg GETB, GETO, GETA, GETD, PUTB, PUTO, PUTA, PUTD;                 // GETPUT
 reg Fx, Mx, Bx, Ox, Ax, Ex, Sx, Px;                               // PAIR SRC
 
 reg xU, xM, xB, xO, xA, xE, xS, xP;                               // PAIR DST
-reg xD, xW, xJ, xH, xZ, xN, xR, xC;
+reg xD, xW, xJ, xH, xZ, xN, xG, xC;
 
 reg CODE, LOCAL, LEAVE, ENTER, INC, DEC;                     // PAIR SCROUNGE
 
@@ -34,7 +34,7 @@ reg CODE, LOCAL, LEAVE, ENTER, INC, DEC;                     // PAIR SCROUNGE
 
 // Page-Index Registers:
 reg [7:0] C;        // Code
-reg [7:0] R;        // Resident
+reg [7:0] G;        // Resident
 reg [7:0] L;        // Local
 reg [7:0] B;        // Base
 
@@ -122,7 +122,7 @@ always @* begin
     
     Fx=0; Mx=0; Bx=0; Ox=0; Ax=0; Ex=0; Sx=0; Px=0;             // Clear PAIR
     xU=0; xM=0; xB=0; xO=0; xA=0; xE=0; xS=0; xP=0;
-    xD=0; xW=0; xJ=0; xH=0; xZ=0; xN=0; xR=0; xC=0;
+    xD=0; xW=0; xJ=0; xH=0; xZ=0; xN=0; xG=0; xC=0;
     
     CODE=0; LOCAL=0; LEAVE=0; ENTER=0; INC=0; DEC=0;        // Clear SCROUNGE
 
@@ -223,7 +223,7 @@ always @* begin
                    4'd11: xH = 1;
                    4'd12: xZ = 1;
                    4'd13: xN = 1;
-                   4'd14: xR = 1;
+                   4'd14: xG = 1;
                    4'd15: xC = 1;
                 endcase
             end
@@ -364,7 +364,7 @@ always @(posedge clk or posedge rst) begin
             STP: {B, O} <= TP;
             SSP: {B, O} <= SP;
             
-            CODE: {B, O} <= {PC[7] ? R:C, PC};
+            CODE: {B, O} <= {PC[7] ? G:C, PC};
             default:;
         endcase
     end
@@ -427,7 +427,7 @@ begin
 end
 
 
-//MEMORY,L,R,I///////////////////////////////////////////////////////////////
+//MEMORY,L,G,I///////////////////////////////////////////////////////////////
 
 // Instantiate 64k x 8 synchronous RAM
 ram vendor_ram (
@@ -447,12 +447,12 @@ wire[7:0] q;    // 8-bit RAM output value
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         L <= 8'h00;
-        R <= 8'h00;
+        G <= 8'h00;
         I <= 8'h00; // Load with NOP opcode
     end
     else case (1'b1)
         FETCH:  begin
-                    addr <= (PC[7]) ? {R,PC} : {C,PC};  // Request opcode
+                    addr <= (PC[7]) ? {G,PC} : {C,PC};  // Request opcode
                     wren <= 0;                          // Reset write enable
                 end
         DECODE: begin
@@ -460,7 +460,7 @@ always @(posedge clk or posedge rst) begin
                     else I <= 8'd32;                    // Inject TRAP 0
                 end
         SETUP:  case (1'b1)
-                    Fx:         addr <= (PC[7]) ? {R,PC} : {C,PC};
+                    Fx:         addr <= (PC[7]) ? {G,PC} : {C,PC};
                     OPC_GETPUT: addr <= {L, 8'hF8 + I[2:0]};
                     default:    addr <= {B,O};
                 endcase
@@ -471,7 +471,7 @@ always @(posedge clk or posedge rst) begin
                 else if (Mx || Fx || GET) data_bus <= q; // Latch memory data
                 else if (ENTER || xC || OPC_TRAP) L <= L - 1;
                 else if (LEAVE || RTS || RTI) L <= L + 1;
-                else if (xR) R <= data_bus;
+                else if (xG) G <= data_bus;
         default:;
     endcase
 end
