@@ -39,15 +39,15 @@ uint8_t g; /* Resident-Page Index register */
 uint8_t b; /* Base Page-Index Register */
 uint8_t l; /* Local-Page Index Register */
 
-uint8_t cp_b; /* Pointers Page-Index COPY */
-uint8_t sp_b; /* Parameter Stack */
-uint8_t ip_b; /* Index/Instruction */
-uint8_t tsp_b; /* Threading Stack */
+uint8_t kp_b; /* Key */
+uint8_t qp_b; /* Queue/Stack Pointer */
+uint8_t ip_b; /* Interpreter Pointer */
+uint8_t tp_b; /* Threading Pointer */
 
-uint8_t cp_o; /* Pointers Offset */
-uint8_t sp_o;
+uint8_t kp_o; /* Pointers Offset */
+uint8_t qp_o;
 uint8_t ip_o;
-uint8_t tsp_o;
+uint8_t tp_o;
 
 
 void myth_step();
@@ -145,14 +145,14 @@ static void call( uint8_t dstpage);
 
 /*BOP Instructions
 */
-#define GCP 0 /* Store POINTER into B:O */
-#define SCP 1 /* Store B:O into POINTER */
-#define GSP 2 
-#define SSP 3
-#define GIP 4 
-#define SIP 5
-#define GTSP 6 
-#define STSP 7
+#define KBO 0 /* Store POINTER into B:O */
+#define BOK 1 /* Store B:O into POINTER */
+#define QBO 2 
+#define BOQ 3
+#define IBO 4 
+#define BOI 5
+#define TBO 6 
+#define BOT 7
 
 #define GETPUT_OFFSET 0xF8 /*Local-page offset used by GETPUT instructions*/
 
@@ -400,17 +400,17 @@ void
 bop( uint8_t opcode)
 {
         switch(opcode & 7){
-                case GCP: b=cp_b; o=cp_o; break;
-                case SCP: cp_b=b; cp_o=o; break;
+                case KBO: b=kp_b; o=kp_o; break;
+                case BOK: kp_b=b; kp_o=o; break;
         
-                case GSP: b=sp_b; o=sp_o; break;
-                case SSP: sp_b=b; sp_o=o; break;
+                case QBO: b=qp_b; o=qp_o; break;
+                case BOQ: qp_b=b; qp_o=o; break;
         
-                case GIP: b=ip_b; o=ip_o; break;
-                case SIP: ip_b=b; ip_o=o; break;
+                case IBO: b=ip_b; o=ip_o; break;
+                case BOI: ip_b=b; ip_o=o; break;
         
-                case GTSP: b=tsp_b; o=tsp_o; break;
-                case STSP: tsp_b=b; tsp_o=o; break;
+                case TBO: b=tp_b; o=tp_o; break;
+                case BOT: tp_b=b; tp_o=o; break;
                 default: break;
         }
 }

@@ -50,50 +50,50 @@
   {
     "opcode": 8,
     "group": "BOP",
-    "mnemonic": "GCP",
-    "desc": "Copy pointer C into B_O"
+    "mnemonic": "KBO",
+    "desc": "Copy pointer K into BO"
   },
   {
     "opcode": 9,
     "group": "BOP",
-    "mnemonic": "SCP",
-    "desc": "Copy B_O into pointer C"
+    "mnemonic": "BOK",
+    "desc": "Copy BO into pointer K"
   },
   {
     "opcode": 10,
     "group": "BOP",
-    "mnemonic": "GSP",
-    "desc": "Copy pointer S into B_O"
+    "mnemonic": "QBO",
+    "desc": "Copy pointer Q into BO"
   },
   {
     "opcode": 11,
     "group": "BOP",
-    "mnemonic": "SSP",
-    "desc": "Copy B_O into pointer S"
+    "mnemonic": "BOQ",
+    "desc": "Copy B_ into pointer Q"
   },
   {
     "opcode": 12,
     "group": "BOP",
-    "mnemonic": "GIP",
-    "desc": "Copy pointer I into B_O"
+    "mnemonic": "IBO",
+    "desc": "Copy pointer I into BO"
   },
   {
     "opcode": 13,
     "group": "BOP",
-    "mnemonic": "SIP",
-    "desc": "Copy B_O into pointer I"
+    "mnemonic": "BOI",
+    "desc": "Copy BO into pointer I"
   },
   {
     "opcode": 14,
     "group": "BOP",
-    "mnemonic": "GTSP",
-    "desc": "Copy pointer TS into B_O"
+    "mnemonic": "TBO",
+    "desc": "Copy pointer T into BO"
   },
   {
     "opcode": 15,
     "group": "BOP",
-    "mnemonic": "STSP",
-    "desc": "Copy B_O into pointer TS"
+    "mnemonic": "BOT",
+    "desc": "Copy BO into pointer T"
   },
   {
     "opcode": 16,

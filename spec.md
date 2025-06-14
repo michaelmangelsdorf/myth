@@ -360,7 +360,7 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
 ### Opcode Matrix
 
            x0    x1    x2    x3    x4    x5    x6    x7    x8    x9    xA    xB    xC    xD    xE    xF
-    0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR   GCP   SCP   GSP   SSP   GIP   SIP  GTSP  STSP
+    0x    NOP   SSI   SSO   SCL   SCH   RTS   RTI   COR   KBO   BOK   QBO   BOQ   IBO   BOI   TBO   BOT
     1x    NOT   ALX   AEX   AGX   AND   IOR   EOR    XA    AX  SWAP   SHL   SHR   ASR  ADDC  ADDV  SUBB
     2x     *0    *1    *2    *3    *4    *5    *6    *7    *8    *9   *10   *11   *12   *13   *14   *15
     3x    *16   *17   *18   *19   *20   *21   *22   *23   *24   *25   *26   *27   *28   *29   *30   *31
@@ -392,17 +392,17 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     
     Group BOP
     
-    0x08: GCP	Copy pointer C into B_O
-    0x09: SCP	Copy B_O into pointer C
+    0x08: KBO	Copy pointer K into BO
+    0x09: BOK	Copy BO into pointer K
     
-    0x0A: GSP	Copy pointer S into B_O
-    0x0B: SSP	Copy B_O into pointer S
+    0x0A: QBO	Copy pointer Q into BO
+    0x0B: BOQ	Copy B_ into pointer Q
     
-    0x0C: GIP	Copy pointer I into B_O
-    0x0D: SIP	Copy B_O into pointer I
+    0x0C: IBO	Copy pointer I into BO
+    0x0D: BOI	Copy BO into pointer I
     
-    0x0E: GTSP	Copy pointer TS into B_O
-    0x0F: STSP	Copy B_O into pointer TS
+    0x0E: TBO	Copy pointer T into BO
+    0x0F: BOT	Copy BO into pointer T
     
     Group ALU
     
@@ -669,4 +669,3 @@ If a label is not unique, the reference goes to the nearest occurrence of it in 
     0xFD: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
     0xFE: PG	Take PIR as page-index, load the index into G, set PC to 80h
     0xFF: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L
-
