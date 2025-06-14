@@ -110,7 +110,7 @@ always @* begin
     NOP=0; SSI=0;  SSO=0;  SCL=0;  SCH=0; RTS=0; RTI=0; COR=0;   // Clear SYS
     
 
-    GRP=0; SRP=0; GIP=0; SIP=0; GTP=0; STP=0; GSP=0; SSP=0;      // Clear BOP
+    GCP=0; SCP=0; GSP=0; SSP=0; GIP=0; SIP=0; GTSP=0; STSP=0;    // Clear BOP
     
     NOT=0; ALX=0;  AEX=0; AGX=0; AND=0; IOR=0;  EOR=0;  XA=0;    // Clear ALU
     AX=0;  SWAP=0; SHL=0; SHR=0; ASR=0; ADDC=0; ADDV=0; SUBB=0;
@@ -141,14 +141,14 @@ always @* begin
 
     if (OPC_BOP) begin
         case (I[2:0])
-            3'd0: GRP = 1;
-            3'd1: SRP = 1;
-            3'd2: GIP = 1;
-            3'd3: SIP = 1;
-            3'd4: GTP = 1;
-            3'd5: STP = 1;
-            3'd6: GSP = 1;
-            3'd7: SSP = 1;
+            3'd0: GCP = 1;
+            3'd1: SCP = 1;
+            3'd2: GSP = 1;
+            3'd3: SSP = 1;
+            3'd4: GIP = 1;
+            3'd5: SIP = 1;
+            3'd6: GTSP = 1;
+            3'd7: STSP = 1;
         endcase
     end
 
@@ -324,10 +324,10 @@ reg [7:0] O_old;
 reg [7:0] B_old;
 
 // Pointer registers:
-reg [15:0] RP;
-reg [15:0] IP;
-reg [15:0] TP;
+reg [15:0] CP;
 reg [15:0] SP;
+reg [15:0] IP;
+reg [15:0] TSP;
 
 wire [15:0] BO = {B,O};  // Combined Base-Offset pointer for BOP instructions
 
@@ -335,10 +335,10 @@ always @(posedge clk or posedge rst) begin
     if (rst) begin
          B <=  8'b0;
          O <=  8'b0;
-        RP <= 16'b0;
-        IP <= 16'b0;
-        TP <= 16'b0;
+        CP <= 16'b0;
         SP <= 16'b0;
+        IP <= 16'b0;
+        TSP <= 16'b0;
     end
     else if (SETUP) case (1'b1)
         xC:   B_old <= B;
@@ -350,19 +350,21 @@ always @(posedge clk or posedge rst) begin
     begin
         if      (xB || GETB)  B <= data_bus;
         else if (xO || GETO)  O <= data_bus;
+        else if (RO) O <= R;
+        else if (OR) R <= O;
         else case (1'b1)
             RTS:
             RTI:
 
-            GRP: RP <= BO;
-            GIP: IP <= BO;
-            GTP: TP <= BO;
+            GCP: CP <= BO;
             GSP: SP <= BO;
+            GIP: IP <= BO;
+            GTSP: TSP <= BO;
 
-            SRP: {B, O} <= RP;
-            SIP: {B, O} <= IP;
-            STP: {B, O} <= TP;
+            SCP: {B, O} <= CP;
             SSP: {B, O} <= SP;
+            SIP: {B, O} <= IP;
+            STSP: {B, O} <= TSP;
             
             CODE: {B, O} <= {PC[7] ? G:C, PC};
             default:;

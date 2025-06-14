@@ -6,14 +6,14 @@
 0x05: C=B G=C PC=O L++
 0x06: BUSY=0 C=B G=C PC=O L++
 0x07: B0=C C=B B=B0 G=C O0=PC PC=O O=O0
-0x08: BO=RP PC++
-0x09: RP=BO PC++
-0x0A: BO=IP PC++
-0x0B: IP=BO PC++
-0x0C: BO=TP PC++
-0x0D: TP=BO PC++
-0x0E: BO=SP PC++
-0x0F: SP=BO PC++
+0x08: BO=CP PC++
+0x09: CP=BO PC++
+0x0A: BO=SP PC++
+0x0B: SP=BO PC++
+0x0C: BO=IP PC++
+0x0D: IP=BO PC++
+0x0E: BO=TSP PC++
+0x0F: TSP=BO PC++
 0x10: A=NOT(A) PC++
 0x11: A=(A<X)?255:0 PC++
 0x12: A=(A==X)?255:0 PC++
