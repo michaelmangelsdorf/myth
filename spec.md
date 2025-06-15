@@ -77,7 +77,7 @@ Without exception, the byte offset for data memory access is stored in O (offset
 
 When reading memory data, the O register must be set to a suitable page-offset value at any time, except when using GETPUT instructions or fetching a literal placed in the code.
 
-##### Page-index Registers
+##### Page-Index Registers
 
 There are four dedicated page-index registers: B for Base, C for Code, R for Resident, and L for Local.
 
@@ -145,7 +145,7 @@ When writing R to run a resident routine in the upper segment, care must be take
 
 Writing into M (xM) stores the value into memory at page index B offset O. Conversely, reading from M (Mx) transfers the value stored into that memory cell into the target of the PAIR instruction. There are no other memory transfer instructions besides xMx, the GETPUT instructions, and Fx.
 
-#### SCROUNGED opcodes
+#### Scrounged PAIR opcodes
 
 Inherent NOP instructions such as BB, OO, AA, and EE, and impractical instructions such as FM and MM (same-cycle memory load-store) are repurposed ("scrounged"), and their respective opcodes execute different instructions.
 
@@ -161,19 +161,19 @@ Inherent NOP instructions such as BB, OO, AA, and EE, and impractical instructio
 
 As mentioned, registers B (base) and O (offset) form a 16-bit pointer for memory access. The xU (update) instruction is used to add an 8-bit signed number to this pointer for doing address arithmetic.
 
-There are four 16-bit registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction. S should be used as global stack pointer, but this is only a convention.
+There are four 16-bit registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction. The K pointer ("Key") can be used as a set of two scratch registers, for passing arguments during function calls for instance. Q should be used as the global stack pointer. I and T should be used to implement threaded code. Restore Q, I and T in your subroutines after using them for different purposes.
 
-	RBO Load R into BO
-	BOR Save BO into R
+	KBO Load R into BO
+	BOK Save BO into K
 	
-	WBO Load W into BO
-	BOW Save BO into W
+	QBO Load Q into BO
+	BOQ Save BO into Q
 	
 	IBO Load I into BO
 	BOI Save BO into I
 
-	SBO Load S into BO
-	BOS Save BO into S
+	TBO Load T into BO
+	BOT Save BO into T
 
 ## PART 2
 
