@@ -116,7 +116,7 @@ The local-page index can be manually decremented using ENTER, and manually incre
 
 Data move instructions of type PAIR have mnemonics that consist of two letters, one for the source, followed by one for the target of the data move. For example, in order to write register B into A, there is an instruction with the mnemonic "ba".
 
-Some registers are "conventional" data registers, such as B and A, which correspond to physical registers, but there are also EFFECT registers, which procure or distribute data indirectly, or trigger conditional actions. One of them is the F register (fetch). It extracts the next byte in the instruction stream, and then skips to the next instruction.
+Some registers are "conventional" data registers, such as B and A, which correspond to physical registers, but there are also EFFECT registers, which source or distribute data indirectly, or trigger conditional actions. One of them is the F register (fetch). It extracts the next byte in the instruction stream, and then skips to the next instruction.
 
 Example: "fa" fetches the byte following the current instruction in memory, and stores it into A. It then increments the program counter by 1 so that the next instruction is fetched instead of the literal.
 
@@ -161,7 +161,11 @@ Inherent NOP instructions such as BB, OO, AA, and EE, and impractical instructio
 
 As mentioned, registers B (base) and O (offset) form a 16-bit pointer for memory access. The xU (update) instruction is used to add an 8-bit signed number to this pointer for doing address arithmetic.
 
-There are four 16-bit registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction. The K pointer ("Key") can be used as a set of two scratch registers, for passing arguments during function calls for instance. Q should be used as the global stack pointer. I and T should be used to implement threaded code. Restore Q, I and T in your subroutines after using them for different purposes.
+There are four 16-bit registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction.
+
+The K pointer ("Key") can be used as a set of two scratch registers, for passing arguments during function calls for instance.
+
+Q should be used as the global stack pointer. I and T should be used to implement threaded code, or other system-internal pointers. Restore Q, I and T in your subroutines after using them for different purposes.
 
 	KBO Load R into BO
 	BOK Save BO into K
@@ -304,7 +308,7 @@ An external device can make an interrupt request (IRQ) by asserting the IRQ sign
 
 At the beginning of each instruction cycle, the CPU checks whether an Interrupt must be serviced. There are two conditions which prevent an interrupt from being serviced by the microcontroller during a given instruction cycle. Firstly, when the CPU is running code within page 0, for example just after RESET, and secondly when the BUSY flag is set.
 
-If the BUSY flag is not set, and the page index in C is not zero, the CPU injects a "fake" TRAP call instruction to page 0, instead of fetching a proper instruction opcode. By entering page 0, the BUSY flag is set the interrupt service routine in page zero at address-offset 0 is run. Note: The xR (Resident) instruction can be used to map code into the upper segment as explained; as long as the page-index in C remains zero, interrupts are disabled.
+If the BUSY flag is not set, and the page index in C is not zero, the CPU injects a "fake" TRAP call instruction to page 0, instead of fetching a proper instruction opcode. By entering page 0, the BUSY flag is set and the interrupt service routine in page zero at address-offset 0 is run. Note: The xG (Guest) instruction can be used to map code into the upper segment as explained; as long as the page-index in C remains zero, interrupts are disabled.
 
 To re-enable interrupts, the software must execute an RTI instruction (Return from Interrupt). RTI behaves identically to RTS (Return from Subroutine), but clears the BUSY flag. As long as the BUSY flag remains set, downstream service routines or other code will not be interrupted by interrupts.
 
@@ -327,7 +331,13 @@ Operation codes fall into 6 format groups, which are decodable using a priority 
 
 ## Assembler
 
-Multiple assembler mnemonics can occur on a single line. Commas (",") can optionally be used for grouping "phrases" of instructions that logically belong together.
+### Casing and Phrasing
+
+Instruction mnemonics are not case-sensitive. Using upper case can provide emphasis or visual structure.
+
+Multiple assembler mnemonics can occur on a single line. Commas (",") and dots (".") and dashes ("-") can optionally be used for grouping "phrases" of instructions that logically belong together. These symbol can be attached to instruction mnemonics without any effect.
+
+By default, put Fx (literal instructions) at the beginning of a new line. Also do this for TRAP instructions (*xyz), if they consume code bytes.
 
 ### Comments
 
@@ -343,11 +353,32 @@ Characters enclosed in double quotation marks such as "Hello World" are assemble
 
 ### Labels
 
-Prefix page labels by @@, and offset labels by @. Once the assembler reaches a page label, the remaining bytes of the current page are padded with 0 (NOP), and the object-code pointer is set to offset 0 of the new page.
+#### Page-Index Labels
 
-A number can occur before the page label prefix ("n@@label"). This pads the remaining bytes of the current page with zeros, and sets the object-code pointer to the specified number prefix.
+Use all UPPER "snake-case" for labels that reference page-indices. Add a colon when defining these labels.
 
-An asterisk placed before a page label encodes a trap call instruction to that address. Such label references will generate an opcode that will trigger a TRAP to the head (offset 0) of the target page.
+A TRAP page label definition must begin with an asterisk and end with a colon. Writing the label without the colon encodes a trap instruction to the defined page-index.
+
+ Multiple labels can be given to the same page-index. A given page can hold a TRAP handler (offset 0), a Guest routine (offset 80h),
+and various other code and data structures that are unrelated to each other. Add a label with the prefix g for pages that contain guest-code for easy
+reference by the caller.
+
+    ; Example skeleton for a TRAP page with other, unrelated named parts
+    *ITSA_TRAP:
+        (Service routine here, can be invoked using *ITSA_TRAP)
+        ...
+        
+    gGUEST_CODE:
+    @70h:myroutine
+        ...
+        
+    SOME_DATA_TABLE: 1 2 4 8 16 32 64 128.
+    
+Once the assembler reaches a page label, the remaining bytes of the current page are padded with 0 (NOP), and the object-code pointer is set to offset 0 of the new page.
+
+#### Offset Labels
+
+Prefix offset labels by @. A number literal followed by a colon can occur between the at-sign and the label text to set a the object code origin. If the number literal specifies an offset __after__ the previous offset, the object code bytes that are skipped are padded with zeros (NOP).
 
 ### Label References
 
@@ -355,7 +386,28 @@ Labels are referenced by prefixing their identifier with < for backward referenc
 
 If a label is not unique, the reference goes to the nearest occurrence of it in the given direction. A label reference is just a numerical value and can be used as a literal anywhere in the code.
 
-## Appendices
+## Systems Programming
+
+The following are recommendations or useful conventions.
+
+### Identifiers
+
+
+
+### Parameter passing
+
+Use the accumulator (AX) for primary arguments in general.
+
+When writing subroutines, use local variables (L8-L3) with higher numbers first, ideally reserving L1, L2 for passing parameters to Guest functions (xG instruction). Guest functions should use L1 and L2 as scratch memory and document this, specifically.
+
+There is a "hidden" local variable shortcut "L0". You can obtain a pointer to this memory location by executing the instruction "LOCAL". Local sets B to the Local page, and O to F7h, the byte offset just below L1. Then use MxM instructions such as "am" to read or store into the L0 variable:
+
+    ; Store number 4 in L0:
+    fa 2 shl, local am.
+
+Pointer K (kbo, bok) is called the "key" and you can use it to pass either a 16-bit pointer, or individual values in B and O, to a subroutine.
+
+## Tables
 
 ### Opcode Matrix
 
