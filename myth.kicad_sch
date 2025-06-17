@@ -6,7 +6,7 @@
 	(paper "User" 1193.8 939.8)
 	(title_block
 		(title "Sonne-8 Micro-Controller")
-		(date "2025-06-16")
+		(date "2025-06-17")
 		(rev "Myth")
 		(company "Contact: mim@ok-schalter.de")
 		(comment 1 "Author: Michael Mangelsdorf")
@@ -26115,9 +26115,9 @@
 		)
 		(uuid "ca6c6ae6-53be-4356-8c7d-1dd7dde0ceca")
 	)
-	(text "Sonne-8 Microcontroller\nReference Schematics\n Rev. Myth"
+	(text "Myth Microcontroller\nReference Schematic"
 		(exclude_from_sim no)
-		(at 325.628 194.31 0)
+		(at 312.166 185.674 0)
 		(effects
 			(font
 				(size 12.7 12.7)
