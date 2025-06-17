@@ -13,7 +13,7 @@
 
 reg NOP, SSI, SSO, SCL, SCH, RTS, RTI, COR;                            // SYS
 
-reg KBO, BOK, QBO, BOQ, IBO, BOI, TBO, BOT;                            // BOP
+reg P1BO, BOP1, P2BO, BOP2, P3BO, BOP3, P4BO, BOP4;                    // BOP
 
 reg NOT, ALX,  AEX, AGX, AND, IOR,  EOR,  XA;                          // ALU
 reg AX,  SWAP, SHL, SHR, ASR, ADDC, ADDV, SUBB;
@@ -22,19 +22,18 @@ reg TRAP;                                                             // TRAP
 
 reg GETB, GETO, GETA, GETD, PUTB, PUTO, PUTA, PUTD;                 // GETPUT
 
-reg Fx, Mx, Bx, Ox, Ax, Ex, Sx, Px;                               // PAIR SRC
+reg Fx, Mx, Bx, Ox, Ax, Dx, Sx, Px;                               // PAIR SRC
 
-reg xU, xM, xB, xO, xA, xE, xS, xP;                               // PAIR DST
-reg xD, xW, xJ, xH, xZ, xN, xG, xC;
+reg xC, xM, xB, xO, xA, xD, xS, xP;                               // PAIR DST
+reg xE, xK, xU, xW, xJ, xH, xZ, xN;
 
-reg CODE, LOCAL, LEAVE, ENTER, INC, DEC;                     // PAIR SCROUNGE
-
+reg KEY, CODE, LOCAL, LEAVE, ENTER, INC, DEC, EA;            // PAIR SCROUNGE
 
 //Register declarations//////////////////////////////////////////////////////
 
 // Page-Index Registers:
 reg [7:0] C;        // Code
-reg [7:0] G;        // Resident
+reg [7:0] K;        // Key
 reg [7:0] L;        // Local
 reg [7:0] B;        // Base
 
@@ -109,22 +108,23 @@ always @* begin
     
     NOP=0; SSI=0;  SSO=0;  SCL=0;  SCH=0; RTS=0; RTI=0; COR=0;   // Clear SYS
     
-
-    KBO=0; BOK=0; QBO=0; BOQ=0; IBO=0; BOI=0; TBO=0; BOT=0;      // Clear BOP
+    P1BO=0; BOP1=0; P2BO=0; BOP2=0;                              // Clear BOP
+    P3BO=0; BOP3=0; P4BO=0; BOP4=0;
     
     NOT=0; ALX=0;  AEX=0; AGX=0; AND=0; IOR=0;  EOR=0;  XA=0;    // Clear ALU
     AX=0;  SWAP=0; SHL=0; SHR=0; ASR=0; ADDC=0; ADDV=0; SUBB=0;
     
     TRAP=0;                                                     // Clear TRAP
     
-    GETB=0;GETO=0; GETA=0; GETD=0;                            // Clear GETPUT
+    GETB=0; GETO=0; GETA=0; GETD=0;                            // Clear GETPUT
     PUTB=0; PUTO=0; PUTA=0; PUTD=0;
     
-    Fx=0; Mx=0; Bx=0; Ox=0; Ax=0; Ex=0; Sx=0; Px=0;             // Clear PAIR
-    xU=0; xM=0; xB=0; xO=0; xA=0; xE=0; xS=0; xP=0;
-    xD=0; xW=0; xJ=0; xH=0; xZ=0; xN=0; xG=0; xC=0;
+    Fx=0; Mx=0; Bx=0; Ox=0; Ax=0; Dx=0; Sx=0; Px=0;             // Clear PAIR
+    xC=0; xM=0; xB=0; xO=0; xA=0; xD=0; xS=0; xP=0;
+    xE=0; xK=0; xU=0; xW=0; xJ=0; xH=0; xZ=0; xN=0;
     
-    CODE=0; LOCAL=0; LEAVE=0; ENTER=0; INC=0; DEC=0;        // Clear SCROUNGE
+    KEY=0;   CODE=0; LOCAL=0; LEAVE=0;                      // Clear SCROUNGE
+    ENTER=0; INC=0;  DEC=0;   EA=0;
 
     if (OPC_SYS) begin
         case (I[2:0])
@@ -141,14 +141,14 @@ always @* begin
 
     if (OPC_BOP) begin
         case (I[2:0])
-            3'd0: KBO = 1;
-            3'd1: BOK = 1;
-            3'd2: QBO = 1;
-            3'd3: BOQ = 1;
-            3'd4: IBO = 1;
-            3'd5: BOI = 1;
-            3'd6: TBO = 1;
-            3'd7: BOT = 1;
+            3'd0: P1BO = 1;
+            3'd1: BOP1 = 1;
+            3'd2: P2BO = 1;
+            3'd3: BOP2 = 1;
+            3'd4: P3BO = 1;
+            3'd5: BOP3 = 1;
+            3'd6: P4BO = 1;
+            3'd7: BOP4 = 1;
         endcase
     end
 
@@ -191,12 +191,14 @@ always @* begin
     if (OPC_PAIR) begin
         case ({I[6:4], // "Scrounge" certain source/destination combos
                I[3:0]})
-            {3'd0, 4'd1}: CODE  = 1; // Scrounge FxM
-            {3'd1, 4'd1}: LOCAL = 1; // Scrounge MxM
-            {3'd2, 4'd2}: LEAVE = 1; // Scrounge BxB
-            {3'd3, 4'd3}: ENTER = 1; // Scrounge OxO
-            {3'd4, 4'd4}: INC   = 1; // Scrounge AxA
-            {3'd5, 4'd5}: DEC   = 1; // Scrounge ExE
+            {3'd0, 4'd1}: KEY   = 1; // Scrounge FxM
+            {3'd0, 4'd1}: CODE  = 1; // Scrounge MxM
+            {3'd1, 4'd1}: LOCAL = 1; // Scrounge BxB
+            {3'd2, 4'd2}: LEAVE = 1; // Scrounge OxO
+            {3'd3, 4'd3}: ENTER = 1; // Scrounge AxA
+            {3'd4, 4'd4}: INC   = 1; // Scrounge DxD
+            {3'd5, 4'd5}: DEC   = 1; // Scrounge SxS
+            {3'd5, 4'd5}: EA    = 1; // Scrounge PxP
             default: begin
                 case (I[6:4])        // Source
                     3'd0: Fx = 1;
@@ -204,26 +206,26 @@ always @* begin
                     3'd2: Bx = 1;
                     3'd3: Ox = 1;
                     3'd4: Ax = 1;
-                    3'd5: Ex = 1;
+                    3'd5: Dx = 1;
                     3'd6: Sx = 1;
                     3'd7: Px = 1;
                 endcase
                 case (I[3:0])        // Destination
-                    4'd0: xU = 1;
+                    4'd0: xC = 1;
                     4'd1: xM = 1;
                     4'd2: xB = 1;
                     4'd3: xO = 1;
                     4'd4: xA = 1;
-                    4'd5: xE = 1;
+                    4'd5: xD = 1;
                     4'd6: xS = 1;
                     4'd7: xP = 1;
-                    4'd8: xD = 1;
-                    4'd9: xW = 1;
-                   4'd10: xJ = 1;
-                   4'd11: xH = 1;
-                   4'd12: xZ = 1;
-                   4'd13: xN = 1;
-                   4'd14: xG = 1;
+                    4'd8: xE = 1;
+                    4'd9: xK = 1;
+                   4'd10: xU = 1;
+                   4'd11: xW = 1;
+                   4'd12: xJ = 1;
+                   4'd13: xH = 1;
+                   4'd14: xZ = 1;
                    4'd15: xC = 1;
                 endcase
             end
@@ -317,17 +319,17 @@ always @(posedge clk or posedge rst) begin
 end
 
 
-//B,O,POINTERS///////////////////////////////////////////////////////////////
+//K,B,O,POINTERS/////////////////////////////////////////////////////////////
 
 // Auxiliary logic
 reg [7:0] O_old;
 reg [7:0] B_old;
 
 // Pointer registers:
-reg [15:0] KP;
-reg [15:0] QP;
-reg [15:0] IP;
-reg [15:0] TP;
+reg [15:0] P1;
+reg [15:0] P2;
+reg [15:0] P3;
+reg [15:0] P4;
 
 wire [15:0] BO = {B,O};  // Combined Base-Offset pointer for BOP instructions
 
@@ -335,10 +337,11 @@ always @(posedge clk or posedge rst) begin
     if (rst) begin
          B <=  8'b0;
          O <=  8'b0;
-        KP <= 16'b0;
-        QP <= 16'b0;
-        IP <= 16'b0;
-        TP <= 16'b0;
+         K <=  8'b0;
+        P1 <= 16'b0;
+        P2 <= 16'b0;
+        P3 <= 16'b0;
+        P4 <= 16'b0;
     end
     else if (SETUP) case (1'b1)
         xC:   B_old <= B;
@@ -351,20 +354,22 @@ always @(posedge clk or posedge rst) begin
         if      (xB || GETB)  B <= data_bus;
         else if (xO || GETO)  O <= data_bus;
         else case (1'b1)
+            KEY: K <= B;
+            xK: BEGIN O <= data_bus; b <= K; END
             RTS:
             RTI:
 
-            BOK: KP <= BO;
-            BOQ: QP <= BO;
-            BOI: IP <= BO;
-            BOT: TP <= BO;
+            BOP1: P1 <= BO;
+            BOP2: P2 <= BO;
+            BOP3: P3 <= BO;
+            BOP4: P4 <= BO;
 
-            KBO: {B, O} <= KP;
-            QBO: {B, O} <= QP;
-            IBO: {B, O} <= IP;
-            TBO: {B, O} <= TP;
+            P1BO: {B, O} <= P1;
+            P2BO: {B, O} <= P2;
+            P3BO: {B, O} <= P3;
+            P4BO: {B, O} <= P4;
             
-            CODE: {B, O} <= {PC[7] ? G:C, PC};
+            CODE: {B, O} <= {C, PC};
             default:;
         endcase
     end
@@ -427,7 +432,7 @@ begin
 end
 
 
-//MEMORY,L,G,I///////////////////////////////////////////////////////////////
+//MEMORY,L,I///////////////////////////////////////////////////////////////
 
 // Instantiate 64k x 8 synchronous RAM
 ram vendor_ram (
@@ -447,12 +452,11 @@ wire[7:0] q;    // 8-bit RAM output value
 always @(posedge clk or posedge rst) begin
     if (rst) begin
         L <= 8'h00;
-        G <= 8'h00;
         I <= 8'h00; // Load with NOP opcode
     end
     else case (1'b1)
         FETCH:  begin
-                    addr <= (PC[7]) ? {G,PC} : {C,PC};  // Request opcode
+                    addr <= {C,PC};  // Request opcode
                     wren <= 0;                          // Reset write enable
                 end
         DECODE: begin
@@ -460,7 +464,7 @@ always @(posedge clk or posedge rst) begin
                     else I <= 8'd32;                    // Inject TRAP 0
                 end
         SETUP:  case (1'b1)
-                    Fx:         addr <= (PC[7]) ? {G,PC} : {C,PC};
+                    Fx:         addr <= {C,PC};
                     OPC_GETPUT: addr <= {L, 8'hF8 + I[2:0]};
                     default:    addr <= {B,O};
                 endcase
@@ -471,7 +475,6 @@ always @(posedge clk or posedge rst) begin
                 else if (Mx || Fx || GET) data_bus <= q; // Latch memory data
                 else if (ENTER || xC || OPC_TRAP) L <= L - 1;
                 else if (LEAVE || RTS || RTI) L <= L + 1;
-                else if (xG) G <= data_bus;
         default:;
     endcase
 end
@@ -526,7 +529,7 @@ always @(posedge clk or posedge rst)
             Bx: data_bus <= B;
             Ox: data_bus <= O;
             Ax: data_bus <= A;
-            Ex: data_bus <= E;
+            Dx: data_bus <= D;
             Sx: data_bus <= SIR;
             Px: data_bus <= PIR;
             default:;

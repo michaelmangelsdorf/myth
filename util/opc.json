@@ -3,1542 +3,1800 @@
     "opcode": 0,
     "group": "SYS",
     "mnemonic": "NOP",
-    "desc": "Pass the turn (no operation)"
+    "desc": "Pass the turn (no operation)",
+    "pseudocode": "PC++"
   },
   {
     "opcode": 1,
     "group": "SYS",
     "mnemonic": "SSI",
-    "desc": "Shift serial bit in"
+    "desc": "Shift serial bit in",
+    "pseudocode": "SIR=(SIR<<1)+MISO PC++"
   },
   {
     "opcode": 2,
     "group": "SYS",
     "mnemonic": "SSO",
-    "desc": "Shift serial bit out"
+    "desc": "Shift serial bit out",
+    "pseudocode": "MOSI=(SOR&80h)?1:0 SOR<<=1 PC++"
   },
   {
     "opcode": 3,
     "group": "SYS",
     "mnemonic": "SCL",
-    "desc": "Set serial clock low"
+    "desc": "Set serial clock low",
+    "pseudocode": "SCLK=0 PC++"
   },
   {
     "opcode": 4,
     "group": "SYS",
     "mnemonic": "SCH",
-    "desc": "Set serial clock high"
+    "desc": "Set serial clock high",
+    "pseudocode": "SCLK=1 PC++"
   },
   {
     "opcode": 5,
     "group": "SYS",
-    "mnemonic": "RTS",
-    "desc": "Return from subroutine"
+    "mnemonic": "RTI",
+    "desc": "Return from interrupt",
+    "pseudocode": "BUSY=0 C=B PC=O L++"
   },
   {
     "opcode": 6,
     "group": "SYS",
-    "mnemonic": "RTI",
-    "desc": "Return from interrupt"
+    "mnemonic": "RTS",
+    "desc": "Return from subroutine",
+    "pseudocode": "C=B PC=O L++"
   },
   {
     "opcode": 7,
     "group": "SYS",
     "mnemonic": "COR",
-    "desc": "Set C to B. Set PC to O. Save return pointer into B_O"
+    "desc": "Set C to B. Set PC to O. Save return pointer into B:O",
+    "pseudocode": "B0=C C=B B=B0 O0=PC PC=O O=O0"
   },
   {
     "opcode": 8,
     "group": "BOP",
-    "mnemonic": "KBO",
-    "desc": "Copy pointer K into BO"
+    "mnemonic": "P1BO",
+    "desc": "Copy pointer P1 into B:O",
+    "pseudocode": "BO=P1 PC++"
   },
   {
     "opcode": 9,
     "group": "BOP",
-    "mnemonic": "BOK",
-    "desc": "Copy BO into pointer K"
+    "mnemonic": "BOP1",
+    "desc": "Copy B:O into pointer P1",
+    "pseudocode": "P1=BO PC++"
   },
   {
     "opcode": 10,
     "group": "BOP",
-    "mnemonic": "QBO",
-    "desc": "Copy pointer Q into BO"
+    "mnemonic": "P2BO",
+    "desc": "Copy pointer P2 into B:O",
+    "pseudocode": "BO=P2 PC++"
   },
   {
     "opcode": 11,
     "group": "BOP",
-    "mnemonic": "BOQ",
-    "desc": "Copy B_ into pointer Q"
+    "mnemonic": "BOP2",
+    "desc": "Copy B:O into pointer P2",
+    "pseudocode": "P2=BO PC++"
   },
   {
     "opcode": 12,
     "group": "BOP",
-    "mnemonic": "IBO",
-    "desc": "Copy pointer I into BO"
+    "mnemonic": "P3BO",
+    "desc": "Copy pointer P3 into B:O",
+    "pseudocode": "BO=P3 PC++"
   },
   {
     "opcode": 13,
     "group": "BOP",
-    "mnemonic": "BOI",
-    "desc": "Copy BO into pointer I"
+    "mnemonic": "BOP3",
+    "desc": "Copy B:O into pointer P3",
+    "pseudocode": "P3=BO PC++"
   },
   {
     "opcode": 14,
     "group": "BOP",
-    "mnemonic": "TBO",
-    "desc": "Copy pointer T into BO"
+    "mnemonic": "P4BO",
+    "desc": "Copy pointer P4 into B:O",
+    "pseudocode": "BO=P4 PC++"
   },
   {
     "opcode": 15,
     "group": "BOP",
-    "mnemonic": "BOT",
-    "desc": "Copy BO into pointer T"
+    "mnemonic": "BOP4",
+    "desc": "Copy B:O into pointer p4",
+    "pseudocode": "P4=BO PC++"
   },
   {
     "opcode": 16,
     "group": "ALU",
     "mnemonic": "NOT",
-    "desc": "Set A to one's complement of A , X unchanged"
+    "desc": "Set A to one's complement of A , X unchanged",
+    "pseudocode": "A=NOT(A) PC++"
   },
   {
     "opcode": 17,
     "group": "ALU",
     "mnemonic": "ALX",
-    "desc": "Flag (A<X) in A (255 if true, 0 if false), X unchanged"
+    "desc": "Flag (A<X) in A (255 if true, 0 if false), X unchanged",
+    "pseudocode": "A=(A<X)?255:0 PC++"
   },
   {
     "opcode": 18,
     "group": "ALU",
     "mnemonic": "AEX",
-    "desc": "Flag (A==X) in A (255 if true, 0 if false), X unchanged"
+    "desc": "Flag (A==X) in A (255 if true, 0 if false), X unchanged",
+    "pseudocode": "A=(A==X)?255:0 PC++"
   },
   {
     "opcode": 19,
     "group": "ALU",
     "mnemonic": "AGX",
-    "desc": "Flag (A>X) in A (255 if true, 0 if false), X unchanged"
+    "desc": "Flag (A>X) in A (255 if true, 0 if false), X unchanged",
+    "pseudocode": "A=(A>X)?255:0 PC++"
   },
   {
     "opcode": 20,
     "group": "ALU",
     "mnemonic": "AND",
-    "desc": "Set A to (A AND X), X unchanged"
+    "desc": "Set A to (A AND X), X unchanged",
+    "pseudocode": "A=(A&X) PC++"
   },
   {
     "opcode": 21,
     "group": "ALU",
     "mnemonic": "IOR",
-    "desc": "Set A to (A OR X), X unchanged"
+    "desc": "Set A to (A OR X), X unchanged",
+    "pseudocode": "A=(A|X) PC++"
   },
   {
     "opcode": 22,
     "group": "ALU",
     "mnemonic": "EOR",
-    "desc": "Set A to (A XOR X), X unchanged"
+    "desc": "Set A to (A XOR X), X unchanged",
+    "pseudocode": "A=(A^X) PC++"
   },
   {
     "opcode": 23,
     "group": "ALU",
     "mnemonic": "XA",
-    "desc": "Set A equal to X, X unchanged"
+    "desc": "Set A equal to X, X unchanged",
+    "pseudocode": "A=X PC++"
   },
   {
     "opcode": 24,
     "group": "ALU",
     "mnemonic": "AX",
-    "desc": "Set X equal to A"
+    "desc": "Set X equal to A",
+    "pseudocode": "X=A PC++"
   },
   {
     "opcode": 25,
     "group": "ALU",
     "mnemonic": "SWAP",
-    "desc": "Swap A and X"
+    "desc": "Swap A and X",
+    "pseudocode": "X0=A A=X X=X0 PC++"
   },
   {
     "opcode": 26,
     "group": "ALU",
     "mnemonic": "SHL",
-    "desc": "Shift A left, result in A, set X to previous MSB of A as LSB (0 or 1)"
+    "desc": "Shift A left, result in A, set X to previous MSB of A as LSB (0 or 1)",
+    "pseudocode": "A0=A A=(A<<1) X=(A0&80h)?1:0 PC++"
   },
   {
     "opcode": 27,
     "group": "ALU",
     "mnemonic": "SHR",
-    "desc": "Shift A right logically, result in A, set X to previous LSB of A as MSB (0 or 80h)"
+    "desc": "Shift A right logically, result in A, set X to previous LSB of A as MSB (0 or 80h)",
+    "pseudocode": "A0=A A=(X>>1) X=(A0&1h)?80h:0 PC++"
   },
   {
     "opcode": 28,
     "group": "ALU",
     "mnemonic": "ASR",
-    "desc": "Shift A right arithmetically, set X to previous LSB of A as MSB (0 or 80h)"
+    "desc": "Shift A right arithmetically, set X to previous LSB of A as MSB (0 or 80h)",
+    "pseudocode": "A0=A A=(X>>1)+(A0&80h) X=(A0&1h)?80h:0 PC++"
   },
   {
     "opcode": 29,
     "group": "ALU",
-    "mnemonic": "ADD",
-    "desc": "Add A to X, result in A, CARRY bit in X (0 or 1)"
+    "mnemonic": "ADDC",
+    "desc": "Add A to X, result in A, CARRY bit in X (0 or 1)",
+    "pseudocode": "A0=A A=X+A X=CARRY-X-plus-A0 PC++"
   },
   {
     "opcode": 30,
     "group": "ALU",
-    "mnemonic": "OVF",
-    "desc": "Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0)"
+    "mnemonic": "ADDV",
+    "desc": "Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0)",
+    "pseudocode": "A0=A A=X+A X=(OVERFLOW-A0+X)?255:0 PC++"
   },
   {
     "opcode": 31,
     "group": "ALU",
-    "mnemonic": "SUB",
-    "desc": "Subtract A from X, result in A, BORROW bit in X (0 or 1)"
+    "mnemonic": "SUBB",
+    "desc": "Subtract A from X, result in A, BORROW bit in X (0 or 1)",
+    "pseudocode": "A0=A A=X-A X=BORROW-X-minus-A0 PC++"
   },
   {
     "opcode": 32,
     "group": "TRAP",
     "mnemonic": "*0",
-    "desc": "Trap call to page 0, offset 0 - Set BUSY flag"
+    "desc": "Trap call to page 0, offset 0 - Set BUSY flag",
+    "pseudocode": "BUSY=1 B0=C C=0 B=B0 O=PC PC=0"
   },
   {
     "opcode": 33,
     "group": "TRAP",
     "mnemonic": "*1",
-    "desc": "Trap call to page 1, offset 0"
+    "desc": "Trap call to page 1, offset 0",
+    "pseudocode": "B0=C C=1 B=B0 O=PC PC=0"
   },
   {
     "opcode": 34,
     "group": "TRAP",
     "mnemonic": "*2",
-    "desc": "Trap call to page 2, offset 0"
+    "desc": "Trap call to page 2, offset 0",
+    "pseudocode": "B0=C C=2 B=B0 O=PC PC=0"
   },
   {
     "opcode": 35,
     "group": "TRAP",
     "mnemonic": "*3",
-    "desc": "Trap call to page 3, offset 0"
+    "desc": "Trap call to page 3, offset 0",
+    "pseudocode": "B0=C C=3 B=B0 O=PC PC=0"
   },
   {
     "opcode": 36,
     "group": "TRAP",
     "mnemonic": "*4",
-    "desc": "Trap call to page 4, offset 0"
+    "desc": "Trap call to page 4, offset 0",
+    "pseudocode": "B0=C C=4 B=B0 O=PC PC=0"
   },
   {
     "opcode": 37,
     "group": "TRAP",
     "mnemonic": "*5",
-    "desc": "Trap call to page 5, offset 0"
+    "desc": "Trap call to page 5, offset 0",
+    "pseudocode": "B0=C C=5 B=B0 O=PC PC=0"
   },
   {
     "opcode": 38,
     "group": "TRAP",
     "mnemonic": "*6",
-    "desc": "Trap call to page 6, offset 0"
+    "desc": "Trap call to page 6, offset 0",
+    "pseudocode": "B0=C C=6 B=B0 O=PC PC=0"
   },
   {
     "opcode": 39,
     "group": "TRAP",
     "mnemonic": "*7",
-    "desc": "Trap call to page 7, offset 0"
+    "desc": "Trap call to page 7, offset 0",
+    "pseudocode": "B0=C C=7 B=B0 O=PC PC=0"
   },
   {
     "opcode": 40,
     "group": "TRAP",
     "mnemonic": "*8",
-    "desc": "Trap call to page 8, offset 0"
+    "desc": "Trap call to page 8, offset 0",
+    "pseudocode": "B0=C C=8 B=B0 O=PC PC=0"
   },
   {
     "opcode": 41,
     "group": "TRAP",
     "mnemonic": "*9",
-    "desc": "Trap call to page 9, offset 0"
+    "desc": "Trap call to page 9, offset 0",
+    "pseudocode": "B0=C C=9 B=B0 O=PC PC=0"
   },
   {
     "opcode": 42,
     "group": "TRAP",
     "mnemonic": "*10",
-    "desc": "Trap call to page 10, offset 0"
+    "desc": "Trap call to page 10, offset 0",
+    "pseudocode": "B0=C C=10 B=B0 O=PC PC=0"
   },
   {
     "opcode": 43,
     "group": "TRAP",
     "mnemonic": "*11",
-    "desc": "Trap call to page 11, offset 0"
+    "desc": "Trap call to page 11, offset 0",
+    "pseudocode": "B0=C C=11 B=B0 O=PC PC=0"
   },
   {
     "opcode": 44,
     "group": "TRAP",
     "mnemonic": "*12",
-    "desc": "Trap call to page 12, offset 0"
+    "desc": "Trap call to page 12, offset 0",
+    "pseudocode": "B0=C C=12 B=B0 O=PC PC=0"
   },
   {
     "opcode": 45,
     "group": "TRAP",
     "mnemonic": "*13",
-    "desc": "Trap call to page 13, offset 0"
+    "desc": "Trap call to page 13, offset 0",
+    "pseudocode": "B0=C C=13 B=B0 O=PC PC=0"
   },
   {
     "opcode": 46,
     "group": "TRAP",
     "mnemonic": "*14",
-    "desc": "Trap call to page 14, offset 0"
+    "desc": "Trap call to page 14, offset 0",
+    "pseudocode": "B0=C C=14 B=B0 O=PC PC=0"
   },
   {
     "opcode": 47,
     "group": "TRAP",
     "mnemonic": "*15",
-    "desc": "Trap call to page 15, offset 0"
+    "desc": "Trap call to page 15, offset 0",
+    "pseudocode": "B0=C C=15 B=B0 O=PC PC=0"
   },
   {
     "opcode": 48,
     "group": "TRAP",
     "mnemonic": "*16",
-    "desc": "Trap call to page 16, offset 0"
+    "desc": "Trap call to page 16, offset 0",
+    "pseudocode": "B0=C C=16 B=B0 O=PC PC=0"
   },
   {
     "opcode": 49,
     "group": "TRAP",
     "mnemonic": "*17",
-    "desc": "Trap call to page 17, offset 0"
+    "desc": "Trap call to page 17, offset 0",
+    "pseudocode": "B0=C C=17 B=B0 O=PC PC=0"
   },
   {
     "opcode": 50,
     "group": "TRAP",
     "mnemonic": "*18",
-    "desc": "Trap call to page 18, offset 0"
+    "desc": "Trap call to page 18, offset 0",
+    "pseudocode": "B0=C C=18 B=B0 O=PC PC=0"
   },
   {
     "opcode": 51,
     "group": "TRAP",
     "mnemonic": "*19",
-    "desc": "Trap call to page 19, offset 0"
+    "desc": "Trap call to page 19, offset 0",
+    "pseudocode": "B0=C C=19 B=B0 O=PC PC=0"
   },
   {
     "opcode": 52,
     "group": "TRAP",
     "mnemonic": "*20",
-    "desc": "Trap call to page 20, offset 0"
+    "desc": "Trap call to page 20, offset 0",
+    "pseudocode": "B0=C C=20 B=B0 O=PC PC=0"
   },
   {
     "opcode": 53,
     "group": "TRAP",
     "mnemonic": "*21",
-    "desc": "Trap call to page 21, offset 0"
+    "desc": "Trap call to page 21, offset 0",
+    "pseudocode": "B0=C C=21 B=B0 O=PC PC=0"
   },
   {
     "opcode": 54,
     "group": "TRAP",
     "mnemonic": "*22",
-    "desc": "Trap call to page 22, offset 0"
+    "desc": "Trap call to page 22, offset 0",
+    "pseudocode": "B0=C C=22 B=B0 O=PC PC=0"
   },
   {
     "opcode": 55,
     "group": "TRAP",
     "mnemonic": "*23",
-    "desc": "Trap call to page 23, offset 0"
+    "desc": "Trap call to page 23, offset 0",
+    "pseudocode": "B0=C C=23 B=B0 O=PC PC=0"
   },
   {
     "opcode": 56,
     "group": "TRAP",
     "mnemonic": "*24",
-    "desc": "Trap call to page 24, offset 0"
+    "desc": "Trap call to page 24, offset 0",
+    "pseudocode": "B0=C C=24 B=B0 O=PC PC=0"
   },
   {
     "opcode": 57,
     "group": "TRAP",
     "mnemonic": "*25",
-    "desc": "Trap call to page 25, offset 0"
+    "desc": "Trap call to page 25, offset 0",
+    "pseudocode": "B0=C C=25 B=B0 O=PC PC=0"
   },
   {
     "opcode": 58,
     "group": "TRAP",
     "mnemonic": "*26",
-    "desc": "Trap call to page 26, offset 0"
+    "desc": "Trap call to page 26, offset 0",
+    "pseudocode": "B0=C C=26 B=B0 O=PC PC=0"
   },
   {
     "opcode": 59,
     "group": "TRAP",
     "mnemonic": "*27",
-    "desc": "Trap call to page 27, offset 0"
+    "desc": "Trap call to page 27, offset 0",
+    "pseudocode": "B0=C C=27 B=B0 O=PC PC=0"
   },
   {
     "opcode": 60,
     "group": "TRAP",
     "mnemonic": "*28",
-    "desc": "Trap call to page 28, offset 0"
+    "desc": "Trap call to page 28, offset 0",
+    "pseudocode": "B0=C C=28 B=B0 O=PC PC=0"
   },
   {
     "opcode": 61,
     "group": "TRAP",
     "mnemonic": "*29",
-    "desc": "Trap call to page 29, offset 0"
+    "desc": "Trap call to page 29, offset 0",
+    "pseudocode": "B0=C C=29 B=B0 O=PC PC=0"
   },
   {
     "opcode": 62,
     "group": "TRAP",
     "mnemonic": "*30",
-    "desc": "Trap call to page 30, offset 0"
+    "desc": "Trap call to page 30, offset 0",
+    "pseudocode": "B0=C C=30 B=B0 O=PC PC=0"
   },
   {
     "opcode": 63,
     "group": "TRAP",
     "mnemonic": "*31",
-    "desc": "Trap call to page 31, offset 0"
+    "desc": "Trap call to page 31, offset 0",
+    "pseudocode": "B0=C C=31 B=B0 O=PC PC=0"
   },
   {
     "opcode": 64,
     "group": "GETPUT",
     "mnemonic": "1b",
-    "desc": "Load B from L1 (M[L_F8h])"
+    "desc": "Load B from L1 (M[L:F8h])",
+    "pseudocode": "b=M[L:F8h] PC++"
   },
   {
     "opcode": 65,
     "group": "GETPUT",
     "mnemonic": "2b",
-    "desc": "Load B from L2 (M[L_F9h])"
+    "desc": "Load B from L2 (M[L:F9h])",
+    "pseudocode": "b=M[L:F9h] PC++"
   },
   {
     "opcode": 66,
     "group": "GETPUT",
     "mnemonic": "3b",
-    "desc": "Load B from L3 (M[L_FAh])"
+    "desc": "Load B from L3 (M[L:FAh])",
+    "pseudocode": "b=M[L:FAh] PC++"
   },
   {
     "opcode": 67,
     "group": "GETPUT",
     "mnemonic": "4b",
-    "desc": "Load B from L4 (M[L_FBh])"
+    "desc": "Load B from L4 (M[L:FBh])",
+    "pseudocode": "b=M[L:FBh] PC++"
   },
   {
     "opcode": 68,
     "group": "GETPUT",
     "mnemonic": "5b",
-    "desc": "Load B from L5 (M[L_FCh])"
+    "desc": "Load B from L5 (M[L:FCh])",
+    "pseudocode": "b=M[L:FCh] PC++"
   },
   {
     "opcode": 69,
     "group": "GETPUT",
     "mnemonic": "6b",
-    "desc": "Load B from L6 (M[L_FDh])"
+    "desc": "Load B from L6 (M[L:FDh])",
+    "pseudocode": "b=M[L:FDh] PC++"
   },
   {
     "opcode": 70,
     "group": "GETPUT",
     "mnemonic": "7b",
-    "desc": "Load B from L7 (M[L_FEh])"
+    "desc": "Load B from L7 (M[L:FEh])",
+    "pseudocode": "b=M[L:FEh] PC++"
   },
   {
     "opcode": 71,
     "group": "GETPUT",
     "mnemonic": "8b",
-    "desc": "Load B from L8 (M[L_FFh])"
+    "desc": "Load B from L8 (M[L:FFh])",
+    "pseudocode": "b=M[L:FFh] PC++"
   },
   {
     "opcode": 72,
     "group": "GETPUT",
     "mnemonic": "b1",
-    "desc": "Store B into L1 (M[L_F8h])"
+    "desc": "Store B into L1 (M[L:F8h])",
+    "pseudocode": "M[L:F8h]=b PC++"
   },
   {
     "opcode": 73,
     "group": "GETPUT",
     "mnemonic": "b2",
-    "desc": "Store B into L2 (M[L_F9h])"
+    "desc": "Store B into L2 (M[L:F9h])",
+    "pseudocode": "M[L:F9h]=b PC++"
   },
   {
     "opcode": 74,
     "group": "GETPUT",
     "mnemonic": "b3",
-    "desc": "Store B into L3 (M[L_FAh])"
+    "desc": "Store B into L3 (M[L:FAh])",
+    "pseudocode": "M[L:FAh]=b PC++"
   },
   {
     "opcode": 75,
     "group": "GETPUT",
     "mnemonic": "b4",
-    "desc": "Store B into L4 (M[L_FBh])"
+    "desc": "Store B into L4 (M[L:FBh])",
+    "pseudocode": "M[L:FBh]=b PC++"
   },
   {
     "opcode": 76,
     "group": "GETPUT",
     "mnemonic": "b5",
-    "desc": "Store B into L5 (M[L_FCh])"
+    "desc": "Store B into L5 (M[L:FCh])",
+    "pseudocode": "M[L:FCh]=b PC++"
   },
   {
     "opcode": 77,
     "group": "GETPUT",
     "mnemonic": "b6",
-    "desc": "Store B into L6 (M[L_FDh])"
+    "desc": "Store B into L6 (M[L:FDh])",
+    "pseudocode": "M[L:FDh]=b PC++"
   },
   {
     "opcode": 78,
     "group": "GETPUT",
     "mnemonic": "b7",
-    "desc": "Store B into L7 (M[L_FEh])"
+    "desc": "Store B into L7 (M[L:FEh])",
+    "pseudocode": "M[L:FEh]=b PC++"
   },
   {
     "opcode": 79,
     "group": "GETPUT",
     "mnemonic": "b8",
-    "desc": "Store B into L8 (M[L_FFh])"
+    "desc": "Store B into L8 (M[L:FFh])",
+    "pseudocode": "M[L:FFh]=b PC++"
   },
   {
     "opcode": 80,
     "group": "GETPUT",
     "mnemonic": "1o",
-    "desc": "Load O from L1 (M[L_F8h])"
+    "desc": "Load O from L1 (M[L:F8h])",
+    "pseudocode": "o=M[L:F8h] PC++"
   },
   {
     "opcode": 81,
     "group": "GETPUT",
     "mnemonic": "2o",
-    "desc": "Load O from L2 (M[L_F9h])"
+    "desc": "Load O from L2 (M[L:F9h])",
+    "pseudocode": "o=M[L:F9h] PC++"
   },
   {
     "opcode": 82,
     "group": "GETPUT",
     "mnemonic": "3o",
-    "desc": "Load O from L3 (M[L_FAh])"
+    "desc": "Load O from L3 (M[L:FAh])",
+    "pseudocode": "o=M[L:FAh] PC++"
   },
   {
     "opcode": 83,
     "group": "GETPUT",
     "mnemonic": "4o",
-    "desc": "Load O from L4 (M[L_FBh])"
+    "desc": "Load O from L4 (M[L:FBh])",
+    "pseudocode": "o=M[L:FBh] PC++"
   },
   {
     "opcode": 84,
     "group": "GETPUT",
     "mnemonic": "5o",
-    "desc": "Load O from L5 (M[L_FCh])"
+    "desc": "Load O from L5 (M[L:FCh])",
+    "pseudocode": "o=M[L:FCh] PC++"
   },
   {
     "opcode": 85,
     "group": "GETPUT",
     "mnemonic": "6o",
-    "desc": "Load O from L6 (M[L_FDh])"
+    "desc": "Load O from L6 (M[L:FDh])",
+    "pseudocode": "o=M[L:FDh] PC++"
   },
   {
     "opcode": 86,
     "group": "GETPUT",
     "mnemonic": "7o",
-    "desc": "Load O from L7 (M[L_FEh])"
+    "desc": "Load O from L7 (M[L:FEh])",
+    "pseudocode": "o=M[L:FEh] PC++"
   },
   {
     "opcode": 87,
     "group": "GETPUT",
     "mnemonic": "8o",
-    "desc": "Load O from L8 (M[L_FFh])"
+    "desc": "Load O from L8 (M[L:FFh])",
+    "pseudocode": "o=M[L:FFh] PC++"
   },
   {
     "opcode": 88,
     "group": "GETPUT",
     "mnemonic": "o1",
-    "desc": "Store O into L1 (M[L_F8h])"
+    "desc": "Store O into L1 (M[L:F8h])",
+    "pseudocode": "M[L:F8h]=o PC++"
   },
   {
     "opcode": 89,
     "group": "GETPUT",
     "mnemonic": "o2",
-    "desc": "Store O into L2 (M[L_F9h])"
+    "desc": "Store O into L2 (M[L:F9h])",
+    "pseudocode": "M[L:F9h]=o PC++"
   },
   {
     "opcode": 90,
     "group": "GETPUT",
     "mnemonic": "o3",
-    "desc": "Store O into L3 (M[L_FAh])"
+    "desc": "Store O into L3 (M[L:FAh])",
+    "pseudocode": "M[L:FAh]=o PC++"
   },
   {
     "opcode": 91,
     "group": "GETPUT",
     "mnemonic": "o4",
-    "desc": "Store O into L4 (M[L_FBh])"
+    "desc": "Store O into L4 (M[L:FBh])",
+    "pseudocode": "M[L:FBh]=o PC++"
   },
   {
     "opcode": 92,
     "group": "GETPUT",
     "mnemonic": "o5",
-    "desc": "Store O into L5 (M[L_FCh])"
+    "desc": "Store O into L5 (M[L:FCh])",
+    "pseudocode": "M[L:FCh]=o PC++"
   },
   {
     "opcode": 93,
     "group": "GETPUT",
     "mnemonic": "o6",
-    "desc": "Store O into L6 (M[L_FDh])"
+    "desc": "Store O into L6 (M[L:FDh])",
+    "pseudocode": "M[L:FDh]=o PC++"
   },
   {
     "opcode": 94,
     "group": "GETPUT",
     "mnemonic": "o7",
-    "desc": "Store O into L7 (M[L_FEh])"
+    "desc": "Store O into L7 (M[L:FEh])",
+    "pseudocode": "M[L:FEh]=o PC++"
   },
   {
     "opcode": 95,
     "group": "GETPUT",
     "mnemonic": "o8",
-    "desc": "Store O into L8 (M[L_FFh])"
+    "desc": "Store O into L8 (M[L:FFh])",
+    "pseudocode": "M[L:FFh]=o PC++"
   },
   {
     "opcode": 96,
     "group": "GETPUT",
     "mnemonic": "1a",
-    "desc": "Load A from L1 (M[L_F8h])"
+    "desc": "Load A from L1 (M[L:F8h])",
+    "pseudocode": "a=M[L:F8h] PC++"
   },
   {
     "opcode": 97,
     "group": "GETPUT",
     "mnemonic": "2a",
-    "desc": "Load A from L2 (M[L_F9h])"
+    "desc": "Load A from L2 (M[L:F9h])",
+    "pseudocode": "a=M[L:F9h] PC++"
   },
   {
     "opcode": 98,
     "group": "GETPUT",
     "mnemonic": "3a",
-    "desc": "Load A from L3 (M[L_FAh])"
+    "desc": "Load A from L3 (M[L:FAh])",
+    "pseudocode": "a=M[L:FAh] PC++"
   },
   {
     "opcode": 99,
     "group": "GETPUT",
     "mnemonic": "4a",
-    "desc": "Load A from L4 (M[L_FBh])"
+    "desc": "Load A from L4 (M[L:FBh])",
+    "pseudocode": "a=M[L:FBh] PC++"
   },
   {
     "opcode": 100,
     "group": "GETPUT",
     "mnemonic": "5a",
-    "desc": "Load A from L5 (M[L_FCh])"
+    "desc": "Load A from L5 (M[L:FCh])",
+    "pseudocode": "a=M[L:FCh] PC++"
   },
   {
     "opcode": 101,
     "group": "GETPUT",
     "mnemonic": "6a",
-    "desc": "Load A from L6 (M[L_FDh])"
+    "desc": "Load A from L6 (M[L:FDh])",
+    "pseudocode": "a=M[L:FDh] PC++"
   },
   {
     "opcode": 102,
     "group": "GETPUT",
     "mnemonic": "7a",
-    "desc": "Load A from L7 (M[L_FEh])"
+    "desc": "Load A from L7 (M[L:FEh])",
+    "pseudocode": "a=M[L:FEh] PC++"
   },
   {
     "opcode": 103,
     "group": "GETPUT",
     "mnemonic": "8a",
-    "desc": "Load A from L8 (M[L_FFh])"
+    "desc": "Load A from L8 (M[L:FFh])",
+    "pseudocode": "a=M[L:FFh] PC++"
   },
   {
     "opcode": 104,
     "group": "GETPUT",
     "mnemonic": "a1",
-    "desc": "Store A into L1 (M[L_F8h])"
+    "desc": "Store A into L1 (M[L:F8h])",
+    "pseudocode": "M[L:F8h]=a PC++"
   },
   {
     "opcode": 105,
     "group": "GETPUT",
     "mnemonic": "a2",
-    "desc": "Store A into L2 (M[L_F9h])"
+    "desc": "Store A into L2 (M[L:F9h])",
+    "pseudocode": "M[L:F9h]=a PC++"
   },
   {
     "opcode": 106,
     "group": "GETPUT",
     "mnemonic": "a3",
-    "desc": "Store A into L3 (M[L_FAh])"
+    "desc": "Store A into L3 (M[L:FAh])",
+    "pseudocode": "M[L:FAh]=a PC++"
   },
   {
     "opcode": 107,
     "group": "GETPUT",
     "mnemonic": "a4",
-    "desc": "Store A into L4 (M[L_FBh])"
+    "desc": "Store A into L4 (M[L:FBh])",
+    "pseudocode": "M[L:FBh]=a PC++"
   },
   {
     "opcode": 108,
     "group": "GETPUT",
     "mnemonic": "a5",
-    "desc": "Store A into L5 (M[L_FCh])"
+    "desc": "Store A into L5 (M[L:FCh])",
+    "pseudocode": "M[L:FCh]=a PC++"
   },
   {
     "opcode": 109,
     "group": "GETPUT",
     "mnemonic": "a6",
-    "desc": "Store A into L6 (M[L_FDh])"
+    "desc": "Store A into L6 (M[L:FDh])",
+    "pseudocode": "M[L:FDh]=a PC++"
   },
   {
     "opcode": 110,
     "group": "GETPUT",
     "mnemonic": "a7",
-    "desc": "Store A into L7 (M[L_FEh])"
+    "desc": "Store A into L7 (M[L:FEh])",
+    "pseudocode": "M[L:FEh]=a PC++"
   },
   {
     "opcode": 111,
     "group": "GETPUT",
     "mnemonic": "a8",
-    "desc": "Store A into L8 (M[L_FFh])"
+    "desc": "Store A into L8 (M[L:FFh])",
+    "pseudocode": "M[L:FFh]=a PC++"
   },
   {
     "opcode": 112,
     "group": "GETPUT",
     "mnemonic": "1d",
-    "desc": "Load D from L1 (M[L_F8h])"
+    "desc": "Load D from L1 (M[L:F8h])",
+    "pseudocode": "d=M[L:F8h] PC++"
   },
   {
     "opcode": 113,
     "group": "GETPUT",
     "mnemonic": "2d",
-    "desc": "Load D from L2 (M[L_F9h])"
+    "desc": "Load D from L2 (M[L:F9h])",
+    "pseudocode": "d=M[L:F9h] PC++"
   },
   {
     "opcode": 114,
     "group": "GETPUT",
     "mnemonic": "3d",
-    "desc": "Load D from L3 (M[L_FAh])"
+    "desc": "Load D from L3 (M[L:FAh])",
+    "pseudocode": "d=M[L:FAh] PC++"
   },
   {
     "opcode": 115,
     "group": "GETPUT",
     "mnemonic": "4d",
-    "desc": "Load D from L4 (M[L_FBh])"
+    "desc": "Load D from L4 (M[L:FBh])",
+    "pseudocode": "d=M[L:FBh] PC++"
   },
   {
     "opcode": 116,
     "group": "GETPUT",
     "mnemonic": "5d",
-    "desc": "Load D from L5 (M[L_FCh])"
+    "desc": "Load D from L5 (M[L:FCh])",
+    "pseudocode": "d=M[L:FCh] PC++"
   },
   {
     "opcode": 117,
     "group": "GETPUT",
     "mnemonic": "6d",
-    "desc": "Load D from L6 (M[L_FDh])"
+    "desc": "Load D from L6 (M[L:FDh])",
+    "pseudocode": "d=M[L:FDh] PC++"
   },
   {
     "opcode": 118,
     "group": "GETPUT",
     "mnemonic": "7d",
-    "desc": "Load D from L7 (M[L_FEh])"
+    "desc": "Load D from L7 (M[L:FEh])",
+    "pseudocode": "d=M[L:FEh] PC++"
   },
   {
     "opcode": 119,
     "group": "GETPUT",
     "mnemonic": "8d",
-    "desc": "Load D from L8 (M[L_FFh])"
+    "desc": "Load D from L8 (M[L:FFh])",
+    "pseudocode": "d=M[L:FFh] PC++"
   },
   {
     "opcode": 120,
     "group": "GETPUT",
     "mnemonic": "d1",
-    "desc": "Store D into L1 (M[L_F8h])"
+    "desc": "Store D into L1 (M[L:F8h])",
+    "pseudocode": "M[L:F8h]=d PC++"
   },
   {
     "opcode": 121,
     "group": "GETPUT",
     "mnemonic": "d2",
-    "desc": "Store D into L2 (M[L_F9h])"
+    "desc": "Store D into L2 (M[L:F9h])",
+    "pseudocode": "M[L:F9h]=d PC++"
   },
   {
     "opcode": 122,
     "group": "GETPUT",
     "mnemonic": "d3",
-    "desc": "Store D into L3 (M[L_FAh])"
+    "desc": "Store D into L3 (M[L:FAh])",
+    "pseudocode": "M[L:FAh]=d PC++"
   },
   {
     "opcode": 123,
     "group": "GETPUT",
     "mnemonic": "d4",
-    "desc": "Store D into L4 (M[L_FBh])"
+    "desc": "Store D into L4 (M[L:FBh])",
+    "pseudocode": "M[L:FBh]=d PC++"
   },
   {
     "opcode": 124,
     "group": "GETPUT",
     "mnemonic": "d5",
-    "desc": "Store D into L5 (M[L_FCh])"
+    "desc": "Store D into L5 (M[L:FCh])",
+    "pseudocode": "M[L:FCh]=d PC++"
   },
   {
     "opcode": 125,
     "group": "GETPUT",
     "mnemonic": "d6",
-    "desc": "Store D into L6 (M[L_FDh])"
+    "desc": "Store D into L6 (M[L:FDh])",
+    "pseudocode": "M[L:FDh]=d PC++"
   },
   {
     "opcode": 126,
     "group": "GETPUT",
     "mnemonic": "d7",
-    "desc": "Store D into L7 (M[L_FEh])"
+    "desc": "Store D into L7 (M[L:FEh])",
+    "pseudocode": "M[L:FEh]=d PC++"
   },
   {
     "opcode": 127,
     "group": "GETPUT",
     "mnemonic": "d8",
-    "desc": "Store D into L8 (M[L_FFh])"
+    "desc": "Store D into L8 (M[L:FFh])",
+    "pseudocode": "M[L:FFh]=d PC++"
   },
   {
     "opcode": 128,
     "group": "PAIR",
-    "mnemonic": "FU",
-    "desc": "Take M[CG_PC++] as 8-bit signed number and add it to 16-bit pointer B_O"
+    "mnemonic": "FC",
+    "desc": "Take M[C:PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L",
+    "pseudocode": "T=M[C:PC] PC++ B=C C=T O=PC PC=0 L--"
   },
   {
     "opcode": 129,
     "group": "PAIR",
     "scrounge": "FM",
-    "mnemonic": "CODE",
-    "desc": "Set pointer B_O to CG_PC"
+    "mnemonic": "KEY",
+    "desc": "Copy register B into K (done instead of FM!)",
+    "pseudocode": "B=C O=PC PC++"
   },
   {
     "opcode": 130,
     "group": "PAIR",
     "mnemonic": "FB",
-    "desc": "Take M[CG_PC++] into B"
+    "desc": "Take M[C:PC++] into B",
+    "pseudocode": "T=M[C:PC] PC++ B=T PC++"
   },
   {
     "opcode": 131,
     "group": "PAIR",
     "mnemonic": "FO",
-    "desc": "Take M[CG_PC++] into O"
+    "desc": "Take M[C:PC++] into O",
+    "pseudocode": "T=M[C:PC] PC++ O=T PC++"
   },
   {
     "opcode": 132,
     "group": "PAIR",
     "mnemonic": "FA",
-    "desc": "Take M[CG_PC++] into A"
+    "desc": "Take M[C:PC++] into A",
+    "pseudocode": "T=M[C:PC] PC++ A=T PC++"
   },
   {
     "opcode": 133,
     "group": "PAIR",
-    "mnemonic": "FE",
-    "desc": "Take M[CG_PC++] into E"
+    "mnemonic": "FD",
+    "desc": "Take M[C:PC++] into D",
+    "pseudocode": "T=M[C:PC] PC++ D=T PC++"
   },
   {
     "opcode": 134,
     "group": "PAIR",
     "mnemonic": "FS",
-    "desc": "Take M[CG_PC++] into SOR"
+    "desc": "Take M[C:PC++] into SOR",
+    "pseudocode": "T=M[C:PC] PC++ SOR=T PC++"
   },
   {
     "opcode": 135,
     "group": "PAIR",
     "mnemonic": "FP",
-    "desc": "Take M[CG_PC++] into POR"
+    "desc": "Take M[C:PC++] into POR",
+    "pseudocode": "T=M[C:PC] PC++ POR=T PC++"
   },
   {
     "opcode": 136,
     "group": "PAIR",
     "mnemonic": "FD",
-    "desc": "Take M[CG_PC++] into D"
+    "desc": "Take M[C:PC++] into E, sets device enable signals",
+    "pseudocode": "T=M[C:PC] PC++ E=T PC++ (Device Enable!)"
   },
   {
     "opcode": 137,
     "group": "PAIR",
-    "mnemonic": "FW",
-    "desc": "Take M[CG_PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "mnemonic": "FK",
+    "desc": "Take M[C:PC++] into O, load K into B",
+    "pseudocode": "T=M[C:PC] PC++ O=T B=K PC++"
   },
   {
     "opcode": 138,
     "group": "PAIR",
-    "mnemonic": "FJ",
-    "desc": "Take M[CG_PC++] as page offset and store it into PC - always"
+    "mnemonic": "FU",
+    "desc": "Take M[C:PC++] as 8-bit signed number and add it to 16-bit pointer B:O",
+    "pseudocode": "T=M[C:PC] PC++ (B:O)+=T(signed) PC++"
   },
   {
     "opcode": 139,
     "group": "PAIR",
-    "mnemonic": "FH",
-    "desc": "Take M[CG_PC++] as page offset and store it into PC - if A is not equal to zero"
+    "mnemonic": "FW",
+    "desc": "Take M[C:PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D",
+    "pseudocode": "T=M[C:PC] PC++ PC=(D?T:PC+1) D--"
   },
   {
     "opcode": 140,
     "group": "PAIR",
-    "mnemonic": "FZ",
-    "desc": "Take M[CG_PC++] as page offset and store it into PC - if A is equal to zero"
+    "mnemonic": "FJ",
+    "desc": "Take M[C:PC++] as page offset and store it into PC - always",
+    "pseudocode": "T=M[C:PC] PC++ PC=T"
   },
   {
     "opcode": 141,
     "group": "PAIR",
-    "mnemonic": "FN",
-    "desc": "Take M[CG_PC++] as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "mnemonic": "FH",
+    "desc": "Take M[C:PC++] as page offset and store it into PC - if A is not equal to zero",
+    "pseudocode": "T=M[C:PC] PC++ PC=(A?T:PC+1)"
   },
   {
     "opcode": 142,
     "group": "PAIR",
-    "mnemonic": "FG",
-    "desc": "Take M[CG_PC++] as page-index, load the index into G, set PC to 80h"
+    "mnemonic": "FZ",
+    "desc": "Take M[C:PC++] as page offset and store it into PC - if A is equal to zero",
+    "pseudocode": "T=M[C:PC] PC++ PC=(A?PC+1:T)"
   },
   {
     "opcode": 143,
     "group": "PAIR",
-    "mnemonic": "FC",
-    "desc": "Take M[CG_PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "mnemonic": "FN",
+    "desc": "Take M[C:PC++] as page offset and store it into PC - if A is negative (has bit 7 set)",
+    "pseudocode": "T=M[C:PC] PC++ PC=(A&80h?T:PC+1)"
   },
   {
     "opcode": 144,
     "group": "PAIR",
-    "mnemonic": "MU",
-    "desc": "Take M[B_O] as 8-bit signed number and add it to 16-bit pointer B_O"
+    "mnemonic": "MC",
+    "desc": "Take M[B:O] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L",
+    "pseudocode": "T=M[B:O] B=C C=T O=PC PC=0 L--"
   },
   {
     "opcode": 145,
     "group": "PAIR",
     "scrounge": "MM",
-    "mnemonic": "LOCAL",
-    "desc": "Set pointer B_O to L_F7h (L0)"
+    "mnemonic": "CODE",
+    "desc": "Copy pointer C:PC into B:O (done instead of MM!)",
+    "pseudocode": "B=L O=F7h PC++"
   },
   {
     "opcode": 146,
     "group": "PAIR",
     "mnemonic": "MB",
-    "desc": "Take M[B_O] into B"
+    "desc": "Take M[B:O] into B",
+    "pseudocode": "T=M[B:O] B=T PC++"
   },
   {
     "opcode": 147,
     "group": "PAIR",
     "mnemonic": "MO",
-    "desc": "Take M[B_O] into O"
+    "desc": "Take M[B:O] into O",
+    "pseudocode": "T=M[B:O] O=T PC++"
   },
   {
     "opcode": 148,
     "group": "PAIR",
     "mnemonic": "MA",
-    "desc": "Take M[B_O] into A"
+    "desc": "Take M[B:O] into A",
+    "pseudocode": "T=M[B:O] A=T PC++"
   },
   {
     "opcode": 149,
     "group": "PAIR",
-    "mnemonic": "ME",
-    "desc": "Take M[B_O] into E"
+    "mnemonic": "MD",
+    "desc": "Take M[B:O] into D",
+    "pseudocode": "T=M[B:O] D=T PC++"
   },
   {
     "opcode": 150,
     "group": "PAIR",
     "mnemonic": "MS",
-    "desc": "Take M[B_O] into SOR"
+    "desc": "Take M[B:O] into SOR",
+    "pseudocode": "T=M[B:O] SOR=T PC++"
   },
   {
     "opcode": 151,
     "group": "PAIR",
     "mnemonic": "MP",
-    "desc": "Take M[B_O] into POR"
+    "desc": "Take M[B:O] into POR",
+    "pseudocode": "T=M[B:O] POR=T PC++"
   },
   {
     "opcode": 152,
     "group": "PAIR",
     "mnemonic": "MD",
-    "desc": "Take M[B_O] into D"
+    "desc": "Take M[B:O] into E, sets device enable signals",
+    "pseudocode": "T=M[B:O] E=T PC++ (Device Enable!)"
   },
   {
     "opcode": 153,
     "group": "PAIR",
-    "mnemonic": "MW",
-    "desc": "Take M[B_O] as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "mnemonic": "MK",
+    "desc": "Take M[B:O] into O, load K into B",
+    "pseudocode": "T=M[B:O] O=T B=K PC++"
   },
   {
     "opcode": 154,
     "group": "PAIR",
-    "mnemonic": "MJ",
-    "desc": "Take M[B_O] as page offset and store it into PC - always"
+    "mnemonic": "MU",
+    "desc": "Take M[B:O] as 8-bit signed number and add it to 16-bit pointer B:O",
+    "pseudocode": "T=M[B:O] (B:O)+=T(signed) PC++"
   },
   {
     "opcode": 155,
     "group": "PAIR",
-    "mnemonic": "MH",
-    "desc": "Take M[B_O] as page offset and store it into PC - if A is not equal to zero"
+    "mnemonic": "MW",
+    "desc": "Take M[B:O] as page offset and store it into PC - while register D is not zero. In either case, decrement D",
+    "pseudocode": "T=M[B:O] PC=(D?T:PC+1) D--"
   },
   {
     "opcode": 156,
     "group": "PAIR",
-    "mnemonic": "MZ",
-    "desc": "Take M[B_O] as page offset and store it into PC - if A is equal to zero"
+    "mnemonic": "MJ",
+    "desc": "Take M[B:O] as page offset and store it into PC - always",
+    "pseudocode": "T=M[B:O] PC=T"
   },
   {
     "opcode": 157,
     "group": "PAIR",
-    "mnemonic": "MN",
-    "desc": "Take M[B_O] as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "mnemonic": "MH",
+    "desc": "Take M[B:O] as page offset and store it into PC - if A is not equal to zero",
+    "pseudocode": "T=M[B:O] PC=(A?T:PC+1)"
   },
   {
     "opcode": 158,
     "group": "PAIR",
-    "mnemonic": "MG",
-    "desc": "Take M[B_O] as page-index, load the index into G, set PC to 80h"
+    "mnemonic": "MZ",
+    "desc": "Take M[B:O] as page offset and store it into PC - if A is equal to zero",
+    "pseudocode": "T=M[B:O] PC=(A?PC+1:T)"
   },
   {
     "opcode": 159,
     "group": "PAIR",
-    "mnemonic": "MC",
-    "desc": "Take M[B_O] as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "mnemonic": "MN",
+    "desc": "Take M[B:O] as page offset and store it into PC - if A is negative (has bit 7 set)",
+    "pseudocode": "T=M[B:O] PC=(A&80h?T:PC+1)"
   },
   {
     "opcode": 160,
     "group": "PAIR",
-    "mnemonic": "BU",
-    "desc": "Take B as 8-bit signed number and add it to 16-bit pointer B_O"
+    "mnemonic": "BC",
+    "desc": "Take B as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L",
+    "pseudocode": "T=B B=C C=T O=PC PC=0 L--"
   },
   {
     "opcode": 161,
     "group": "PAIR",
     "mnemonic": "BM",
-    "desc": "Take B into M[B_O]"
+    "desc": "Take B into M[B:O]",
+    "pseudocode": "T=B M[B:O]=T PC++"
   },
   {
     "opcode": 162,
     "group": "PAIR",
     "scrounge": "BB",
-    "mnemonic": "LEAVE",
-    "desc": "Increment L"
+    "mnemonic": "LOCAL",
+    "desc": "Copy pointer L:F7h (L0) into B:O (done instead of BB!)",
+    "pseudocode": "L++ PC++"
   },
   {
     "opcode": 163,
     "group": "PAIR",
     "mnemonic": "BO",
-    "desc": "Take B into O"
+    "desc": "Take B into O",
+    "pseudocode": "T=B O=T PC++"
   },
   {
     "opcode": 164,
     "group": "PAIR",
     "mnemonic": "BA",
-    "desc": "Take B into A"
+    "desc": "Take B into A",
+    "pseudocode": "T=B A=T PC++"
   },
   {
     "opcode": 165,
     "group": "PAIR",
-    "mnemonic": "BE",
-    "desc": "Take B into E"
+    "mnemonic": "BD",
+    "desc": "Take B into D",
+    "pseudocode": "T=B D=T PC++"
   },
   {
     "opcode": 166,
     "group": "PAIR",
     "mnemonic": "BS",
-    "desc": "Take B into SOR"
+    "desc": "Take B into SOR",
+    "pseudocode": "T=B SOR=T PC++"
   },
   {
     "opcode": 167,
     "group": "PAIR",
     "mnemonic": "BP",
-    "desc": "Take B into POR"
+    "desc": "Take B into POR",
+    "pseudocode": "T=B POR=T PC++"
   },
   {
     "opcode": 168,
     "group": "PAIR",
     "mnemonic": "BD",
-    "desc": "Take B into D"
+    "desc": "Take B into E, sets device enable signals",
+    "pseudocode": "T=B E=T PC++ (Device Enable!)"
   },
   {
     "opcode": 169,
     "group": "PAIR",
-    "mnemonic": "BW",
-    "desc": "Take B as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "mnemonic": "BK",
+    "desc": "Take B into O, load K into B",
+    "pseudocode": "T=B O=T B=K PC++"
   },
   {
     "opcode": 170,
     "group": "PAIR",
-    "mnemonic": "BJ",
-    "desc": "Take B as page offset and store it into PC - always"
+    "mnemonic": "BU",
+    "desc": "Take B as 8-bit signed number and add it to 16-bit pointer B:O",
+    "pseudocode": "T=B (B:O)+=T(signed) PC++"
   },
   {
     "opcode": 171,
     "group": "PAIR",
-    "mnemonic": "BH",
-    "desc": "Take B as page offset and store it into PC - if A is not equal to zero"
+    "mnemonic": "BW",
+    "desc": "Take B as page offset and store it into PC - while register D is not zero. In either case, decrement D",
+    "pseudocode": "T=B PC=(D?T:PC+1) D--"
   },
   {
     "opcode": 172,
     "group": "PAIR",
-    "mnemonic": "BZ",
-    "desc": "Take B as page offset and store it into PC - if A is equal to zero"
+    "mnemonic": "BJ",
+    "desc": "Take B as page offset and store it into PC - always",
+    "pseudocode": "T=B PC=T"
   },
   {
     "opcode": 173,
     "group": "PAIR",
-    "mnemonic": "BN",
-    "desc": "Take B as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "mnemonic": "BH",
+    "desc": "Take B as page offset and store it into PC - if A is not equal to zero",
+    "pseudocode": "T=B PC=(A?T:PC+1)"
   },
   {
     "opcode": 174,
     "group": "PAIR",
-    "mnemonic": "BG",
-    "desc": "Take B as page-index, load the index into G, set PC to 80h"
+    "mnemonic": "BZ",
+    "desc": "Take B as page offset and store it into PC - if A is equal to zero",
+    "pseudocode": "T=B PC=(A?PC+1:T)"
   },
   {
     "opcode": 175,
     "group": "PAIR",
-    "mnemonic": "BC",
-    "desc": "Take B as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "mnemonic": "BN",
+    "desc": "Take B as page offset and store it into PC - if A is negative (has bit 7 set)",
+    "pseudocode": "T=B PC=(A&80h?T:PC+1)"
   },
   {
     "opcode": 176,
     "group": "PAIR",
-    "mnemonic": "OU",
-    "desc": "Take O as 8-bit signed number and add it to 16-bit pointer B_O"
+    "mnemonic": "OC",
+    "desc": "Take O as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L",
+    "pseudocode": "T=O B=C C=T O=PC PC=0 L--"
   },
   {
     "opcode": 177,
     "group": "PAIR",
     "mnemonic": "OM",
-    "desc": "Take O into M[B_O]"
+    "desc": "Take O into M[B:O]",
+    "pseudocode": "T=O M[B:O]=T PC++"
   },
   {
     "opcode": 178,
     "group": "PAIR",
     "mnemonic": "OB",
-    "desc": "Take O into B"
+    "desc": "Take O into B",
+    "pseudocode": "T=O B=T PC++"
   },
   {
     "opcode": 179,
     "group": "PAIR",
     "scrounge": "OO",
-    "mnemonic": "ENTER",
-    "desc": "Decrement L"
+    "mnemonic": "LEAVE",
+    "desc": "Increment L (done instead of OO!)",
+    "pseudocode": "L-- PC++"
   },
   {
     "opcode": 180,
     "group": "PAIR",
     "mnemonic": "OA",
-    "desc": "Take O into A"
+    "desc": "Take O into A",
+    "pseudocode": "T=O A=T PC++"
   },
   {
     "opcode": 181,
     "group": "PAIR",
-    "mnemonic": "OE",
-    "desc": "Take O into E"
+    "mnemonic": "OD",
+    "desc": "Take O into D",
+    "pseudocode": "T=O D=T PC++"
   },
   {
     "opcode": 182,
     "group": "PAIR",
     "mnemonic": "OS",
-    "desc": "Take O into SOR"
+    "desc": "Take O into SOR",
+    "pseudocode": "T=O SOR=T PC++"
   },
   {
     "opcode": 183,
     "group": "PAIR",
     "mnemonic": "OP",
-    "desc": "Take O into POR"
+    "desc": "Take O into POR",
+    "pseudocode": "T=O POR=T PC++"
   },
   {
     "opcode": 184,
     "group": "PAIR",
     "mnemonic": "OD",
-    "desc": "Take O into D"
+    "desc": "Take O into E, sets device enable signals",
+    "pseudocode": "T=O E=T PC++ (Device Enable!)"
   },
   {
     "opcode": 185,
     "group": "PAIR",
-    "mnemonic": "OW",
-    "desc": "Take O as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "mnemonic": "OK",
+    "desc": "Take O into O, load K into B",
+    "pseudocode": "T=O O=T B=K PC++"
   },
   {
     "opcode": 186,
     "group": "PAIR",
-    "mnemonic": "OJ",
-    "desc": "Take O as page offset and store it into PC - always"
+    "mnemonic": "OU",
+    "desc": "Take O as 8-bit signed number and add it to 16-bit pointer B:O",
+    "pseudocode": "T=O (B:O)+=T(signed) PC++"
   },
   {
     "opcode": 187,
     "group": "PAIR",
-    "mnemonic": "OH",
-    "desc": "Take O as page offset and store it into PC - if A is not equal to zero"
+    "mnemonic": "OW",
+    "desc": "Take O as page offset and store it into PC - while register D is not zero. In either case, decrement D",
+    "pseudocode": "T=O PC=(D?T:PC+1) D--"
   },
   {
     "opcode": 188,
     "group": "PAIR",
-    "mnemonic": "OZ",
-    "desc": "Take O as page offset and store it into PC - if A is equal to zero"
+    "mnemonic": "OJ",
+    "desc": "Take O as page offset and store it into PC - always",
+    "pseudocode": "T=O PC=T"
   },
   {
     "opcode": 189,
     "group": "PAIR",
-    "mnemonic": "ON",
-    "desc": "Take O as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "mnemonic": "OH",
+    "desc": "Take O as page offset and store it into PC - if A is not equal to zero",
+    "pseudocode": "T=O PC=(A?T:PC+1)"
   },
   {
     "opcode": 190,
     "group": "PAIR",
-    "mnemonic": "OG",
-    "desc": "Take O as page-index, load the index into G, set PC to 80h"
+    "mnemonic": "OZ",
+    "desc": "Take O as page offset and store it into PC - if A is equal to zero",
+    "pseudocode": "T=O PC=(A?PC+1:T)"
   },
   {
     "opcode": 191,
     "group": "PAIR",
-    "mnemonic": "OC",
-    "desc": "Take O as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "mnemonic": "ON",
+    "desc": "Take O as page offset and store it into PC - if A is negative (has bit 7 set)",
+    "pseudocode": "T=O PC=(A&80h?T:PC+1)"
   },
   {
     "opcode": 192,
     "group": "PAIR",
-    "mnemonic": "AU",
-    "desc": "Take A as 8-bit signed number and add it to 16-bit pointer B_O"
+    "mnemonic": "AC",
+    "desc": "Take A as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L",
+    "pseudocode": "T=A B=C C=T O=PC PC=0 L--"
   },
   {
     "opcode": 193,
     "group": "PAIR",
     "mnemonic": "AM",
-    "desc": "Take A into M[B_O]"
+    "desc": "Take A into M[B:O]",
+    "pseudocode": "T=A M[B:O]=T PC++"
   },
   {
     "opcode": 194,
     "group": "PAIR",
     "mnemonic": "AB",
-    "desc": "Take A into B"
+    "desc": "Take A into B",
+    "pseudocode": "T=A B=T PC++"
   },
   {
     "opcode": 195,
     "group": "PAIR",
     "mnemonic": "AO",
-    "desc": "Take A into O"
+    "desc": "Take A into O",
+    "pseudocode": "T=A O=T PC++"
   },
   {
     "opcode": 196,
     "group": "PAIR",
     "scrounge": "AA",
-    "mnemonic": "INC",
-    "desc": "Increment A"
+    "mnemonic": "ENTER",
+    "desc": "Decrement L (done instead of AA!)",
+    "pseudocode": "A++ PC++"
   },
   {
     "opcode": 197,
     "group": "PAIR",
-    "mnemonic": "AE",
-    "desc": "Take A into E"
+    "mnemonic": "AD",
+    "desc": "Take A into D",
+    "pseudocode": "T=A D=T PC++"
   },
   {
     "opcode": 198,
     "group": "PAIR",
     "mnemonic": "AS",
-    "desc": "Take A into SOR"
+    "desc": "Take A into SOR",
+    "pseudocode": "T=A SOR=T PC++"
   },
   {
     "opcode": 199,
     "group": "PAIR",
     "mnemonic": "AP",
-    "desc": "Take A into POR"
+    "desc": "Take A into POR",
+    "pseudocode": "T=A POR=T PC++"
   },
   {
     "opcode": 200,
     "group": "PAIR",
     "mnemonic": "AD",
-    "desc": "Take A into D"
+    "desc": "Take A into E, sets device enable signals",
+    "pseudocode": "T=A E=T PC++ (Device Enable!)"
   },
   {
     "opcode": 201,
     "group": "PAIR",
-    "mnemonic": "AW",
-    "desc": "Take A as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "mnemonic": "AK",
+    "desc": "Take A into O, load K into B",
+    "pseudocode": "T=A O=T B=K PC++"
   },
   {
     "opcode": 202,
     "group": "PAIR",
-    "mnemonic": "AJ",
-    "desc": "Take A as page offset and store it into PC - always"
+    "mnemonic": "AU",
+    "desc": "Take A as 8-bit signed number and add it to 16-bit pointer B:O",
+    "pseudocode": "T=A (B:O)+=T(signed) PC++"
   },
   {
     "opcode": 203,
     "group": "PAIR",
-    "mnemonic": "AH",
-    "desc": "Take A as page offset and store it into PC - if A is not equal to zero"
+    "mnemonic": "AW",
+    "desc": "Take A as page offset and store it into PC - while register D is not zero. In either case, decrement D",
+    "pseudocode": "T=A PC=(D?T:PC+1) D--"
   },
   {
     "opcode": 204,
     "group": "PAIR",
-    "mnemonic": "AZ",
-    "desc": "Take A as page offset and store it into PC - if A is equal to zero"
+    "mnemonic": "AJ",
+    "desc": "Take A as page offset and store it into PC - always",
+    "pseudocode": "T=A PC=T"
   },
   {
     "opcode": 205,
     "group": "PAIR",
-    "mnemonic": "AN",
-    "desc": "Take A as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "mnemonic": "AH",
+    "desc": "Take A as page offset and store it into PC - if A is not equal to zero",
+    "pseudocode": "T=A PC=(A?T:PC+1)"
   },
   {
     "opcode": 206,
     "group": "PAIR",
-    "mnemonic": "AG",
-    "desc": "Take A as page-index, load the index into G, set PC to 80h"
+    "mnemonic": "AZ",
+    "desc": "Take A as page offset and store it into PC - if A is equal to zero",
+    "pseudocode": "T=A PC=(A?PC+1:T)"
   },
   {
     "opcode": 207,
     "group": "PAIR",
-    "mnemonic": "AC",
-    "desc": "Take A as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "mnemonic": "AN",
+    "desc": "Take A as page offset and store it into PC - if A is negative (has bit 7 set)",
+    "pseudocode": "T=A PC=(A&80h?T:PC+1)"
   },
   {
     "opcode": 208,
     "group": "PAIR",
-    "mnemonic": "EU",
-    "desc": "Take E as 8-bit signed number and add it to 16-bit pointer B_O"
+    "mnemonic": "DC",
+    "desc": "Take D as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L",
+    "pseudocode": "T=D B=C C=T O=PC PC=0 L--"
   },
   {
     "opcode": 209,
     "group": "PAIR",
-    "mnemonic": "EM",
-    "desc": "Take E into M[B_O]"
+    "mnemonic": "DM",
+    "desc": "Take D into M[B:O]",
+    "pseudocode": "T=D M[B:O]=T PC++"
   },
   {
     "opcode": 210,
     "group": "PAIR",
-    "mnemonic": "EB",
-    "desc": "Take E into B"
+    "mnemonic": "DB",
+    "desc": "Take D into B",
+    "pseudocode": "T=D B=T PC++"
   },
   {
     "opcode": 211,
     "group": "PAIR",
-    "mnemonic": "EO",
-    "desc": "Take E into O"
+    "mnemonic": "DO",
+    "desc": "Take D into O",
+    "pseudocode": "T=D O=T PC++"
   },
   {
     "opcode": 212,
     "group": "PAIR",
-    "mnemonic": "EA",
-    "desc": "Take E into A"
+    "mnemonic": "DA",
+    "desc": "Take D into A",
+    "pseudocode": "T=D A=T PC++"
   },
   {
     "opcode": 213,
     "group": "PAIR",
-    "scrounge": "EE",
-    "mnemonic": "DEC",
-    "desc": "Decrement A"
+    "scrounge": "DD",
+    "mnemonic": "INC",
+    "desc": "Increment A (done instead of DD!)",
+    "pseudocode": "A-- PC++"
   },
   {
     "opcode": 214,
     "group": "PAIR",
-    "mnemonic": "ES",
-    "desc": "Take E into SOR"
+    "mnemonic": "DS",
+    "desc": "Take D into SOR",
+    "pseudocode": "T=D SOR=T PC++"
   },
   {
     "opcode": 215,
     "group": "PAIR",
-    "mnemonic": "EP",
-    "desc": "Take E into POR"
+    "mnemonic": "DP",
+    "desc": "Take D into POR",
+    "pseudocode": "T=D POR=T PC++"
   },
   {
     "opcode": 216,
     "group": "PAIR",
-    "mnemonic": "ED",
-    "desc": "Take E into D"
+    "mnemonic": "DD",
+    "desc": "Take D into E, sets device enable signals",
+    "pseudocode": "T=D E=T PC++ (Device Enable!)"
   },
   {
     "opcode": 217,
     "group": "PAIR",
-    "mnemonic": "EW",
-    "desc": "Take E as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "mnemonic": "DK",
+    "desc": "Take D into O, load K into B",
+    "pseudocode": "T=D O=T B=K PC++"
   },
   {
     "opcode": 218,
     "group": "PAIR",
-    "mnemonic": "EJ",
-    "desc": "Take E as page offset and store it into PC - always"
+    "mnemonic": "DU",
+    "desc": "Take D as 8-bit signed number and add it to 16-bit pointer B:O",
+    "pseudocode": "T=D (B:O)+=T(signed) PC++"
   },
   {
     "opcode": 219,
     "group": "PAIR",
-    "mnemonic": "EH",
-    "desc": "Take E as page offset and store it into PC - if A is not equal to zero"
+    "mnemonic": "DW",
+    "desc": "Take D as page offset and store it into PC - while register D is not zero. In either case, decrement D",
+    "pseudocode": "T=D PC=(D?T:PC+1) D--"
   },
   {
     "opcode": 220,
     "group": "PAIR",
-    "mnemonic": "EZ",
-    "desc": "Take E as page offset and store it into PC - if A is equal to zero"
+    "mnemonic": "DJ",
+    "desc": "Take D as page offset and store it into PC - always",
+    "pseudocode": "T=D PC=T"
   },
   {
     "opcode": 221,
     "group": "PAIR",
-    "mnemonic": "EN",
-    "desc": "Take E as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "mnemonic": "DH",
+    "desc": "Take D as page offset and store it into PC - if A is not equal to zero",
+    "pseudocode": "T=D PC=(A?T:PC+1)"
   },
   {
     "opcode": 222,
     "group": "PAIR",
-    "mnemonic": "EG",
-    "desc": "Take E as page-index, load the index into G, set PC to 80h"
+    "mnemonic": "DZ",
+    "desc": "Take D as page offset and store it into PC - if A is equal to zero",
+    "pseudocode": "T=D PC=(A?PC+1:T)"
   },
   {
     "opcode": 223,
     "group": "PAIR",
-    "mnemonic": "EC",
-    "desc": "Take E as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "mnemonic": "DN",
+    "desc": "Take D as page offset and store it into PC - if A is negative (has bit 7 set)",
+    "pseudocode": "T=D PC=(A&80h?T:PC+1)"
   },
   {
     "opcode": 224,
     "group": "PAIR",
-    "mnemonic": "SU",
-    "desc": "Take SIR as 8-bit signed number and add it to 16-bit pointer B_O"
+    "mnemonic": "SC",
+    "desc": "Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L",
+    "pseudocode": "T=SIR B=C C=T O=PC PC=0 L--"
   },
   {
     "opcode": 225,
     "group": "PAIR",
     "mnemonic": "SM",
-    "desc": "Take SIR into M[B_O]"
+    "desc": "Take SIR into M[B:O]",
+    "pseudocode": "T=SIR M[B:O]=T PC++"
   },
   {
     "opcode": 226,
     "group": "PAIR",
     "mnemonic": "SB",
-    "desc": "Take SIR into B"
+    "desc": "Take SIR into B",
+    "pseudocode": "T=SIR B=T PC++"
   },
   {
     "opcode": 227,
     "group": "PAIR",
     "mnemonic": "SO",
-    "desc": "Take SIR into O"
+    "desc": "Take SIR into O",
+    "pseudocode": "T=SIR O=T PC++"
   },
   {
     "opcode": 228,
     "group": "PAIR",
     "mnemonic": "SA",
-    "desc": "Take SIR into A"
+    "desc": "Take SIR into A",
+    "pseudocode": "T=SIR A=T PC++"
   },
   {
     "opcode": 229,
     "group": "PAIR",
-    "mnemonic": "SE",
-    "desc": "Take SIR into E"
+    "mnemonic": "SD",
+    "desc": "Take SIR into D",
+    "pseudocode": "T=SIR D=T PC++"
   },
   {
     "opcode": 230,
     "group": "PAIR",
-    "mnemonic": "SS",
-    "desc": "Take SIR into SOR"
+    "scrounge": "SS",
+    "mnemonic": "DEC",
+    "desc": "Decrement A (done instead of SS!)",
+    "pseudocode": "A=E PC++"
   },
   {
     "opcode": 231,
     "group": "PAIR",
     "mnemonic": "SP",
-    "desc": "Take SIR into POR"
+    "desc": "Take SIR into POR",
+    "pseudocode": "T=SIR POR=T PC++"
   },
   {
     "opcode": 232,
     "group": "PAIR",
     "mnemonic": "SD",
-    "desc": "Take SIR into D"
+    "desc": "Take SIR into E, sets device enable signals",
+    "pseudocode": "T=SIR E=T PC++ (Device Enable!)"
   },
   {
     "opcode": 233,
     "group": "PAIR",
-    "mnemonic": "SW",
-    "desc": "Take SIR as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "mnemonic": "SK",
+    "desc": "Take SIR into O, load K into B",
+    "pseudocode": "T=SIR O=T B=K PC++"
   },
   {
     "opcode": 234,
     "group": "PAIR",
-    "mnemonic": "SJ",
-    "desc": "Take SIR as page offset and store it into PC - always"
+    "mnemonic": "SU",
+    "desc": "Take SIR as 8-bit signed number and add it to 16-bit pointer B:O",
+    "pseudocode": "T=SIR (B:O)+=T(signed) PC++"
   },
   {
     "opcode": 235,
     "group": "PAIR",
-    "mnemonic": "SH",
-    "desc": "Take SIR as page offset and store it into PC - if A is not equal to zero"
+    "mnemonic": "SW",
+    "desc": "Take SIR as page offset and store it into PC - while register D is not zero. In either case, decrement D",
+    "pseudocode": "T=SIR PC=(D?T:PC+1) D--"
   },
   {
     "opcode": 236,
     "group": "PAIR",
-    "mnemonic": "SZ",
-    "desc": "Take SIR as page offset and store it into PC - if A is equal to zero"
+    "mnemonic": "SJ",
+    "desc": "Take SIR as page offset and store it into PC - always",
+    "pseudocode": "T=SIR PC=T"
   },
   {
     "opcode": 237,
     "group": "PAIR",
-    "mnemonic": "SN",
-    "desc": "Take SIR as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "mnemonic": "SH",
+    "desc": "Take SIR as page offset and store it into PC - if A is not equal to zero",
+    "pseudocode": "T=SIR PC=(A?T:PC+1)"
   },
   {
     "opcode": 238,
     "group": "PAIR",
-    "mnemonic": "SG",
-    "desc": "Take SIR as page-index, load the index into G, set PC to 80h"
+    "mnemonic": "SZ",
+    "desc": "Take SIR as page offset and store it into PC - if A is equal to zero",
+    "pseudocode": "T=SIR PC=(A?PC+1:T)"
   },
   {
     "opcode": 239,
     "group": "PAIR",
-    "mnemonic": "SC",
-    "desc": "Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "mnemonic": "SN",
+    "desc": "Take SIR as page offset and store it into PC - if A is negative (has bit 7 set)",
+    "pseudocode": "T=SIR PC=(A&80h?T:PC+1)"
   },
   {
     "opcode": 240,
     "group": "PAIR",
-    "mnemonic": "PU",
-    "desc": "Take PIR as 8-bit signed number and add it to 16-bit pointer B_O"
+    "mnemonic": "PC",
+    "desc": "Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L",
+    "pseudocode": "T=PIR B=C C=T O=PC PC=0 L--"
   },
   {
     "opcode": 241,
     "group": "PAIR",
     "mnemonic": "PM",
-    "desc": "Take PIR into M[B_O]"
+    "desc": "Take PIR into M[B:O]",
+    "pseudocode": "T=PIR M[B:O]=T PC++"
   },
   {
     "opcode": 242,
     "group": "PAIR",
     "mnemonic": "PB",
-    "desc": "Take PIR into B"
+    "desc": "Take PIR into B",
+    "pseudocode": "T=PIR B=T PC++"
   },
   {
     "opcode": 243,
     "group": "PAIR",
     "mnemonic": "PO",
-    "desc": "Take PIR into O"
+    "desc": "Take PIR into O",
+    "pseudocode": "T=PIR O=T PC++"
   },
   {
     "opcode": 244,
     "group": "PAIR",
     "mnemonic": "PA",
-    "desc": "Take PIR into A"
+    "desc": "Take PIR into A",
+    "pseudocode": "T=PIR A=T PC++"
   },
   {
     "opcode": 245,
     "group": "PAIR",
-    "mnemonic": "PE",
-    "desc": "Take PIR into E"
+    "mnemonic": "PD",
+    "desc": "Take PIR into D",
+    "pseudocode": "T=PIR D=T PC++"
   },
   {
     "opcode": 246,
     "group": "PAIR",
     "mnemonic": "PS",
-    "desc": "Take PIR into SOR"
+    "desc": "Take PIR into SOR",
+    "pseudocode": "T=PIR SOR=T PC++"
   },
   {
     "opcode": 247,
     "group": "PAIR",
-    "mnemonic": "PP",
-    "desc": "Take PIR into POR"
+    "scrounge": "PP",
+    "mnemonic": "EA",
+    "desc": "Copy E to A (done instead of PP!)",
+    "pseudocode": "K=B PC++"
   },
   {
     "opcode": 248,
     "group": "PAIR",
     "mnemonic": "PD",
-    "desc": "Take PIR into D"
+    "desc": "Take PIR into E, sets device enable signals",
+    "pseudocode": "T=PIR E=T PC++ (Device Enable!)"
   },
   {
     "opcode": 249,
     "group": "PAIR",
-    "mnemonic": "PW",
-    "desc": "Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D"
+    "mnemonic": "PK",
+    "desc": "Take PIR into O, load K into B",
+    "pseudocode": "T=PIR O=T B=K PC++"
   },
   {
     "opcode": 250,
     "group": "PAIR",
-    "mnemonic": "PJ",
-    "desc": "Take PIR as page offset and store it into PC - always"
+    "mnemonic": "PU",
+    "desc": "Take PIR as 8-bit signed number and add it to 16-bit pointer B:O",
+    "pseudocode": "T=PIR (B:O)+=T(signed) PC++"
   },
   {
     "opcode": 251,
     "group": "PAIR",
-    "mnemonic": "PH",
-    "desc": "Take PIR as page offset and store it into PC - if A is not equal to zero"
+    "mnemonic": "PW",
+    "desc": "Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D",
+    "pseudocode": "T=PIR PC=(D?T:PC+1) D--"
   },
   {
     "opcode": 252,
     "group": "PAIR",
-    "mnemonic": "PZ",
-    "desc": "Take PIR as page offset and store it into PC - if A is equal to zero"
+    "mnemonic": "PJ",
+    "desc": "Take PIR as page offset and store it into PC - always",
+    "pseudocode": "T=PIR PC=T"
   },
   {
     "opcode": 253,
     "group": "PAIR",
-    "mnemonic": "PN",
-    "desc": "Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)"
+    "mnemonic": "PH",
+    "desc": "Take PIR as page offset and store it into PC - if A is not equal to zero",
+    "pseudocode": "T=PIR PC=(A?T:PC+1)"
   },
   {
     "opcode": 254,
     "group": "PAIR",
-    "mnemonic": "PG",
-    "desc": "Take PIR as page-index, load the index into G, set PC to 80h"
+    "mnemonic": "PZ",
+    "desc": "Take PIR as page offset and store it into PC - if A is equal to zero",
+    "pseudocode": "T=PIR PC=(A?PC+1:T)"
   },
   {
     "opcode": 255,
     "group": "PAIR",
-    "mnemonic": "PC",
-    "desc": "Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B_O. Decrement L"
+    "mnemonic": "PN",
+    "desc": "Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)",
+    "pseudocode": "T=PIR PC=(A&80h?T:PC+1)"
   }
 ]
