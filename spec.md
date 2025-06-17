@@ -348,7 +348,6 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     ; Store number 4 in L0:
     fa 2 shl, local am.
 
-Pointer K (kbo, bok) is called the "key" and you can use it to pass either a 16-bit pointer, or individual values in B and O, to a subroutine.
 
 ## Tables
 
