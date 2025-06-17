@@ -13,6 +13,7 @@
 		(comment 2 "Project homepage: https://github.com/michaelmangelsdorf/myth")
 		(comment 3 "Rev. Step 58 Fedfroh")
 		(comment 4 "Based on working prototype PCB: https://github.com/michaelmangelsdorf/sonne8")
+		(comment 5 "a.k.a the Microcode Bastard")
 	)
 	(lib_symbols
 		(symbol "4075_1"
