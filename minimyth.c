@@ -129,7 +129,7 @@ myth_step()
 
            Executing a TRAP0 call from your program is indistinguishable
            from accepting an interrupt.
-           Execute RTI to disable to busy flag and unnest the call. */
+           Execute RTI to disable the busy flag and unnest the call. */
 
         if (irq && c!=0 && !busy) opcode = 32; /* Inject TRAP0 */
         else opcode = fetch();

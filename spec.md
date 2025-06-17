@@ -33,37 +33,6 @@ The ALU can run the following opcodes:
     14 ADDV  Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0)
     15 SUBB  Subtract A from X, result in A, BORROW bit in X (0 or 1)
 
-In C, this presents as follows:
-    
-    /* Execute ALU instruction
-    */
-    void
-    alu( uint8_t opcode)
-    {
-            int i;
-            uint8_t a0 = a;
-            uint8_t ovf = ((a&0x80)^(x&0x80))==0    /* Addends have same sign */
-                            && ((i&0x80)^(a&0x80)); /* But result has different sign */
-            
-            switch(opcode & 15){
-                    case NOT: a = ~a;                                   break;
-                    case ALX: a = (a<x)  ? 255:0;                       break;
-                    case AEX: a = (a==x) ? 255:0;                       break;
-                    case AGX: a = (a>x)  ? 255:0;                       break;
-                    case AND: a = a & x;                                break;
-                    case IOR: a = a | x;                                break;
-                    case EOR: a = a ^ x;                                break;
-                    case XA: a=x;                                       break;
-                    case AX: x=a;                                       break;
-                    case SWAP: a=x; x=a0;                               break;
-                    case SHL: a<<=1; x=(a0 & 0x80)? 1:0;                break;
-                    case SHR: a>>=1; x=(a0 & 1)? 0x80:0;                break;
-                    case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0; break;
-                    case ADDC: i = x+a; a=i&0xFF; x=(i>255)? 1:0;       break;
-                    case ADDV: i = x+a; a=i&0xFF; x=ovf?255:0;          break;
-                    case SUBB: i = x-a; x=(i<0)? 0:1;                   break;
-            }
-    }
 
 #### Memory Layout
 
@@ -79,9 +48,9 @@ When reading memory data, the O register must be set to a suitable page-offset v
 
 ##### Page-Index Registers
 
-There are four dedicated page-index registers: B for Base, C for Code, R for Resident, and L for Local.
+There are four dedicated page-index registers: B for Base, C for Code, K for Key, and L for Local.
 
-###### B
+###### Register B
 
 Without exception, the B register (base) is used together with O (offset) as the memory pointer to the address where read or write operations occur.
 
@@ -89,11 +58,22 @@ When reading memory data, the B:O register pair must be set to a suitable memory
 
 The 16-bit value B:O is called the Base Pointer.
 
-###### C
+###### Register C
 
 When code is running, the byte offset of the current instruction is invariably stored in the program counter register (PC). The page number where this offset applies is stored in C (Code).
 
-###### L
+###### Register K
+
+This is an amenity register that can be set to B using the KEY instruction. It is used in conjunction with the PAIR transfer target xK, an effect register. When writing into xK, the written value is stored in O, and B is set to K.
+
+The intended use for this instruction is to provide a shortcut:
+
+    ;Load a system variable (MYVAR) from a table in page 2
+    fb 2 KEY (Set key page-index)
+    ...
+    fk MYVAR ma (Set base pointer to the MYVAR location and read into A)
+
+###### Register L
 
 The purpose of the L (local) page index register is to provide single page stack frames for subroutines. During subroutine calls, the page index in L is decremented, so that memory reads and writes using the L page index transparently access memory which is local to the currently running subroutine. When the subroutine returns, the page index in L is incremented, so that the previous stack frame (or L page) is restored to the calling subroutine.
 
@@ -156,8 +136,6 @@ Inherent NOP instructions such as BB, OO, AA, and DD, and impractical instructio
 As mentioned, registers B (base) and O (offset) form a 16-bit pointer for memory access. The xU (update) instruction is used to add an 8-bit signed number to this pointer for doing address arithmetic.
 
 There are four 16-bit amenity registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction (instruction group BOP). For instance: BOP1 stores the B:O pointer into P1, and P1BO stores P1 into B:O.
-
-The ("Key") is a known page-index, which can be set from B using the KEY instruction. The xK instruction writes a page-offset into O, and sets B to the value of K.
 
 ## PART 2
 
