@@ -503,7 +503,7 @@ sys( uint8_t opcode)
 
 int
 main(int argc, char *argv[])
-{       
+{
         // RESET: Set L, C, PC and BUSY to 0
         // Run myth_step() n times
         printf("Myth CPU Implementation Stub\n");
