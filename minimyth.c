@@ -290,7 +290,7 @@ pair( uint8_t opcode)
                  /* Add signed 8-bit v to 16-bit B:O */
 
                 case xU: ui16 = (o+v)>127? /* Sign extend to 16-bit */
-                                 (uint16_t)v | 0x00FF : v;
+                                 (uint16_t)v | 0xFF00 : v;
                          o = ui16 & 0xFF;
                          b = ui16 >> 8;
                          break;
@@ -403,30 +403,30 @@ alu( uint8_t opcode)
 #define ADDV 14 /* Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0) */
 #define SUBB 15 /* Subtract A from X, result in A, BORROW bit in X (0 or 1) */
 
-        int i;
         uint8_t a0 = a;
 
         /* Compute signed addition overflow flag */
+        int i = x+a;
         uint8_t ovf = ((a&0x80)^(x&0x80))==0    /* Addends have same sign */
                         && ((i&0x80)^(a&0x80)); /* But result has different sign */
         
         switch(opcode & 15){
-                case NOT: a = ~a;                                   break;
-                case ALX: a = (a<x)  ? 255:0;                       break;
-                case AEX: a = (a==x) ? 255:0;                       break;
-                case AGX: a = (a>x)  ? 255:0;                       break;
-                case AND: a = a & x;                                break;
-                case IOR: a = a | x;                                break;
-                case EOR: a = a ^ x;                                break;
-                case XA: a=x;                                       break;
-                case AX: x=a;                                       break;
-                case SWAP: a=x; x=a0;                               break;
-                case SHL: a<<=1; x=(a0 & 0x80)? 1:0;                break;
-                case SHR: a>>=1; x=(a0 & 1)? 0x80:0;                break;
-                case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0; break;
-                case ADDC: i = x+a; a=i&0xFF; x=(i>255)? 1:0;       break;
-                case ADDV: i = x+a; a=i&0xFF; x=ovf?255:0;          break;
-                case SUBB: i = x-a; x=(i<0)? 0:1;                   break;
+                case NOT: a = ~a;                                      break;
+                case ALX: a = (a<x)  ? 255:0;                          break;
+                case AEX: a = (a==x) ? 255:0;                          break;
+                case AGX: a = (a>x)  ? 255:0;                          break;
+                case AND: a = a & x;                                   break;
+                case IOR: a = a | x;                                   break;
+                case EOR: a = a ^ x;                                   break;
+                case XA: a=x;                                          break;
+                case AX: x=a;                                          break;
+                case SWAP: a=x; x=a0;                                  break;
+                case SHL: a<<=1; x=(a0 & 0x80)? 1:0;                   break;
+                case SHR: a>>=1; x=(a0 & 1)? 0x80:0;                   break;
+                case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0;    break;
+                case ADDC: a=i&0xFF; x=(i>255)? 1:0;                   break;
+                case ADDV: a=i&0xFF; x=ovf?255:0;                      break;
+                case SUBB: i = (int x)-(int)a; a=i&0xFF; x=(i<0)? 0:1; break;
         }
 }
 
