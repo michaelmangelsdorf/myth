@@ -85,7 +85,7 @@ static uint8_t fetch();
 
 static void    push_acc( uint8_t v);
 static uint8_t srcval(   uint8_t srcreg);
-static void    scrounge( uint8_t opcode);
+static uint8_t scrounge( uint8_t opcode);
 static void    pair(     uint8_t opcode);
 static void    getput(   uint8_t opcode);
 static void    trap(     uint8_t opcode);
@@ -241,7 +241,7 @@ srcval( uint8_t srcreg)
 void
 pair( uint8_t opcode)
 {
-        scrounge( opcode);
+        if (scrounge( opcode)) return;
 
 /* PAIR Instruction - Bits 0-3: DESTINATION index
    'xREG' notation: Transfer SOURCE x into DEST
@@ -306,7 +306,7 @@ pair( uint8_t opcode)
 }
 
 
-void
+uint8_t
 scrounge( uint8_t opcode)
 {
 
@@ -322,14 +322,15 @@ scrounge( uint8_t opcode)
 #define EA    16*Px + xP
 
         switch(opcode & 0x7F){
-                case KEY:      k=b;                break;
-                case CODE:     b=c; o=pc;          break;
-                case LOCAL:    b=l; o=0xF7; /*L0*/ break;
-                case LEAVE:    l++;                break;
-                case ENTER:    l--;                break;
-                case INC:      a++;                break;
-                case DEC:      a--;                break;
-                case EA:       a=e_new;            break;
+                case KEY:      k=b;                return KEY;
+                case CODE:     b=c; o=pc;          return CODE;
+                case LOCAL:    b=l; o=0xF7; /*L0*/ return LOCAL;
+                case LEAVE:    l++;                return LEAVE;
+                case ENTER:    l--;                return ENTER;
+                case INC:      a++;                return INC;
+                case DEC:      a--;                return DEC;
+                case EA:       a=e_new;            return EA;
+                default: return 0;
         }
 }
 
