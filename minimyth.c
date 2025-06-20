@@ -25,7 +25,7 @@ uint8_t busy;  /* BUSY / Interrupts-Disabled flag (output) */
 /* IO Device Selection */
 
 uint8_t e_old; /* Device Enable Register */
-uint8_t e_new; /* _old is for persisting edge information in VM file */
+uint8_t e;     /* _old is for persisting edge information in VM file */
 
 /* Serial Interface */
 
@@ -283,8 +283,8 @@ pair( uint8_t opcode)
                 case xD: d = v;             break;
                 case xS: sor = v;           break;
                 case xP: por = v;           break;
-                case xE: e_old = e_new;
-                         e_new = v;         break;
+                case xE: e_old = e;
+                         e = v;             break;
                 case xK: b = k; o = v;      break;
 
                  /* Add signed 8-bit v to 16-bit B:O */
@@ -329,7 +329,7 @@ scrounge( uint8_t opcode)
                 case ENTER:    l--;                return ENTER;
                 case INC:      a++;                return INC;
                 case DEC:      a--;                return DEC;
-                case EA:       a=e_new;            return EA;
+                case EA:       a=e;            return EA;
                 default: return 0;
         }
 }
@@ -411,22 +411,22 @@ alu( uint8_t opcode)
                         && ((i&0x80)^(a&0x80)); /* But result has different sign */
         
         switch(opcode & 15){
-                case NOT: a = ~a;                                      break;
-                case ALX: a = (a<x)  ? 255:0;                          break;
-                case AEX: a = (a==x) ? 255:0;                          break;
-                case AGX: a = (a>x)  ? 255:0;                          break;
-                case AND: a = a & x;                                   break;
-                case IOR: a = a | x;                                   break;
-                case EOR: a = a ^ x;                                   break;
-                case XA: a=x;                                          break;
-                case AX: x=a;                                          break;
-                case SWAP: a=x; x=a0;                                  break;
-                case SHL: a<<=1; x=(a0 & 0x80)? 1:0;                   break;
-                case SHR: a>>=1; x=(a0 & 1)? 0x80:0;                   break;
-                case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0;    break;
-                case ADDC: a=i&0xFF; x=(i>255)? 1:0;                   break;
-                case ADDV: a=i&0xFF; x=ovf?255:0;                      break;
-                case SUBB: i = (int x)-(int)a; a=i&0xFF; x=(i<0)? 0:1; break;
+                case NOT: a = ~a;                                       break;
+                case ALX: a = (a<x)  ? 255:0;                           break;
+                case AEX: a = (a==x) ? 255:0;                           break;
+                case AGX: a = (a>x)  ? 255:0;                           break;
+                case AND: a = a & x;                                    break;
+                case IOR: a = a | x;                                    break;
+                case EOR: a = a ^ x;                                    break;
+                case XA: a=x;                                           break;
+                case AX: x=a;                                           break;
+                case SWAP: a=x; x=a0;                                   break;
+                case SHL: a<<=1; x=(a0 & 0x80)? 1:0;                    break;
+                case SHR: a>>=1; x=(a0 & 1)? 0x80:0;                    break;
+                case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0;     break;
+                case ADDC: a=i&0xFF; x=(i>255)? 1:0;                    break;
+                case ADDV: a=i&0xFF; x=ovf?255:0;                       break;
+                case SUBB: i = (int)x - (int)a; a=i&0xFF; x=(i<0)? 0:1; break;
         }
 }
 
