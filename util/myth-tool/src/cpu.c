@@ -1,6 +1,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
+
+#include "cpu.h"
 
 /*
 ** Minimal C program as reference on how Myth CPU is intended to work.
@@ -9,13 +12,9 @@
 ** Author: 2025 Michael Mangelsdorf <mim@ok-schalter.de>
 */
 
-/*
-** CPU STATE VARIABLES
-*/
-
 /* Memory */
 
-uint8_t ram[256][256] = {}; /* Organised as [PAGE-INDEX][BYTE-OFFSET] */
+uint8_t ram[256*256]  = {0}; /* Organised as [PAGE-INDEX][BYTE-OFFSET] */
 
 /* Interrupts */
 
@@ -75,27 +74,6 @@ uint8_t l;     /* Local Page Index Register */
 uint8_t d;     /* Down-Counter / Auto-Decrement Register */
 
 
-/*
-** PROTOTYPES
-*/
-
-       void    myth_step();
-
-static uint8_t fetch();
-
-static void    push_acc( uint8_t v);
-static uint8_t srcval(   uint8_t srcreg);
-static uint8_t scrounge( uint8_t opcode);
-static void    pair(     uint8_t opcode);
-static void    getput(   uint8_t opcode);
-static void    trap(     uint8_t opcode);
-static void    alu(      uint8_t opcode);
-static void    bop(      uint8_t opcode);
-static void    sys(      uint8_t opcode);
-
-static void    call(     uint8_t dstpage);
-
-
 /* Single-step 1 instruction cycle
 */
 void
@@ -152,7 +130,7 @@ myth_step()
 uint8_t
 fetch()
 {
-        return ram[c][pc++];
+        return ram[c*256 + pc++];
 }
 
 
@@ -220,10 +198,9 @@ srcval( uint8_t srcreg)
 #define Sx 6 /* SERIAL input */
 #define Px 7 /* PARALLEL input */
 
-        uint8_t pc0 = pc;
         switch(srcreg){
                 case Fx: return fetch();
-                case Mx: return ram[b][o];
+                case Mx: return ram[b*256 + o];
                 case Bx: return b;
                 case Ox: return o;
                 case Ax: return a;
@@ -276,7 +253,7 @@ pair( uint8_t opcode)
 
         switch(dst){
                 case xC: call(v);           break;
-                case xM: ram[b][o] = v;     break;
+                case xM: ram[b*256 + o] = v;     break;
                 case xB: b = v;             break;
                 case xO: o = v;             break;
                 case xA: push_acc(v);       break;
@@ -359,7 +336,7 @@ getput( uint8_t opcode)
         #define BITS02 opcode & 7
 
         uint8_t index = BITS02;
-        uint8_t *mptr = &( ram[l][GETPUT_OFFSET +index] );
+        uint8_t *mptr = &( ram[l*256 + GETPUT_OFFSET + index] );
 
         if(opcode & BIT3)
                 switch(BITS45){
@@ -500,15 +477,4 @@ sys( uint8_t opcode)
                 case COR: cor(); break;
         }
 }
-
-
-int
-main(int argc, char *argv[])
-{
-        // RESET: Set L, C, PC and BUSY to 0
-        // Run myth_step() n times
-        printf("Myth CPU Implementation Stub\n");
-        exit(0);
-}
-
 

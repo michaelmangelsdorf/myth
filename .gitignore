@@ -1,4 +1,8 @@
 a.out
 *.lck
 .DS_Store
+*.o
+a.out
+my.sublime-project
+my.sublime-workspace
 

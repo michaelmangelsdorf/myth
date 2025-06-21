@@ -1,0 +1,91 @@
+%YAML 1.2
+---
+name: My8 Assembly
+file_extensions:
+  - my8
+scope: source.my8
+
+contexts:
+  main:
+    - include: comments
+    - include: labels
+    - include: numbers
+    - include: strings
+    - include: opcodes
+    - include: labelrefs
+    - include: constants
+    - include: directive
+    - include: charconst
+
+  charconst:
+    - match: "'([ -~])'"
+      scope: constant.character.literal.my8
+
+  directive:
+    - match: (?i)\b(PAGE|OFFSET)\b
+      scope: keyword.directive.asm.my8
+
+  comments:
+    - match: ';.*$'
+      scope: comment.line.semicolon.my8
+
+  labels:
+    # Global label (with colon) – applies to both PAGE and OFFSET labels
+    - match: '(?:\d+)?@([a-zA-Z_][a-zA-Z0-9_]{0,15}):'
+      scope: label.global.my8
+
+    # PAGE label (UPPERCASE only, no colon)
+    - match: '(?:\d+)?@([A-Z_][A-Z0-9_]{0,15})\b'
+      scope: entity.name.label.page.my8
+
+    # OFFSET label (mixed or lowercase, no colon)
+    - match: '(?:\d+)?@([a-zA-Z_][a-zA-Z0-9_]{0,15})\b'
+      scope: entity.name.label.offset.my8
+
+  labelrefs:
+    # Labelref with < or > and UPPERCASE identifier (not preceded by a digit)
+    - match: (?<!\d)([<>])([A-Z_][A-Z0-9_]{0,15})\b
+      scope: variable.labelref.page.my8
+
+    # Labelref with < or > and mixed/lowercase identifier (not preceded by a digit)
+    - match: (?<!\d)([<>])([a-zA-Z_][a-zA-Z0-9_]{0,15})\b
+      scope: variable.labelref.offset.my8
+
+  constants:
+    - match: \b([A-Z_][A-Z0-9_]*)=(0x[0-9a-fA-F]+|\d+)\b
+      captures:
+        1: entity.name.constant.my8
+        2: constant.numeric.my8
+
+  numbers:
+    - match: \b0x[0-9a-fA-F]+\b
+      scope: constant.numeric.hex.my8
+    - match: \b\d+\b
+      scope: constant.numeric.decimal.my8
+
+  strings:
+    - match: '"'
+      scope: punctuation.definition.string.begin.my8
+      push:
+        - meta_scope: string.quoted.double.my8
+        - match: '"'
+          scope: punctuation.definition.string.end.my8
+          pop: true
+        - match: '\\.'
+          scope: constant.character.escape.my8
+
+  opcodes:
+    - match: (?i)\b(NOP|SSI|SSO|SCL|SCH|RTI|RTS|COR)\b
+      scope: keyword.control.sys.my8
+    - match: (?i)\b(P1BO|BOP1|P2BO|BOP2|P3BO|BOP3|P4BO|BOP4)\b
+      scope: keyword.control.bop.my8
+    - match: (?i)\b(NOT|ALX|AEX|AGX|AND|IOR|EOR|XA|AX|SWAP|SHL|SHR|ASR|ADDC|ADDV|SUBB)\b
+      scope: keyword.control.alu.my8
+    - match: (?i)\b\*[0-9]+\b
+      scope: keyword.control.trap.my8
+    - match: (?i)\b(?:[1-8][boad]|[boad][1-8])\b
+      scope: keyword.control.getput.my8
+    - match: (?i)\b(?!MM|BB|OO|AA|DD|SS|PP|FM)([FMBOADSP](?:C|B|O|A|D|S|P|E|K|U|W|J|H|Z|N))\b
+      scope: keyword.control.pair.my8
+    - match: (?i)\b(CODE|LOCAL|LEAVE|ENTER|INC|DEC|EA|KEY)\b
+      scope: keyword.control.scrounge.my8

@@ -289,52 +289,66 @@ Operation codes fall into 6 format groups, which are decodable using a priority 
 
 ## Assembler
 
-### Casing and Phrasing
-
-Instruction mnemonics are not case-sensitive. Using upper case can provide emphasis or visual structure.
-
-Multiple assembler mnemonics can occur on a single line. Commas (",") and dots (".") and dashes ("-") can optionally be used for grouping "phrases" of instructions that logically belong together. These symbol can be attached to instruction mnemonics without any effect.
-
-By default, put Fx (literal instructions) at the beginning of a new line. Also do this for TRAP instructions (*xyz), if they consume code bytes.
-
-### Comments
-
-Place comments into parentheses. A semicolon (";") works as a line comment.
-
-### Number Literals
-
-Decimal numbers from 0-255 can be included in the source text as literals, and be prefixed by an optional minus sign. Hexadecimal numbers must be in two uppercase digits and marked with the suffix "h", for instance: "80h" for 128.            Binary numbers can either be formatted as four numeric digits with the suffix "b" (1111b = 15), or in the following way, as two 4-bit groups separated by an underscore ("_") with the suffix "b", for instance: "0010_0000b" for 32.
-
-### Strings and Characters
-
-Characters enclosed in double quotation marks such as "Hello World" are assembled to ASCII strings of characters.
-
 ### Labels
 
-#### Page-Index Labels
-
-Use all UPPER "snake-case" for labels that reference page-indices. Add a colon when defining these labels.
-
-A TRAP page label definition must begin with an asterisk and end with a colon. Writing the label without the colon encodes a trap instruction to the defined page-index.
-    
-Once the assembler reaches a page label, the remaining bytes of the current page are padded with 0 (NOP), and the object-code pointer is set to offset 0 of the new page.
-
-#### Offset Labels
-
-Prefix offset labels by @. A number literal followed by a colon can occur between the at-sign and the label text to set a the object code origin. If the number literal specifies an offset __after__ the previous offset, the object code bytes that are skipped are padded with zeros (NOP).
+- Labels are defined with `@labelname` at the start of a line. A decimal number before the at sign (`123@labelname`) sets the page-index to that number, if the labelname is all-uppercase, or sets the page-offset to that number if the labelname contains lowercase letters.
+- A label may optionally be followed by a colon (`:`), like `@FOO:` — this marks it as a **global label**. Global labels are inserted into the **native symbol table** (inside the resulting binary image).
+- Labels must be unique **unless** they are a **single lowercase letter** (`@a`, `@b`, etc.), which may be defined multiple times (for generic labels such as short jumps). When defined multiple times, the nearest matching label in either direction will be used, see below.
 
 ### Label References
 
-Labels are referenced by prefixing their identifier with < for backward references (the intended label is defined earlier in the source code than the reference to it), or with > for forward references (the intended label is defined after the reference to it in the source code).
+- Use `<label` for a **backward reference** to the closest matching label earlier in the file.
+- Use `>label` for a **forward reference** to the closest matching label later in the file.
 
-If a label is not unique, the reference goes to the nearest occurrence of it in the given direction. A label reference is just a numerical value and can be used as a literal anywhere in the code.
+### Constants
+
+- You can define a constant using `name=value`. The value can be any valid number literal (see below).
+- Defined constants can be used later by referencing their name in the source code.
+
+### Special Tokens
+
+- `PAGE` — Page-index of the current instruction.
+- `OFFSET` — Page-offset of the current instruction.
+
+### Literals
+
+- **Decimal**: e.g., `42`, `-5`
+- **Hexadecimal**: Suffix `h` (e.g., `2Ah`, `0FFh`)
+- **Binary**: Prefix `b`, underscores allowed (e.g., `b1010_0001`)
+- **Character literal**: Single character in quotes (e.g., `'A'`)
+- **String literal**: Double quotes, may contain spaces (e.g., `" hello world "`)
+
+## Mnemonics
+
+- Mnemonics are case insensitive — `addc`, `ADDC`, and `AddC` are all valid.
+- Example mnemonics: `AND`, `ADDC`, `RET`, `2r`
+
+### Comments
+
+- Any text after a semicolon (`;`) is a comment.
+- Text enclosed in parentheses `( ... )` is also treated as a comment — including the parentheses themselves.
+  - Spaces may appear after the opening or before the closing parenthesis.
+  - `( this is a valid comment )` — this entire part is ignored.
+
+### Syntax-Highlighting in Sublime
+
+Place the syntax and color scheme definition files from the repo inside the folder: `/Users/???/Library/Application Support/Sublime Text 3/Packages/User'` (macOS).
+
+Then in Sublime, press CMD-Shift-P. In the dialog, navigate to: `Preferences: Settings- Syntax Specific` and paste the following snippet.
+ 
+    // These settings override both User and Default settings for the myth-my8 syntax
+    {
+    		"color_scheme": "myth-my8.sublime-color-scheme",
+    }
+
+
+
 
 ## Systems Programming
 
 The following are recommendations or useful conventions.
 
 ### Identifiers
-
 
 
 ### Parameter passing

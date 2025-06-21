@@ -1,0 +1,117 @@
+{
+  "name": "My8",
+  "variables": {
+    "background": "#2e2e2e",
+    "foreground": "#dcdcdc",
+    "yellow": "#c4c700",
+    "red": "#e64a4a",
+    "blue": "#5a99d1",
+    "purple": "#d48fd6",
+    "green": "#7fc97f",
+    "orange": "#d88d31",
+    "gray": "#888888",
+    "cyan": "#4fc9cc",
+    "comment": "#727272"
+  },
+  "globals": {
+    "background": "var(background)",
+    "foreground": "var(foreground)",
+    "caret": "white",
+    "selection": "#264f78",
+    "selection_border": "#00000000",
+    "line_highlight": "#3c3c3c"
+  },
+  "rules": [
+    {
+      "scope": "label.global.my8",
+      "foreground": "var(yellow)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "string.quoted.double.my8",
+      "foreground": "var(cyan)"
+    },
+    {
+      "scope": "keyword.directive.asm.my8",
+      "foreground": "var(orange)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "keyword.control.sys.my8",
+      "foreground": "var(yellow)"
+    },
+    {
+      "scope": "keyword.control.bop.my8",
+      "foreground": "var(blue)"
+    },
+    {
+      "scope": "keyword.control.alu.my8",
+      "foreground": "var(green)"
+    },
+    {
+      "scope": "keyword.control.trap.my8",
+      "foreground": "var(purple)"
+    },
+    {
+      "scope": "keyword.control.getput.my8",
+      "foreground": "var(blue)"
+    },
+    {
+      "scope": "keyword.control.pair.my8",
+      "foreground": "var(orange)"
+    },
+    {
+      "scope": "keyword.control.scrounge.my8",
+      "foreground": "var(red)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "constant.numeric.hex.my8 constant.numeric.decimal.my8",
+      "foreground": "#b1b1b1"
+    },
+    {
+      "scope": "variable.parameter.register.my8",
+      "foreground": "#99b3cc"
+    },
+    {
+      "scope": "variable.labelref.page.my8",
+      "foreground": "#c3a2d3",  // Strong purple for page labelrefs
+      "font_style": "bold"
+    },
+    {
+      "scope": "variable.labelref.offset.my8",
+      "foreground": "#b0a6d1"  // Lighter purple for offset labelrefs
+    },
+    {
+      "scope": "entity.name.label.page.my8",
+      "foreground": "var(orange)",  // Uses same orange as directives
+      "font_style": "bold"
+    },
+    {
+      "scope": "entity.name.label.offset.my8",
+      "foreground": "#b0a6d1"  // Matches labelref.offset for harmony
+    },
+    {
+      "scope": "comment.line.semicolon.my8",
+      "foreground": "var(comment)",
+      "font_style": "italic"
+    },
+    {
+      "scope": "punctuation.definition.string.begin.my8 punctuation.definition.string.end.my8",
+      "foreground": "var(gray)"
+    },
+    {
+      "scope": "constant.character.escape.my8",
+      "foreground": "var(purple)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "constant.character.literal.my8",
+      "foreground": "var(cyan)"
+    },
+    {
+      "scope": "variable.name.constant.my8",
+      "foreground": "var(yellow)"
+    }
+  ]
+}
