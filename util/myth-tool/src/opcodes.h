@@ -10,6 +10,4 @@ typedef struct {
     const char* pseudocode;
 } Opcode;
 
-Opcode opcodes[];
-
 #endif
