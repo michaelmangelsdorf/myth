@@ -658,51 +658,107 @@ int handle_string_literal(const char* token, uint8_t* output_buffer, size_t* out
 }
 
 
+#include <stdint.h>
+#include <string.h>
+#include <stdio.h>
+
+extern uint8_t ram[]; // Global RAM buffer
+
+int add_symbol_entry(uint8_t typeid, const char* name, const uint8_t* data,
+                     uint8_t itemcount, uint16_t* offset)
+{
+    if (typeid > 15) {
+        fprintf(stderr, "Invalid typeid: %u\n", typeid);
+        return -1;
+    }
+
+    size_t namelen = strlen(name);
+    if (namelen > 15) {
+        fprintf(stderr, "Symbol name too long: %s\n", name);
+        return -1;
+    }
+
+    uint16_t start = *offset;
+    uint16_t pos = *offset;
+
+    // (a) Placeholder for offset to next entry
+    uint16_t offset_pos = pos;
+    ram[pos++] = 0x00;
+
+    // (b) Type/length byte
+    uint8_t typelen = ((typeid & 0x0F) << 4) | ((uint8_t)namelen & 0x0F);
+    ram[pos++] = typelen;
+
+    // (c) Symbol name (null-terminated)
+    for (size_t i = 0; i < namelen; ++i) {
+        ram[pos++] = (uint8_t)name[i];
+    }
+    ram[pos++] = 0x00;
+
+    // (d) Data bytes
+    for (uint8_t i = 0; i < itemcount; ++i) {
+        ram[pos++] = data[i];
+    }
+
+    // (e) Compute and patch relative offset
+    uint16_t entry_size = pos - start;
+    if (entry_size > 255) {
+        fprintf(stderr, "Symbol entry too large: %s (size %u bytes)\n", name, entry_size);
+        return -1;
+    }
+
+    ram[offset_pos] = (uint8_t)entry_size;
+
+    // Update offset pointer
+    *offset = pos;
+    return 0;
+}
+
+
+
+/* Create a symbol table inside ram[] with the mnemonics
+ *
+ */
 void write_globals(void)
 {
-        uint16_t symaddr = SYMTAB_OFFS;
+    uint16_t symaddr = SYMTAB_OFFS;
 
-        for (size_t i = 0; i < label_count; ++i) {
-                if (!label_table[i].isglobal) {
-                        continue;
-                }
 
-                const char* name = label_table[i].name;
-                size_t namelen = strlen(name);
-                if (namelen > 15) {
-                        fprintf(stderr, "Global symbol name too long: %s\n", name);
-                        continue;
-                }
+    // Create symbols for mnemonics
+    for (int i = 0; i < 256; ++i) {
+        const char* name = opcodes[i].mnemonic;
 
-                // Reserve space to compute offset
-                uint16_t entry_start = symaddr;
-
-                // (a) Placeholder for offset to next entry
-                uint16_t offset_pos = symaddr;
-                ram[symaddr++] = 0x00; // will be patched later
-
-                // (b) Type/length byte: high nibble = 0x10 (label), low nibble = namelen
-                uint8_t typelen = 0x10 | (uint8_t)(namelen & 0x0F);
-                ram[symaddr++] = typelen;
-
-                // (c) Symbol name, null-terminated
-                for (size_t j = 0; j < namelen; ++j) {
-                        ram[symaddr++] = (uint8_t)name[j];
-                }
-                ram[symaddr++] = 0x00; // null terminator
-
-                // (d) Optional padding: at least 2 bytes of 0xFF (arbitrary rule, adjustable)
-                ram[symaddr++] = 0xFF;
-                ram[symaddr++] = 0xFF;
-
-                // Compute and write (a): relative offset to next entry
-                uint8_t offset = (uint8_t)(symaddr - entry_start);
-                ram[offset_pos] = offset;
+        if (!name || strlen(name) == 0) {
+            continue; // skip empty mnemonics
         }
 
-        // (e) End of symbol table
-        ram[symaddr++] = 0x00;
+        uint8_t data[1] = { (uint8_t)opcodes[i].opcode };
+
+        if (add_symbol_entry(2, name, data, 1, &symaddr) != 0) {
+            fprintf(stderr, "Failed to write mnemonic symbol: %s\n", name);
+        }
+    }
+
+    for (size_t i = 0; i < label_count; ++i) {
+        if (!label_table[i].isglobal) {
+            continue;
+        }
+
+        const char* name = label_table[i].name;
+
+        // No extra data associated with label symbols in this case
+        uint8_t empty_data[0] = {};
+
+        // Type ID 0x1 = label symbol
+        if (add_symbol_entry(0x1, name, empty_data, 0, &symaddr) != 0) {
+            fprintf(stderr, "Failed to write global symbol: %s\n", name);
+        }
+    }
+
+    // Mark end of symbol table
+    ram[symaddr++] = 0x00;
 }
+
 
 
 
