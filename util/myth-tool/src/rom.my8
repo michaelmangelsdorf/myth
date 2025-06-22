@@ -1,8 +1,37 @@
-
 ; Firmware for Myth Micro-Controller Systems
 ; 2025 Michael Mangelsdorf (mim@ok-schalter.de)
 ; Project files: https://github.com/michaelmangelsdorf/myth
 ; Assemble using "my -a rom.my8" tool
 
 @IRQ:
+@idle fj <idle
+
+; Multiply A times X, result in A:X
+; A:X accumulator acts as a two-element push-down stack when writing to A
+; Both regs are the implied ALU operands, primary result in A, secondary in X
+
+; Using page 3: "my"-tool uses p1 for persisting regs, p2 as IO-buffer
+
+3@MUL8
+    a1          (Save multiplicand into L1 - turns into low order result)
+    xa a4       (Save multiplier into L4)
+    fa 0, a2    (Set high-order result to 0, keep in L2)
+    fd 7        (Initialise loop counter, 8 bits to process)
+    @loop
+        fa b0000_0001, 1a AND  (Check LSB of multiplicand)
+        fz >a                  (Skip if zero)
+            4a 2a ADDC a2      (Add multiplier to high order result)
+        @a
+        1a SHR, a1             (Shift low-order result right)
+        2a SHR, a2             (Shift high-order result right, LSB saved to X)
+        xa 1a IOR, a1          (Carry high-order LSB into low-order MSB)
+    fw <loop
+    1a          (Push low-order result)
+    2a          (Push high-order result)
+    RTS
+
+
+
+
+
 

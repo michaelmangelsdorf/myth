@@ -173,6 +173,7 @@ call( uint8_t dstpage)
         c = dstpage;
 
         l--;         /*Create stack frame*/
+        printf("call to %04X O=%02X B=%02X\n", c*256+pc, o, b);
 }
 
 
@@ -265,7 +266,7 @@ pair( uint8_t opcode)
                 case xM: ram[b*256 + o] = v;     break;
                 case xB: b = v;             break;
                 case xO: o = v;             break;
-                case xA: push_acc(v);       break;
+                case xA: push_acc(v);       printf("to A: %02X\n",v); break;
                 case xD: d = v;             break;
                 case xS: sor = v;           break;
                 case xP: por = v;           break;
@@ -482,6 +483,7 @@ sys( uint8_t opcode)
                         c = b;
                         pc = o;
                         l++; /* Leave stack frame*/
+                        printf("RTS\n");
                         break;
                 case COR: cor(); break;
         }

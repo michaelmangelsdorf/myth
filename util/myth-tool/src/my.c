@@ -112,9 +112,10 @@ void terminal_output() {
 void
 try_dialog()
 {
+        c=0; pc=0;
         for (unsigned u=0xFFFF; u>0; u--) {
                 myth_step();
-                if (ram[OFFSET_OUTPUT] == '\0') break;
+                if (ram[OFFSET_OUTPUT] != '\0') break;
         }
         if (ram[OFFSET_OUTPUT] != '\0') terminal_output();
         else {
@@ -219,7 +220,7 @@ void handle_args(int argc, char *argv[]) {
 
     unsigned cycs;
 
-    while ((opt = getopt_long(argc, argv, "lhuN:pa:b:d:s:r:mw:o:", long_options, &option_index)) != -1) {
+    while ((opt = getopt_long(argc, argv, "lhuN:pa:b:d:sr:mw:o:", long_options, &option_index)) != -1) {
         switch (opt) {
             case 'h':
                 print_usage();

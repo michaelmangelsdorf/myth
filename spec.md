@@ -395,7 +395,7 @@ A memory read-out (dump) can be printed out with `my -b 2 -d 2000h`. This exampl
 
 You can set individual CPU registers using `my -w regname=value`. The command `my -p` prints out a text block of all registers ("pulley").
 
-Individual instructions can be executed with `my -o mnemonic`, and the virtual CPU can be instructed to run n cycles with `my -r n` (for single-step only use `my -s`).
+Individual instructions can be executed with `my -o mnemonic`, and the virtual CPU can be instructed to run n cycles with `my -r n` (for single-step only use `my -s`). Be mindful of setting C and PC to suitable values!
 
 There is a special dialog mode, when `my` is run with a command line where the first character is not a '-' (not a command line option). The command line (max 127 ascii bytes) is then copied into the RAM image at 0x0200 and the CPU is run in order to have it write an output string (max 127 bytes) at 0x0280. The CPU is stopped and the tool terminates as soon as the output string becomes not NULL, or once 64k cycles have elapsed. You can then run `my -m` to try for another 64k cycles.
 

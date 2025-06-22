@@ -1,6 +1,7 @@
 
 
 #include "asm.h"
+#include "binfile.h"
 
 Opcode opcodes[] = {
     { 0, "SYS", "NOP", "Pass the turn (no operation)", "PC++" },
@@ -8,8 +9,8 @@ Opcode opcodes[] = {
     { 2, "SYS", "SSO", "Shift serial bit out", "MOSI=(SOR&80h)?1:0 SOR<<=1 PC++" },
     { 3, "SYS", "SCL", "Set serial clock low", "SCLK=0 PC++" },
     { 4, "SYS", "SCH", "Set serial clock high", "SCLK=1 PC++" },
-    { 5, "SYS", "RTI", "Return from interrupt", "BUSY=0 C=B PC=O L++" },
-    { 6, "SYS", "RTS", "Return from subroutine", "C=B PC=O L++" },
+    { 5, "SYS", "RTS", "Return from interrupt", "BUSY=0 C=B PC=O L++" },
+    { 6, "SYS", "RTI", "Return from subroutine", "C=B PC=O L++" },
     { 7, "SYS", "COR", "Set C to B. Set PC to O. Save return pointer into B:O", "B0=C C=B B=B0 O0=PC PC=O O=O0" },
     { 8, "BOP", "P1BO", "Copy pointer P1 into B:O", "BO=P1 PC++" },
     { 9, "BOP", "BOP1", "Copy B:O into pointer P1", "P1=BO PC++" },
@@ -388,7 +389,7 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
         // Determine if all uppercase
         int is_upper = 1;
         for (size_t i = 0; i < strlen(label); ++i) {
-                if (!isupper((unsigned char)label[i])) {
+                if (!isupper((unsigned char)label[i]) && !isdigit((unsigned char)label[i]) ) {
                         is_upper = 0;
                         break;
                 }
@@ -396,7 +397,7 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
 
         // Rebase PC if a prefix number exists
         if (prefix_num > 0) {
-                uint16_t prev_pc = *pc;  // Save the old PC before changing
+                //uint16_t prev_pc = *pc;  // Save the old PC before changing
 
                 if (is_upper) {
                         *pc = ((uint16_t)(prefix_num & 0xFF)) << 8;
@@ -405,11 +406,14 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
                         *pc = (*pc & 0xFF00) | (prefix_num & 0xFF);
                 }
                 // Fill skipped bytes with zero if moving forward
-                if (*pc > prev_pc) {
-                        for (uint16_t addr = prev_pc; addr < *pc; addr++) {
-                                ram[addr] = 0x00;
-                        }
-                }
+                // if (*pc > prev_pc) {
+                //         for (uint16_t addr = prev_pc; addr < *pc; addr++) {
+                //                 ram[addr] = 0x00;
+                //         }
+                // }
+        } else if (is_upper) {
+                uint8_t pg = (*pc & 0xFF00) >> 8;
+                *pc = (pg+1)*256;
         }
 
         // Allow redefinition in pass 1 only if the label is a single lowercase letter
@@ -424,8 +428,9 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
 
         // Add to label table
         strncpy(label_table[label_count].name, label, MAX_LABEL_LEN - 1);
+
         label_table[label_count].name[MAX_LABEL_LEN - 1] = '\0';
-        label_table[label_count].address = *pc;
+        label_table[label_count].address = is_upper ? *pc >> 8 : *pc;
         label_table[label_count].isglobal = isglobal;
         label_count++;
 
@@ -859,6 +864,7 @@ void assemble(Line** line_ptr_array, size_t line_count)
 
                     if (valid_prefix) {
                         handle_labeldef(token, &pc, pass);
+                          //line->objcode_offset = pc;
                         token = strtok(NULL, " \t,");  // Get next token
                         continue;
                     }
@@ -938,23 +944,22 @@ void assemble(Line** line_ptr_array, size_t line_count)
     write_globals();
 }
 
-
-
 void write_listing(FILE* out, Line** line_ptr_array, size_t line_count) {
     int use_color = (out == stdout);
+    uint16_t prevl_addr=0, currl_addr=0, nextl_addr=0, len, pos;
 
     // Print aligned header
     fprintf(out, "ADDR:  OBJCODE:                  LIN:  SOURCE:\n");
 
     for (size_t i = 0; i < line_count; i++) {
         Line* line = line_ptr_array[i];
-        uint16_t start = line->objcode_offset;
-        uint16_t end = (i + 1 < line_count) ? line_ptr_array[i + 1]->objcode_offset : final_offset;
-        uint16_t len = (end > start) ? (end - start) : 0;
-        uint16_t pos = start;
-        int printed = 0;
+        prevl_addr = currl_addr;
+        currl_addr = line->objcode_offset;
+        nextl_addr = (i + 1 < line_count) ? line_ptr_array[i + 1]->objcode_offset : final_offset;
+        len = (nextl_addr > currl_addr) ? (nextl_addr - currl_addr) : 0;
+        pos = currl_addr;
 
-        if (len == 0) {
+        if (len == 0 || ((currl_addr == prevl_addr)&&(currl_addr != 0))) {
             fprintf(out, "                              ");
             if (use_color) fprintf(out, COLOR_LINE);
             fprintf(out, "   %04zu  ", i + 1);
@@ -965,6 +970,7 @@ void write_listing(FILE* out, Line** line_ptr_array, size_t line_count) {
 
         while (len > 0) {
             uint8_t chunk_len = len > 8 ? 8 : len;
+
             if (use_color) fprintf(out, COLOR_ADDR);
             fprintf(out, "%04X:  ", pos);
             if (use_color) fprintf(out, COLOR_RESET);
@@ -984,18 +990,17 @@ void write_listing(FILE* out, Line** line_ptr_array, size_t line_count) {
             fprintf(out, "   %04zu  ", i + 1);
             if (use_color) fprintf(out, COLOR_RESET);
 
-            if (printed == 0) {
-                fprintf(out, "%s", line->text);
-            }
-
+            fprintf(out, "%s", line->text);
             fprintf(out, "\n");
 
             pos += chunk_len;
             len -= chunk_len;
-            printed = 1;
         }
     }
 }
+
+
+
 
 
 

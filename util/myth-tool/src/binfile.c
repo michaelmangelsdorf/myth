@@ -113,14 +113,14 @@ read_ram(const char *filename)
 void
 create_new_ram_file(const char *filename) {
     FILE *file = fopen(filename, "wb");
-    if (file == NULL) {
-        fprintf( stderr, "Created zeroed file: %s\n", filename);
-        exit(1);
-    }
+    if (file != NULL) {
     // Write zeroed RAM to the file
-    memset(ram, 0, sizeof(ram));
-    if (fwrite(ram, sizeof(uint8_t), sizeof(ram), file) != sizeof(ram)) {
-        perror("Error writing zeroed RAM to file");
+        memset(ram, 0, sizeof(ram));
+        if (fwrite(ram, sizeof(uint8_t), sizeof(ram), file) != sizeof(ram)) {
+            perror("Error writing zeroed RAM to file");
+            exit(1);
+        }
+        fprintf( stderr, "Created zeroed file: %s\n", filename);
         exit(1);
     }
     fclose(file);
