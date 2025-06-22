@@ -6,7 +6,7 @@ A demonstration video in the other repo shows the controller board with a compan
 
 In the video, it loads a program for multiplying two numbers from a serial EEPROM running a native SPI implementation. It then computes the result and displays it on the I/O boards 7-segment display.
 
-The new project over here will help me explore a modified version of the CPU a little more and write software for it, before developing more hardware.
+The new project over here will help me explore a specific, stable version of the CPU a little more and write software for it, before developing more hardware.
 
 The schematics have been stripped of everything I thought wasn't essential, so it's a bit easier to read. In other words, although it's possible to load the schematics file into KiCad, its intended use is only for reference.
 

@@ -658,11 +658,6 @@ int handle_string_literal(const char* token, uint8_t* output_buffer, size_t* out
 }
 
 
-#include <stdint.h>
-#include <string.h>
-#include <stdio.h>
-
-extern uint8_t ram[]; // Global RAM buffer
 
 int add_symbol_entry(uint8_t typeid, const char* name, const uint8_t* data,
                      uint8_t itemcount, uint16_t* offset)

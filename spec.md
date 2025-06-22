@@ -163,12 +163,13 @@ Inherent NOP instructions such as BB, OO, AA, and DD, and impractical instructio
 	PP routed to: EA (Copy E to A)
 
 
-#### B:O Pointer Registers (BOPs)
+#### B:O Pointer Register (BOPs) and Amenity Pointers
 
 As mentioned, registers B (base) and O (offset) form a 16-bit pointer for memory access. The xU (update) instruction is used to add an 8-bit signed number to this pointer for doing address arithmetic.
 
 There are four 16-bit amenity registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction (instruction group BOP). For instance: BOP1 stores the B:O pointer into P1, and P1BO stores P1 into B:O.
 
+See the note on usage conventions for these pointers in the "Programming" section.
 
 #### Interrupts
 
@@ -434,6 +435,52 @@ The example sets the accumulator registers A and X, and executes the ADDC instru
     L5:00(+000) L6:00(+000) L7:00(+000) L8:00(+000)  BUSY:0
 
 
+### Preliminary ROM image ("Firmware")
+
+#### Reserved Pages for My-Tool
+
+##### Page 0 - Interrupts
+
+Due to how interrupts work, code execution after power-on, reset or when an interrupt request is accepted, starts at address 0h. Page 0 should be reserved for handling these various cases, particularly the main interrupt service handler.
+
+##### Page 1 - Register Store
+
+I currently work with a 64k image in which the CPU registers are persisted starting at address 0100h (see my-tool project files), with the whole page being reserved.
+
+##### Page 2 - Text Buffers
+
+Further, page 2 is used for two text buffers which my-tool used to communicate with the Myth VM: In dialog mode, a maximum of 127 bytes of the command line text is stored as a zero terminated string at address 0200h (input buffer). The VM is expected to respond by writing a zero terminated string not exceeding 127 characters into the output buffer at address 0280h.
+
+The first byte of the output buffer should be monitored; when it becomes non-zero, this is a termination/ready signal from the VM. This implies that the output string should be written, with the first character last, overwriting the initial zero at 0280h.
+
+##### Page 3 - Key
+
+The firmware currently sets K to page 3, so that xK instructions set the B:O pointer to 3:x. The xK instruction was implemented to have quick access to one "key" page of frequently used system variables.
+
+(A table of these will be maintained here)
+
+##### Page 5 - Stack and S4 Pointer
+
+The amenity pointer S4 is currently reserved as a system wide parameter stack pointer, and it is set to 5FFh, growing towards lower addresses. If your routines use it for other purposes, please restore its value. P1 can be used as a scratch register for P:O.
+
+##### Page 6 - Threading Heap and Threading Stack
+
+To experiment with threaded code, amenity pointer S3 is currently reserved as a system wide threading stack pointer, set to 6FFh. S2 is reserved as the threading token pointer. If you use it for other purposes, please restore it.
+
+#### Symbol Table
+
+The assembler outputs a "Global" symbol table. Entries in this table are formed as follows:
+
+- **Link-Byte**: Relative byte offset to the next entry, or zero for end-of-table.
+- **Info-Byte**: High-order nybble encodes the symbol type, low order is the length in bytes of the symbol name -1; hence a maximum length of 16.
+- **Name-String** Name of the symbol
+- **Zero**: Zero for string termination of the name string
+- **Data-Bytes**: Variable number of data-bytes, corresponding to the type of the symbol
+
+The following types are currently used:
+
+- **Assembler label**: Type=1, data-bytes: none
+- **Mnemonic**: Type=2, data-bytes: opcode
 
 ### Parameter passing
 
