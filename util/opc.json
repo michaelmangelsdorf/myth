@@ -38,15 +38,15 @@
     "opcode": 5,
     "group": "SYS",
     "mnemonic": "RTS",
-    "desc": "Return from interrupt",
-    "pseudocode": "BUSY=0 C=B PC=O L++"
+    "desc": "Return from subroutine",
+    "pseudocode": "C=B PC=O L++"
   },
   {
     "opcode": 6,
     "group": "SYS",
     "mnemonic": "RTI",
-    "desc": "Return from subroutine",
-    "pseudocode": "C=B PC=O L++"
+    "desc": "Return from interrupt",
+    "pseudocode": "BUSY=0 C=B PC=O L++"
   },
   {
     "opcode": 7,
