@@ -5,7 +5,7 @@
 
 #include "srcfile.h"
 
-// MM: This code was coauthored with an AI, to try it out
+// MM: This code was coauthored with an AI, I wanted to try that out
 // worked surprisingly well, as this seems the perfect use-case
 // for it, generating boilerplate such as this
 // I've learned that there is a boolean type in C!

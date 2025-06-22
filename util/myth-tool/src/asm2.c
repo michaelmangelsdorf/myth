@@ -371,7 +371,7 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
                 prefix_num = atoi(num_prefix);
 
                 if (label[num_len] != '@') {
-                        fprintf(stderr, "Malformed label: missing '@' after number\n");
+                        fprintf(stderr, "Invalid label: missing '@' after number\n");
                         return;
                 }
 
@@ -429,7 +429,7 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
         label_table[label_count].isglobal = isglobal;
         label_count++;
 
-        printf("Label defined: %s -> 0x%04X (%s)\n", label, *pc, isglobal ? "global" : "local");
+        //printf("Label defined: %s -> 0x%04X (%s)\n", label, *pc, isglobal ? "global" : "local");
 }
 
 
@@ -469,8 +469,8 @@ void handle_labelref(const char* label, char direction, uint16_t pc)
         if (found) {
                 // Write low byte of label address into RAM
                 ram[pc] = (uint8_t)(resolved_address & 0xFF);
-                printf("Resolved %c%s to 0x%04X -> emitted 0x%02X at 0x%04X\n",
-                       direction, label, resolved_address, ram[pc], pc);
+                //printf("Resolved %c%s to 0x%04X -> emitted 0x%02X at 0x%04X\n",
+                //       direction, label, resolved_address, ram[pc], pc);
         } else {
                 fprintf(stderr, "Error: Could not resolve label reference %c%s at 0x%04X\n",
                         direction, label, pc);
@@ -487,12 +487,18 @@ void strip_trailing_punctuation(char* token)
 
 // Helper function to convert a string to uppercase
 void to_upper(const char* src, char* dest, size_t size) {
+    if (!src || !dest || size == 0) {
+        return; // Prevent segmentation faults due to NULL pointers or zero size
+    }
+
     size_t i;
-    for (i = 0; i < size - 1 && src[i]; ++i) {
+    for (i = 0; i < size - 1 && src[i] != '\0'; ++i) {
         dest[i] = (char)toupper((unsigned char)src[i]);
     }
-    dest[i] = '\0';
+
+    dest[i] = '\0'; // Always null-terminate
 }
+
 
 int find_opcode(const char* token, uint8_t* opcode)
 {
@@ -621,7 +627,7 @@ int handle_string_literal(const char* token, uint8_t* output_buffer, size_t* out
     size_t len = strlen(token);
 
     if (len < 2 || token[0] != '"' || token[len - 1] != '"') {
-        fprintf(stderr, "Malformed string literal (missing quotes): %s\n", token);
+        fprintf(stderr, "Invalid string literal (missing quotes): %s\n", token);
         return -1;
     }
 
@@ -704,7 +710,7 @@ void handle_constdef(const char* token)
 
         const char* equal_sign = strchr(token, '=');
         if (!equal_sign) {
-                fprintf(stderr, "Malformed constant definition: %s\n", token);
+                fprintf(stderr, "Invalid constant definition: %s\n", token);
                 return;
         }
 
@@ -742,7 +748,7 @@ void handle_constdef(const char* token)
         label_table[label_count].isglobal = 0;
         label_count++;
 
-        printf("Constant defined: %s = 0x%02X\n", name, value & 0xFF);
+        //printf("Constant defined: %s = 0x%02X\n", name, value & 0xFF);
 }
 
 
@@ -777,7 +783,7 @@ void assemble(Line** line_ptr_array, size_t line_count)
     static int pass;
 
     for (pass = 1; pass <= 2; ++pass) {
-    	printf("Pass %d\n", pass);
+     //printf("Pass %d\n", pass);
         pc = 0;
 
         for (size_t i = 0; i < line_count; ++i) {

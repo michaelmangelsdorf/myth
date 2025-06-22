@@ -11,7 +11,6 @@
 
 #include "my.h"
 #include "cpu.h"
-#include "opcodes.h"
 
 
 #define MAX_LABELS 1000
@@ -29,6 +28,16 @@ typedef struct {
 #define SYMTAB_OFFS 0x8000  // or wherever appropriate
 
 
+
+typedef struct {
+    int opcode;
+    const char* group;
+    const char* mnemonic;
+    const char* desc;
+    const char* pseudocode;
+} Opcode;
+
+extern Opcode opcodes[];
 
 
 

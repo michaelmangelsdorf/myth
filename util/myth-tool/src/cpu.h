@@ -27,7 +27,7 @@ extern uint8_t k;
 extern uint8_t l;
 extern uint8_t d;
 
-
+extern void exec_opcode(uint8_t opcode);
 extern void myth_step();
 uint8_t fetch();
 void push_acc(uint8_t v);

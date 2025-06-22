@@ -1,18 +1,50 @@
 ## Myth CPU/Micro-Controller
 ## OVERVIEW
 
-Myth is a spinoff with minor changes of an earlier micro-controller built successfully using just under 100 74HC series chips, some CMOS memory and passive components.
-
 Myth is an educational 8-bit toy CPU with a reduced, but hopefully enjoyable feature set. It has no microcoded complex instructions, but care has been taken to allow for practicable programming that should be intuitive to the assembler programmer.
 
-Published schematics and documentation of the earlier, working prototype:
+The project is based on an earlier prototype, built successfully using just under 100 74HC series chips, some CMOS memory and passive components.
+
+Published schematics and documentation of the earlier project, including the design files for the final PCB production run at JLCPCB are on GitHub:
 https://github.com/michaelmangelsdorf/Sonne8
 
 ## PART 1
 
-### Computations
+### Basic CPU
 
-The two registers A and X are called the accumulator. A holds the primary result of ALU (Arithmetic Logic Unit) operations. X holds the secondary result. When writing a value into A (instructions xA and GETA), the accumulator functions as a two-element push-down stack: The old value of A is saved into X before overwriting it with the new value.
+An accumulator with two registers (A and X) feeds into an Arithmetic Logic Unit (ALU), computes a result, then overwrites A and X with the results.
+
+The primary result (the sum of both registers, for instance) is stored in A, the secondard result (carry bit of the sum) is stored in X.
+
+When writing a value into A (instructions _A and GETA), the accumulator functions as a two-element push-down stack: The old value of A is saved into X before overwriting it with the new value. X can be saved into A with the XA instruction.
+
+X cannot be read or written directly.
+
+Here is an example that demonstrates the use of the ALU in conjunction with the accumulator:
+
+    ; F_ fetches a literal and places it into whatever _ is
+    
+    FA 4  (Pushes 4 onto the accumulator stack AX)
+    FA 5  (Pushes 5)
+    
+    (A is now 5, X is 4)
+    
+    ADDC  ; Add A and X; secondary result/side effect:
+          ; carry bit in X
+    
+    (A is now 9, X is 0)
+    
+    SHR   ; Shift A right; secondary result/side effect:
+          ; previous low order bit as 0 or 80h in X
+    
+    (A is now 4, X is 1)
+    
+    AGX   ; Produce flag: A greater than X, no side effect
+    
+    (A is FFh - true, X is 1 - unchanged)
+
+
+
 
 The ALU can run the following opcodes:
 
@@ -36,31 +68,31 @@ The ALU can run the following opcodes:
 
 #### Memory Layout
 
-The CPU has access to 64 kilobytes of RAM. This memory is organized into 256 pages of 256 bytes.
+Memory is accessed as 256 pages of 256 bytes each (64k).
 
-A memory address is composed of a page index (high order address) and a byte offset (low order address) within that page. For example address 0x6502 has a page index of 0x65 and a byte offset of 0x02.
+A memory address is composed of a page index (high order address byte) and an offset (low order address byte) within that page. For example address 0x6502 has a page index of 0x65 and a byte offset of 0x02.
 
 ##### Offset Registers
 
-Without exception, the byte offset for data memory access is stored in O (offset), and the byte offset for fetching instructions and literals is stored in the program counter register (PC).
+There are only two offset registers and they are the only means of setting address offsets in this design, so must be used for directly accessing memory.
 
-When reading memory data, the O register must be set to a suitable page-offset value at any time, except when using GETPUT instructions or fetching a literal placed in the code.
+For data memory access, the byte offset in the offset register (O) is used, and the byte offset for fetching instructions and literals is stored in the program counter register (PC).
+
+There are instructions that access memory with implicit offsets, however.
 
 ##### Page-Index Registers
 
-There are four dedicated page-index registers: B for Base, C for Code, K for Key, and L for Local.
+There are four page-index registers: B for Base, C for Code, K for Key, and L for Local.
 
 ###### Register B
 
-Without exception, the B register (base) is used together with O (offset) as the memory pointer to the address where read or write operations occur.
+For data memory access, the base register (B) is used together with O as the memory pointer to the address where read or write operations occur.
 
-When reading memory data, the B:O register pair must be set to a suitable memory pointer, except when using GETPUT instructions or fetching a literal placed in the code.
-
-The 16-bit value B:O is called the Base Pointer.
+The 16-bit value B:O is called the base pointer. The base pointer is the only means of composing complete 16-bit addresses (pointers) directly.
 
 ###### Register C
 
-When code is running, the byte offset of the current instruction is invariably stored in the program counter register (PC). The page number where this offset applies is stored in C (Code).
+When code is running, the program counter register (PC) holds the byte offset of the current instruction in memory. The page number where this offset applies is stored in C (Code).
 
 ###### Register K
 
@@ -137,9 +169,23 @@ As mentioned, registers B (base) and O (offset) form a 16-bit pointer for memory
 
 There are four 16-bit amenity registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction (instruction group BOP). For instance: BOP1 stores the B:O pointer into P1, and P1BO stores P1 into B:O.
 
-## PART 2
 
-### External Communication (I/O)
+#### Interrupts
+
+An external device can make an interrupt request (IRQ) by asserting the IRQ signal.
+
+At the beginning of each instruction cycle, the CPU checks whether an Interrupt must be serviced. There are two conditions which prevent an interrupt from being serviced by the microcontroller during a given instruction cycle. Firstly, when the CPU is running code within page 0, for example just after RESET, and secondly when the BUSY flag is set.
+
+If the BUSY flag is not set, and the page index in C is not zero, the CPU injects a "fake" TRAP call instruction to page 0, instead of fetching a proper instruction opcode. By entering page 0, an interrupt service routine in page zero at address-offset 0 is run.
+
+To re-enable interrupts, the software must execute an RTI instruction (Return from Interrupt). RTI behaves identically to RTS (Return from Subroutine), but clears the BUSY flag. As long as the BUSY flag remains set, downstream service routines or other code will not be interrupted by interrupts.
+
+The interrupt service subroutine once it returns resumes execution at the point in code where the interrupt occurred.
+
+You can manually set BUSY by executing TRAP 0. Only this instruction will work, other calls to page 0 do not have this side effect.
+
+
+## PART 2 - I/O Functionality (Dedicated Registers and Instructions)
 
 #### Device Selection
 
@@ -259,22 +305,9 @@ Similarly, to transmit data on the leading or trailing edge, execute SSO before 
 
 After data transmission is complete, the selected device needs to be deselected to allow other devices to communicate on the bus. This is done by updating the E register with the appropriate value.
 
+## Part 3 - Programming
 
-### Interrupts
-
-An external device can make an interrupt request (IRQ) by asserting the IRQ signal.
-
-At the beginning of each instruction cycle, the CPU checks whether an Interrupt must be serviced. There are two conditions which prevent an interrupt from being serviced by the microcontroller during a given instruction cycle. Firstly, when the CPU is running code within page 0, for example just after RESET, and secondly when the BUSY flag is set.
-
-If the BUSY flag is not set, and the page index in C is not zero, the CPU injects a "fake" TRAP call instruction to page 0, instead of fetching a proper instruction opcode. By entering page 0, an interrupt service routine in page zero at address-offset 0 is run.
-
-To re-enable interrupts, the software must execute an RTI instruction (Return from Interrupt). RTI behaves identically to RTS (Return from Subroutine), but clears the BUSY flag. As long as the BUSY flag remains set, downstream service routines or other code will not be interrupted by interrupts.
-
-The interrupt service subroutine once it returns resumes execution at the point in code where the interrupt occurred.
-
-You can manually set BUSY by executing TRAP 0. Only this instruction will work, other calls to page 0 do not have this side effect.
-
-## Opcode Format
+### Opcode Format
 
 Operation codes fall into 6 format groups, which are decodable using a priority encoder. 
 
@@ -287,30 +320,32 @@ Operation codes fall into 6 format groups, which are decodable using a priority 
            OPC_GETPUT    01 xx x xxx    b0-2: OFFS, b3: GET/PUT, b4-5: REG
            OPC_PAIR      1  xxx xxxx    b0-3: DST, b4-6: SRC
 
-## Assembler
+### Assembler
 
-### Labels
+#### Labels
 
-- Labels are defined with `@labelname` at the start of a line. A decimal number before the at sign (`123@labelname`) sets the page-index to that number, if the labelname is all-uppercase, or sets the page-offset to that number if the labelname contains lowercase letters.
+- Address labels are defined using identifiers prefixed with an at-sign (`@labelname`). A decimal number before the at sign (`123@labelname`) sets the page-index for emitting object code to that number, if the labelname is all-uppercase, or sets the page-offset to that number if the labelname contains lowercase letters.
 - A label may optionally be followed by a colon (`:`), like `@FOO:` — this marks it as a **global label**. Global labels are inserted into the **native symbol table** (inside the resulting binary image).
 - Labels must be unique **unless** they are a **single lowercase letter** (`@a`, `@b`, etc.), which may be defined multiple times (for generic labels such as short jumps). When defined multiple times, the nearest matching label in either direction will be used, see below.
 
-### Label References
+#### Label References
 
 - Use `<label` for a **backward reference** to the closest matching label earlier in the file.
 - Use `>label` for a **forward reference** to the closest matching label later in the file.
+- Any label identifier can be placed into the source text and emits its value into the object code. This is equivalent to a backward reference ("search from the beginning, earlier definitions first").
 
-### Constants
+#### Constants (Data Labels)
 
 - You can define a constant using `name=value`. The value can be any valid number literal (see below).
 - Defined constants can be used later by referencing their name in the source code.
+- A colon after the label name (`name:=value`) defines a global label.
 
-### Special Tokens
+#### Special Tokens
 
 - `PAGE` — Page-index of the current instruction.
 - `OFFSET` — Page-offset of the current instruction.
 
-### Literals
+#### Literals
 
 - **Decimal**: e.g., `42`, `-5`
 - **Hexadecimal**: Suffix `h` (e.g., `2Ah`, `0FFh`)
@@ -318,19 +353,23 @@ Operation codes fall into 6 format groups, which are decodable using a priority 
 - **Character literal**: Single character in quotes (e.g., `'A'`)
 - **String literal**: Double quotes, may contain spaces (e.g., `" hello world "`)
 
-## Mnemonics
+#### Mnemonics
 
 - Mnemonics are case insensitive — `addc`, `ADDC`, and `AddC` are all valid.
 - Example mnemonics: `AND`, `ADDC`, `RET`, `2r`
 
-### Comments
+#### Comments
 
 - Any text after a semicolon (`;`) is a comment.
-- Text enclosed in parentheses `( ... )` is also treated as a comment — including the parentheses themselves.
-  - Spaces may appear after the opening or before the closing parenthesis.
-  - `( this is a valid comment )` — this entire part is ignored.
+- Text enclosed in parentheses `(A comment)` is also treated as a comment — including the parentheses themselves.
 
-### Syntax-Highlighting in Sublime
+#### Phrasing
+
+Any assembly token can be followed by a comma (,) or a dot (.), and dashes are ignored.
+
+    fa 1, fa 2 (pushed onto A) - ADDC. ; These are fine
+
+#### Syntax-Highlighting in Sublime
 
 Place the syntax and color scheme definition files from the repo inside the folder: `/Users/???/Library/Application Support/Sublime Text 3/Packages/User'` (macOS).
 
@@ -344,11 +383,56 @@ Then in Sublime, press CMD-Shift-P. In the dialog, navigate to: `Preferences: Se
 
 
 
-## Systems Programming
+### "My"-Tool for Native  Development
 
-The following are recommendations or useful conventions.
+The command line tool `my` (for Myth) can be used to set registers, print memory read-outs, and for assembling and running assembler code. The source-code for `my` is in the `util` folder of the Myth GitHub repo.
 
-### Identifiers
+On each invocation, the program reads in a complete 64k RAM image (default name: `rom.bin` that is used as memory for a virtual Myth CPU. You can create this file by running `my -N <filename>`. Before the tool terminates, the (possibly modified) RAM is persisted back into the image file.
+
+You can assemble a source file into this image with `my -la <filename>`. The `l` option in this example prints an additional assembly listing including the emitted object code by source line.
+
+A memory read-out (dump) can be printed out with `my -b 2 -d 2000h`. This example prints 16 data bytes stored starting at address 0x2000, listing them in three number bases. See `my -h` for more options.
+
+You can set individual CPU registers using `my -w regname=value`. The command `my -p` prints out a text block of all registers ("pulley").
+
+Individual instructions can be executed with `my -o mnemonic`, and the virtual CPU can be instructed to run n cycles with `my -r n` (for single-step only use `my -s`).
+
+There is a special dialog mode, when `my` is run with a command line where the first character is not a '-' (not a command line option). The command line (max 127 ascii bytes) is then copied into the RAM image at 0x0200 and the CPU is run in order to have it write an output string (max 127 bytes) at 0x0280. The CPU is stopped and the tool terminates as soon as the output string becomes not NULL, or once 64k cycles have elapsed. You can then run `my -m` to try for another 64k cycles.
+
+Example `my` session:
+
+The example sets the accumulator registers A and X, and executes the ADDC instruction, which produces the sum of A and X in A, and the carry generated by the addition into X.
+
+    (base) ➜  myth-tool git:(main) ✗ my -p
+    
+    C:00 PC:A7          E:00(0000_0000) E_OLD:00(0000_0000)
+    SCLK:0 MISO:0 MOSI:0      SIR:00 SOR:00   PIR:00 POR:00
+    A:09(+009,0000_1001)  X:00(+000,0000_0000)   D:00  L:00
+    BO:0000  P1:0000 P2:0000 P3:0000 P4:0000   KEY:00 L0:00
+    L1:00(+000) L2:00(+000) L3:00(+000) L4:00(+000)   IRQ:0
+    L5:00(+000) L6:00(+000) L7:00(+000) L8:00(+000)  BUSY:0
+    
+    (base) ➜  myth-tool git:(main) ✗ my -w a=4
+    (base) ➜  myth-tool git:(main) ✗ my -w x=253
+    (base) ➜  myth-tool git:(main) ✗ my -p
+    
+    C:00 PC:A7          E:00(0000_0000) E_OLD:00(0000_0000)
+    SCLK:0 MISO:0 MOSI:0      SIR:00 SOR:00   PIR:00 POR:00
+    A:04(+004,0000_0100)  X:FD(-003,1111_1101)   D:00  L:00
+    BO:0000  P1:0000 P2:0000 P3:0000 P4:0000   KEY:00 L0:00
+    L1:00(+000) L2:00(+000) L3:00(+000) L4:00(+000)   IRQ:0
+    L5:00(+000) L6:00(+000) L7:00(+000) L8:00(+000)  BUSY:0
+    
+    (base) ➜  myth-tool git:(main) ✗ my -o ADDC
+    (base) ➜  myth-tool git:(main) ✗ my -p
+    
+    C:00 PC:A7          E:00(0000_0000) E_OLD:00(0000_0000)
+    SCLK:0 MISO:0 MOSI:0      SIR:00 SOR:00   PIR:00 POR:00
+    A:01(+001,0000_0001)  X:01(+001,0000_0001)   D:00  L:00
+    BO:0000  P1:0000 P2:0000 P3:0000 P4:0000   KEY:00 L0:00
+    L1:00(+000) L2:00(+000) L3:00(+000) L4:00(+000)   IRQ:0
+    L5:00(+000) L6:00(+000) L7:00(+000) L8:00(+000)  BUSY:0
+
 
 
 ### Parameter passing

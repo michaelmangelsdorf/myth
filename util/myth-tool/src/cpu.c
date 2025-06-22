@@ -74,6 +74,22 @@ uint8_t l;     /* Local Page Index Register */
 uint8_t d;     /* Down-Counter / Auto-Decrement Register */
 
 
+/* Execute an opcode
+ *
+ */
+void exec_opcode(uint8_t opcode)
+{
+        /*Decode priority encoded opcode
+         and execute decoded instruction*/
+        if      (opcode & 0x80) pair(   opcode);
+        else if (opcode & 0x40) getput( opcode);
+        else if (opcode & 0x20) trap(   opcode);
+        else if (opcode & 0x10) alu(    opcode);
+        else if (opcode & 0x08) bop(    opcode);
+        else                    sys(    opcode);
+}
+
+
 /* Single-step 1 instruction cycle
 */
 void
@@ -112,14 +128,7 @@ myth_step()
         if (irq && c!=0 && !busy) opcode = 32; /* Inject TRAP0 */
         else opcode = fetch();
 
-        /*Decode priority encoded opcode
-         and execute decoded instruction*/
-        if      (opcode & 0x80) pair(   opcode);
-        else if (opcode & 0x40) getput( opcode);
-        else if (opcode & 0x20) trap(   opcode);
-        else if (opcode & 0x10) alu(    opcode);
-        else if (opcode & 0x08) bop(    opcode);
-        else                    sys(    opcode);
+        exec_opcode(opcode);
 }
 
 
