@@ -59,4 +59,4 @@ Here is an example of a native multiplication routine which multiplies the two 8
     0320:  05                        0029      RTS
 
 
-![Source code](https://github.com/michaelmangelsdorf/myth/blob/main/syntax.png) of the multiplication routine in Sublime text with syntax highlighting.
+Source Code ![Source](https://github.com/michaelmangelsdorf/myth/blob/main/syntax.png) of the multiplication routine in Sublime text with syntax highlighting.
