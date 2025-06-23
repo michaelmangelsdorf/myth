@@ -358,7 +358,7 @@ int terminal_input(int argc, char *argv[]) {
 int
 main( int argc, char *argv[])
 {
-        char *fname = "rom.bin"; // Default name
+        char *fname = "ram.bin"; // Default name
 
         if(read_ram(fname) == -1) handle_N_option(fname);
 

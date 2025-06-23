@@ -396,7 +396,7 @@ alu( uint8_t opcode)
 #define ADDV 14 /* Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0) */
 #define SUBB 15 /* Subtract A from X, result in A, BORROW bit in X (0 or 1) */
 
-        uint8_t a0 = a, x0 = x;
+        uint8_t a0 = a;
 
         /* Compute signed addition overflow flag */
         int i = x + a;

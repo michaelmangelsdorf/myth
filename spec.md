@@ -392,7 +392,7 @@ Then in Sublime, press CMD-Shift-P. In the dialog, navigate to: `Preferences: Se
 
 The command line tool `my` (for Myth) can be used to set registers, print memory read-outs, and for assembling and running assembler code. The source-code for `my` is in the `util` folder of the Myth GitHub repo.
 
-On each invocation, the program reads in a complete 64k RAM image (default name: `rom.bin` that is used as memory for a virtual Myth CPU. You can create this file by running `my -N <filename>`. Before the tool terminates, the (possibly modified) RAM is persisted back into the image file.
+On each invocation, the program reads in a complete 64k RAM image (default name: `ram.bin` that is used as memory for a virtual Myth CPU. You can create this file by running `my -N <filename>`. Before the tool terminates, the (possibly modified) RAM is persisted back into the image file.
 
 You can assemble a source file into this image with `my -la <filename>`. The `l` option in this example prints an additional assembly listing including the emitted object code by source line.
 
@@ -402,7 +402,7 @@ You can set individual CPU registers using `my -w regname=value`. The command `m
 
 Individual instructions can be executed with `my -o mnemonic`, and the virtual CPU can be instructed to run n cycles with `my -r n` (for single-step only use `my -s`). Be mindful of setting C and PC to suitable values!
 
-There is a special dialog mode, when `my` is run with a command line where the first character is not a '-' (not a command line option). The command line (max 127 ascii bytes) is then copied into the RAM image at 0x0200 and the CPU is run in order to have it write an output string (max 127 bytes) at 0x0280. The CPU is stopped and the tool terminates as soon as the output string becomes not NULL, or once 64k cycles have elapsed. You can then run `my -m` to try for another 64k cycles.
+There is a special dialog mode, when `my` is run with a command line where the first character is not a '-' (not a command line option). The command line (max 127 ascii bytes) is then copied into the RAM image at 0x2100 and the CPU is run in order to have it write an output string (max 127 bytes) at 0x2180. The CPU is stopped and the tool terminates as soon as the output string becomes not NULL, or once 64k cycles have elapsed. You can then run `my -m` to try for another 64k cycles.
 
 Example `my` session:
 
@@ -497,6 +497,10 @@ The following types are currently used:
 
 - **Assembly label**: Type=1, data-bytes: none
 - **Mnemonic**: Type=2, data-bytes: opcode
+
+### Debugging Native Code
+
+Don't forget that you can place hooks directly into cpu.c for instance. As a temporary debugging aid, writing into E (_E) is caught in cpu.c und causes My-Tool to print-out a register dump.
 
 ### Parameter passing
 
