@@ -12,7 +12,7 @@
 
 
 #define MAX_LINE_LENGTH 80
-
+#define REG_BUFFER_OFFSET 0x2000
 
 extern int write_ram(const char *filename);
 extern int read_ram(const char *filename);

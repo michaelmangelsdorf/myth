@@ -1,11 +1,6 @@
 
 #include "binfile.h"
 
-// This code was coauthored with an AI, to try it out
-// worked surprisingly well, as this seems the perfect use-case
-// for it, generating boilerplate such as this
-// I've learned that there is a boolean type in C!
-// I respect the C99 standard for other good things... but boolean! come on...
 
 extern int
 write_ram(const char *filename)
@@ -19,8 +14,7 @@ write_ram(const char *filename)
     // Write the entire RAM array
     fwrite(ram, sizeof(uint8_t), sizeof(ram), file);
 
-    // Seek to position 0x100 for variables
-    fseek(file, 0x100, SEEK_SET);
+    fseek(file, REG_BUFFER_OFFSET, SEEK_SET);
 
     // Write the state variables to the file
     fwrite(&irq, sizeof(uint8_t), 1, file);
@@ -71,7 +65,7 @@ read_ram(const char *filename)
     fread(ram, sizeof(uint8_t), sizeof(ram), file);
 
     // Seek to position 0x100 for variables
-    fseek(file, 0x100, SEEK_SET);
+    fseek(file, REG_BUFFER_OFFSET, SEEK_SET);
 
     // Read the state variables from the file
     fread(&irq, sizeof(uint8_t), 1, file);

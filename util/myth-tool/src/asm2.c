@@ -832,65 +832,59 @@ void remove_parentheses_comment(char* line) {
     }
 }
 
+void emit(uint8_t byte, uint16_t* emit_at, uint16_t* bytes_emitted) {
+    ram[(*emit_at)++] = byte;
+    (*bytes_emitted)++;
+}
 
 void assemble(Line** line_ptr_array, size_t line_count)
 {
-    uint16_t pc;
+    uint16_t emit_at;
     static int pass;
 
     for (pass = 1; pass <= 2; ++pass) {
-     //printf("Pass %d\n", pass);
-        pc = 0;
+        emit_at = 0;
 
         for (size_t i = 0; i < line_count; ++i) {
             Line* line = line_ptr_array[i];
+            uint16_t bytes_emitted = 0;
+            line->objcode_offset = emit_at;
 
-            // Set the object code offset before processing any tokens for the current line
-            line->objcode_offset = pc;
-
-            // Make a copy of line->text to avoid modifying the original string
-            char line_copy[256];  // Ensure this is large enough for your needs
+            char line_copy[256];
             strncpy(line_copy, line->text, sizeof(line_copy) - 1);
-            line_copy[sizeof(line_copy) - 1] = '\0';  // Ensure null termination
+            line_copy[sizeof(line_copy) - 1] = '\0';
 
             strip_comment(line_copy);
             remove_parentheses_comment(line_copy);
 
-            if (line_copy[0] == '\0') {
-                continue; // Skip blank/comment-only lines
-            }
+            if (line_copy[0] == '\0') continue;
 
-            // Tokenize the line copy, not the original line->text
-            char* token = strtok(line_copy, " \t,");  // Split by spaces, tabs, or commas
-            while (token != NULL) {  // Iterate over all tokens in the line
-
+            char* token = strtok(line_copy, " \t,");
+            while (token != NULL) {
                 strip_trailing_punctuation(token);
 
-                // Handle - "phrasing" token, ignore
                 if (strcmp(token, "-") == 0) {
-                    token = strtok(NULL, " \t,");  // Get next token
+                    token = strtok(NULL, " \t,");
                     continue;
                 }
 
-                // Handle the PAGE token
                 if (strcmp(token, "PAGE") == 0) {
-                    uint8_t page_value = (uint8_t)(pc >> 8);  // High-order byte of PC
+                    uint8_t page_value = (uint8_t)(emit_at >> 8);
                     if (pass == 1) {
-                        line->objcode_offset = pc;
+                        line->objcode_offset = emit_at;
                     }
-                    ram[pc++] = page_value;
-                    token = strtok(NULL, " \t,");  // Get next token
+                    emit(page_value, &emit_at, &bytes_emitted);
+                    token = strtok(NULL, " \t,");
                     continue;
                 }
 
-                // Handle the OFFSET token
                 if (strcmp(token, "OFFSET") == 0) {
-                    uint8_t offset_value = (uint8_t)(pc & 0xFF);  // Low-order byte of PC
+                    uint8_t offset_value = (uint8_t)(emit_at & 0xFF);
                     if (pass == 1) {
-                        line->objcode_offset = pc;
+                        line->objcode_offset = emit_at;
                     }
-                    ram[pc++] = offset_value;
-                    token = strtok(NULL, " \t,");  // Get next token
+                    emit(offset_value, &emit_at, &bytes_emitted);
+                    token = strtok(NULL, " \t,");
                     continue;
                 }
 
@@ -898,11 +892,10 @@ void assemble(Line** line_ptr_array, size_t line_count)
                     if (pass == 1) {
                         handle_constdef(token);
                     }
-                    token = strtok(NULL, " \t,");  // Get next token
+                    token = strtok(NULL, " \t,");
                     continue;
                 }
 
-                // --- Label Definition ---
                 char* at_sign = strchr(token, '@');
                 if (at_sign != NULL) {
                     int valid_prefix = 1;
@@ -914,41 +907,37 @@ void assemble(Line** line_ptr_array, size_t line_count)
                     }
 
                     if (valid_prefix) {
-                        handle_labeldef(token, &pc, pass);
-                          //line->objcode_offset = pc;
-                        token = strtok(NULL, " \t,");  // Get next token
+                        handle_labeldef(token, &emit_at, pass);
+                        token = strtok(NULL, " \t,");
                         continue;
                     }
                 }
 
-                // --- Label Reference ---
                 if (token[0] == '<' || token[0] == '>') {
                     if (pass == 1) {
-                        ram[pc++] = 0x00; // Reserve space
+                        emit(0x00, &emit_at, &bytes_emitted); // Reserve space
                     } else {
-                        handle_labelref(token + 1, token[0], pc++);
+                        handle_labelref(token + 1, token[0], emit_at++);
                     }
-                    token = strtok(NULL, " \t,");  // Get next token
+                    token = strtok(NULL, " \t,");
                     continue;
                 }
 
                 uint8_t opcode = 0;
 
-                // --- Mnemonic ---
                 if (find_opcode(token, &opcode) == 0) {
                     if (pass == 1) {
-                        line->objcode_offset = pc;
+                        line->objcode_offset = emit_at;
                     }
-                    ram[pc++] = opcode;
-                }
-                else {
+                    emit(opcode, &emit_at, &bytes_emitted);
+                } else {
                     int value = 0;
 
                     if (handle_singlechar(token, &value) == 0) {
                         if (pass == 1) {
-                            line->objcode_offset = pc;
+                            line->objcode_offset = emit_at;
                         }
-                        ram[pc++] = (uint8_t)(value & 0xFF);
+                        emit((uint8_t)(value & 0xFF), &emit_at, &bytes_emitted);
                     }
                     else if (token[0] == '"') {
                         uint8_t string_buffer[256];
@@ -956,29 +945,30 @@ void assemble(Line** line_ptr_array, size_t line_count)
 
                         if (handle_string_literal(token, string_buffer, &string_len) == 0) {
                             if (pass == 1) {
-                                line->objcode_offset = pc;
+                                line->objcode_offset = emit_at;
                             }
                             for (size_t j = 0; j < string_len; ++j) {
-                                ram[pc++] = string_buffer[j];
+                                emit(string_buffer[j], &emit_at, &bytes_emitted);
                             }
                         }
                     }
                     else if (handle_numbers(token, &value) == 0) {
                         if (pass == 1) {
-                            line->objcode_offset = pc;
+                            line->objcode_offset = emit_at;
                         }
-                        ram[pc++] = (uint8_t)(value & 0xFF);
+                        emit((uint8_t)(value & 0xFF), &emit_at, &bytes_emitted);
                     }
                     else {
                         uint8_t const_val = 0;
                         if (lookup_constant(token, &const_val) == 0) {
                             if (pass == 1) {
-                                line->objcode_offset = pc;
+                                line->objcode_offset = emit_at;
                             }
-                            ram[pc++] = const_val;
-                            token = strtok(NULL, " \t,");  // Get next token
+                            emit(const_val, &emit_at, &bytes_emitted);
+                            token = strtok(NULL, " \t,");
                             continue;
                         }
+
                         if (pass == 2) {
                             fprintf(stderr, "Unrecognized token on line %zu: %s\n", i + 1, token);
                         }
@@ -987,30 +977,38 @@ void assemble(Line** line_ptr_array, size_t line_count)
                         }
                     }
                 }
-                token = strtok(NULL, " \t,");  // Get next token
+
+                token = strtok(NULL, " \t,");
             }
-            final_offset = pc;
+
+            line->bytes_emitted = bytes_emitted;
+            final_offset = emit_at;
         }
     }
+
     write_globals();
 }
 
-void write_listing(FILE* out, Line** line_ptr_array, size_t line_count) {
+
+
+
+void
+write_listing(FILE* out, Line** line_ptr_array, size_t line_count)
+{
     int use_color = (out == stdout);
-    uint16_t prevl_addr=0, currl_addr=0, nextl_addr=0, len, pos;
+    uint16_t len, pos;
 
     // Print aligned header
     fprintf(out, "ADDR:  OBJCODE:                  LIN:  SOURCE:\n");
 
-    for (size_t i = 0; i < line_count; i++) {
-        Line* line = line_ptr_array[i];
-        prevl_addr = currl_addr;
-        currl_addr = line->objcode_offset;
-        nextl_addr = (i + 1 < line_count) ? line_ptr_array[i + 1]->objcode_offset : final_offset;
-        len = (nextl_addr > currl_addr) ? (nextl_addr - currl_addr) : 0;
-        pos = currl_addr;
+    for(size_t i = 0; i < line_count; i++){
 
-        if (len == 0 || ((currl_addr == prevl_addr)&&(currl_addr != 0))) {
+        Line* line = line_ptr_array[i];
+        uint16_t acurr = line->objcode_offset;
+
+        len = line->bytes_emitted;
+
+        if(len == 0){
             fprintf(out, "                              ");
             if (use_color) fprintf(out, COLOR_LINE);
             fprintf(out, "   %04zu  ", i + 1);
@@ -1019,9 +1017,9 @@ void write_listing(FILE* out, Line** line_ptr_array, size_t line_count) {
             continue;
         }
 
-        while (len > 0) {
+        pos = acurr;
+        while(len > 0){
             uint8_t chunk_len = len > 8 ? 8 : len;
-
             if (use_color) fprintf(out, COLOR_ADDR);
             fprintf(out, "%04X:  ", pos);
             if (use_color) fprintf(out, COLOR_RESET);

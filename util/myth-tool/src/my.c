@@ -16,16 +16,6 @@
 #include "asm.h"
 
 
-// This tool, excluding cpu.c, was coauthored with an AI, as I wanted to try.
-// It worked surprisingly well not only for boilerplate code.
-// I had written a very similar program (assembler-parser) for my 16-bit cpu
-// Project (see GitHub) by hand, and wanted to see how the "AI version" looked.
-// I've learned that there is a boolean type in C!
-// I respect the C99 standard for other good things... but boolean! come on...
-
-#define OFFSET_INPUT 0x0200
-#define OFFSET_OUTPUT 0x0280
-#define MAX_LENGTH 127
 
 uint8_t print_listing = 0;
 uint8_t dump_base = 16;

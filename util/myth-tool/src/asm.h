@@ -13,8 +13,10 @@
 #include "cpu.h"
 
 
-#define MAX_LABELS 1000
+#define MAX_LABELS    1000
 #define MAX_LABEL_LEN 16
+#define SYMTAB_OFFS   0x8000  // or wherever appropriate
+
 
 typedef struct {
         uint8_t isglobal;
@@ -24,9 +26,13 @@ typedef struct {
 } LabelDef;
 
 
+typedef struct {
+        uint8_t bytes_emitted;
+        uint16_t objcode_offset;
+        char text[81];
+} Line;
 
-#define SYMTAB_OFFS 0x8000  // or wherever appropriate
-
+uint16_t final_offset;
 
 
 typedef struct {

@@ -3,8 +3,27 @@
 ; Project files: https://github.com/michaelmangelsdorf/myth
 ; Assemble using "my -a rom.my8" tool
 
-@IRQ:
-@idle fj <idle
+; Use P4 as Parameter Stack Pointer
+; Use P3 as Threading Stack Pointer
+; Use P2 as Threading Token Pointer (IP)
+
+; Try to keep page code to below 80h (Threaded Code offset and Locals)
+
+0@IRQ:  fb KEYPAGE - KEY.
+        fo FFh - fb PSTACK, BOP4. fb TSTACK, BOP3.
+
+@done fb MYBUFS, fo 0 om. ; EXIT signal for my-tool
+@idle fj <idle            ; Never reached
+
+fj idle
+
+32@MYREGS:
+33@MYBUFS:
+34@KEYPAGE:
+35@PSTACK:
+36@TSTACK:
+
+; ---------------------------------------------------------------------------
 
 ; Multiply A times X, result in A:X
 ; A:X accumulator acts as a two-element push-down stack when writing to A
@@ -12,7 +31,7 @@
 
 ; Using page 3: "my"-tool uses p1 for persisting regs, p2 as IO-buffer
 
-3@MUL8
+37@MUL8:
     a1          (Save multiplicand into L1 - turns into low order result)
     xa a4       (Save multiplier into L4)
     fa 0, a2    (Set high-order result to 0, keep in L2)
@@ -30,8 +49,13 @@
     2a          (Push high-order result)
     RTS
 
+; ---------------------------------------------------------------------------
 
 
+
+
+
+128@SYMTAB:
 
 
 

@@ -1,11 +1,10 @@
 #ifndef MY_H
 #define MY_H
 
-typedef struct {
-        uint16_t objcode_offset;
-        char text[81];
-} Line;
+#define OFFSET_INPUT  0x2100
+#define OFFSET_OUTPUT 0x2180
+#define MAX_LENGTH    127
 
-uint16_t final_offset;
+
 
 #endif

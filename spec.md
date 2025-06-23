@@ -443,29 +443,41 @@ The example sets the accumulator registers A and X, and executes the ADDC instru
 
 Due to how interrupts work, code execution after power-on, reset or when an interrupt request is accepted, starts at address 0h. Page 0 should be reserved for handling these various cases, particularly the main interrupt service handler.
 
-##### Page 1 - Register Store
+##### Pages 1-31 Trap Handlers
 
-I currently work with a 64k image in which the CPU registers are persisted starting at address 0100h (see my-tool project files), with the whole page being reserved.
+The TRAP instruction (*n) is a single-instruction subroutine call to an immediate address encoded in the opcode using 5 bits. The range of call target pages is therefore 0..31. Trap 0 is equivalent to causing an interrupt to happen: doing this calls page 0 and sets the BUSY flag.
 
-##### Page 2 - Text Buffers
+##### Page 32 (2000h) - Register Store
 
-Further, page 2 is used for two text buffers which my-tool used to communicate with the Myth VM: In dialog mode, a maximum of 127 bytes of the command line text is stored as a zero terminated string at address 0200h (input buffer). The VM is expected to respond by writing a zero terminated string not exceeding 127 characters into the output buffer at address 0280h.
+My-Tool persists the CPU registers in the 64k firmware image starting at page index 32, address 2000h (see my-tool project files), with the whole page being reserved.
 
-The first byte of the output buffer should be monitored; when it becomes non-zero, this is a termination/ready signal from the VM. This implies that the output string should be written, with the first character last, overwriting the initial zero at 0280h.
+##### Page 33 (2100h) - Text Buffers
 
-##### Page 3 - Key
+Further, page 33 is used for two text buffers which my-tool used to communicate with the Myth VM: In dialog mode, a maximum of 127 bytes of the command line text is stored as a zero terminated string at address 2100h (input buffer). The VM is expected to respond by writing a zero terminated string not exceeding 127 characters into the output buffer at address 2180h.
 
-The firmware currently sets K to page 3, so that xK instructions set the B:O pointer to 3:x. The xK instruction was implemented to have quick access to one "key" page of frequently used system variables.
+The first byte of the output buffer should be monitored; when it becomes non-zero, this is a termination/ready signal from the VM. This implies that the output string should be written, with the first character last, overwriting the initial zero at 2180h put there by My-Tool before running the VM.
+
+##### Page 34 (2200h) - Key
+
+The firmware currently sets K to page 34, so that xK instructions set the B:O pointer to 34:x. The xK instruction was implemented to have quick access to one "key" page of frequently used system variables.
 
 (A table of these will be maintained here)
 
-##### Page 5 - Stack and S4 Pointer
+##### Page 35 (2300h) - Stack and S4 Pointer
 
-The amenity pointer S4 is currently reserved as a system wide parameter stack pointer, and it is set to 5FFh, growing towards lower addresses. If your routines use it for other purposes, please restore its value. P1 can be used as a scratch register for P:O.
+The amenity pointer P4 is currently reserved as a system wide parameter stack pointer, and it is set to 23FFh, growing towards lower addresses. If your routines use it for other purposes, you should restore its value on return. P1 can be used as a scratch register for P:O.
 
-##### Page 6 - Threading Heap and Threading Stack
+##### Page 36 (2400h) - Threading Stack
 
-To experiment with threaded code, amenity pointer S3 is currently reserved as a system wide threading stack pointer, set to 6FFh. S2 is reserved as the threading token pointer. If you use it for other purposes, please restore it.
+To experiment with threaded code, amenity pointer P3 is currently reserved as a system wide threading stack pointer, set to 24FFh. P2 is reserved as the threading token pointer. If you use it for other purposes, you should restore its value on return.
+
+#### Other Points
+
+- **Local Page Frames**
+Be aware that the local frame pointer in L decrements during subroutine nesting. Subroutines use the highest 9 bytes (F7h - FFh) for local variables L0-L8. The address of L0 is loaded into B:O by the LOCAL instruction. L1-L8 are accessible using GETPUT-instructions. In principal, the whole local page is available to the currently running subroutine. This implies a tradeoff between how much data you store in your local frames, and how long your subroutines are since they must stay clear of the local storage.
+
+- **Threaded Code**
+This is particular the firmware, but the subroutines implementing threaded code will use 80h as the implied page offset for interpreter-called code.
 
 #### Symbol Table
 
@@ -479,14 +491,12 @@ The assembler outputs a "Global" symbol table. Entries in this table are formed 
 
 The following types are currently used:
 
-- **Assembler label**: Type=1, data-bytes: none
+- **Assembly label**: Type=1, data-bytes: none
 - **Mnemonic**: Type=2, data-bytes: opcode
 
 ### Parameter passing
 
 Use the accumulator (AX) for primary arguments in general.
-
-When writing subroutines, use local variables (L8-L3) with higher numbers first, ideally reserving L1, L2 for passing parameters to Guest functions (xG instruction). Guest functions should use L1 and L2 as scratch memory and document this, specifically.
 
 There is a "hidden" local variable shortcut "L0". You can obtain a pointer to this memory location by executing the instruction "LOCAL". Local sets B to the Local page, and O to F7h, the byte offset just below L1. Then use MxM instructions such as "am" to read or store into the L0 variable:
 

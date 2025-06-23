@@ -5,14 +5,9 @@
 
 #include "srcfile.h"
 
-// MM: This code was coauthored with an AI, I wanted to try that out
-// worked surprisingly well, as this seems the perfect use-case
-// for it, generating boilerplate such as this
-// I've learned that there is a boolean type in C!
-// I respect the C99 standard for other good things... but boolean! come on...
-// Comments, prefix MM are my own
 
-// MM: This fills the "text" fields of an array of Lines
+
+// This fills the "text" fields of an array of Lines
 // with lines from a source text file:
 
 // #define MAX_D_REGS 40 // max object code bytes per line (single digit lits)
