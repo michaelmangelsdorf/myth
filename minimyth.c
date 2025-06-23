@@ -426,7 +426,10 @@ alu( uint8_t opcode)
                 case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0;     break;
                 case ADDC: a=i&0xFF; x=(i>255)? 1:0;                    break;
                 case ADDV: a=i&0xFF; x=ovf?255:0;                       break;
-                case SUBB: i = (int)x - (int)a; a=i&0xFF; x=(i<0)? 0:1; break;
+                case SUBB: i = x - a;
+                           a = x - a;
+                           x = (i<0) ? 1 : 0;
+                 break;
         }
 }
 

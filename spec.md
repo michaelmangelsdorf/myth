@@ -333,7 +333,11 @@ Operation codes fall into 6 format groups, which are decodable using a priority 
 
 - Use `<label` for a **backward reference** to the closest matching label earlier in the file.
 - Use `>label` for a **forward reference** to the closest matching label later in the file.
-- Any label identifier can be placed into the source text and emits its value into the object code. This is equivalent to a backward reference ("search from the beginning, earlier definitions first").
+- Use `#label` for a general, first-match search.
+
+#### Trap Call Syntax
+
+- The asterisk is used for trap call references: `*label` or `*123`, or `*1Fh` etc. all assemble trap instructions.
 
 #### Constants (Data Labels)
 
@@ -691,7 +695,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0x85: FD	Take M[C:PC++] into D
     0x86: FS	Take M[C:PC++] into SOR
     0x87: FP	Take M[C:PC++] into POR
-    0x88: FD	Take M[C:PC++] into E, sets device enable signals
+    0x88: FE	Take M[C:PC++] into E, sets device enable signals
     0x89: FK	Take M[C:PC++] into O, load K into B
     0x8A: FU	Take M[C:PC++] as 8-bit signed number and add it to 16-bit pointer B:O
     0x8B: FW	Take M[C:PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D
@@ -708,7 +712,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0x95: MD	Take M[B:O] into D
     0x96: MS	Take M[B:O] into SOR
     0x97: MP	Take M[B:O] into POR
-    0x98: MD	Take M[B:O] into E, sets device enable signals
+    0x98: ME	Take M[B:O] into E, sets device enable signals
     0x99: MK	Take M[B:O] into O, load K into B
     0x9A: MU	Take M[B:O] as 8-bit signed number and add it to 16-bit pointer B:O
     0x9B: MW	Take M[B:O] as page offset and store it into PC - while register D is not zero. In either case, decrement D
@@ -725,7 +729,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xA5: BD	Take B into D
     0xA6: BS	Take B into SOR
     0xA7: BP	Take B into POR
-    0xA8: BD	Take B into E, sets device enable signals
+    0xA8: BE	Take B into E, sets device enable signals
     0xA9: BK	Take B into O, load K into B
     0xAA: BU	Take B as 8-bit signed number and add it to 16-bit pointer B:O
     0xAB: BW	Take B as page offset and store it into PC - while register D is not zero. In either case, decrement D
@@ -742,7 +746,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xB5: OD	Take O into D
     0xB6: OS	Take O into SOR
     0xB7: OP	Take O into POR
-    0xB8: OD	Take O into E, sets device enable signals
+    0xB8: OE	Take O into E, sets device enable signals
     0xB9: OK	Take O into O, load K into B
     0xBA: OU	Take O as 8-bit signed number and add it to 16-bit pointer B:O
     0xBB: OW	Take O as page offset and store it into PC - while register D is not zero. In either case, decrement D
@@ -759,7 +763,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xC5: AD	Take A into D
     0xC6: AS	Take A into SOR
     0xC7: AP	Take A into POR
-    0xC8: AD	Take A into E, sets device enable signals
+    0xC8: AE	Take A into E, sets device enable signals
     0xC9: AK	Take A into O, load K into B
     0xCA: AU	Take A as 8-bit signed number and add it to 16-bit pointer B:O
     0xCB: AW	Take A as page offset and store it into PC - while register D is not zero. In either case, decrement D
@@ -776,7 +780,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xD5: INC	Increment A
     0xD6: DS	Take D into SOR
     0xD7: DP	Take D into POR
-    0xD8: DD	Take D into E, sets device enable signals
+    0xD8: DE	Take D into E, sets device enable signals
     0xD9: DK	Take D into O, load K into B
     0xDA: DU	Take D as 8-bit signed number and add it to 16-bit pointer B:O
     0xDB: DW	Take D as page offset and store it into PC - while register D is not zero. In either case, decrement D
@@ -793,7 +797,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xE5: SD	Take SIR into D
     0xE6: DEC	Decrement A
     0xE7: SP	Take SIR into POR
-    0xE8: SD	Take SIR into E, sets device enable signals
+    0xE8: SE	Take SIR into E, sets device enable signals
     0xE9: SK	Take SIR into O, load K into B
     0xEA: SU	Take SIR as 8-bit signed number and add it to 16-bit pointer B:O
     0xEB: SW	Take SIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
@@ -810,7 +814,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xF5: PD	Take PIR into D
     0xF6: PS	Take PIR into SOR
     0xF7: EA	Copy E to A
-    0xF8: PD	Take PIR into E, sets device enable signals
+    0xF8: PE	Take PIR into E, sets device enable signals
     0xF9: PK	Take PIR into O, load K into B
     0xFA: PU	Take PIR as 8-bit signed number and add it to 16-bit pointer B:O
     0xFB: PW	Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D

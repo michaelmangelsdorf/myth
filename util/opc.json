@@ -955,7 +955,7 @@
   {
     "opcode": 136,
     "group": "PAIR",
-    "mnemonic": "FD",
+    "mnemonic": "FE",
     "desc": "Take M[C:PC++] into E, sets device enable signals",
     "pseudocode": "T=M[C:PC] PC++ E=T PC++ (Device Enable!)"
   },
@@ -1068,7 +1068,7 @@
   {
     "opcode": 152,
     "group": "PAIR",
-    "mnemonic": "MD",
+    "mnemonic": "ME",
     "desc": "Take M[B:O] into E, sets device enable signals",
     "pseudocode": "T=M[B:O] E=T PC++ (Device Enable!)"
   },
@@ -1181,7 +1181,7 @@
   {
     "opcode": 168,
     "group": "PAIR",
-    "mnemonic": "BD",
+    "mnemonic": "BE",
     "desc": "Take B into E, sets device enable signals",
     "pseudocode": "T=B E=T PC++ (Device Enable!)"
   },
@@ -1294,7 +1294,7 @@
   {
     "opcode": 184,
     "group": "PAIR",
-    "mnemonic": "OD",
+    "mnemonic": "OE",
     "desc": "Take O into E, sets device enable signals",
     "pseudocode": "T=O E=T PC++ (Device Enable!)"
   },
@@ -1407,7 +1407,7 @@
   {
     "opcode": 200,
     "group": "PAIR",
-    "mnemonic": "AD",
+    "mnemonic": "AE",
     "desc": "Take A into E, sets device enable signals",
     "pseudocode": "T=A E=T PC++ (Device Enable!)"
   },
@@ -1520,7 +1520,7 @@
   {
     "opcode": 216,
     "group": "PAIR",
-    "mnemonic": "DD",
+    "mnemonic": "DE",
     "desc": "Take D into E, sets device enable signals",
     "pseudocode": "T=D E=T PC++ (Device Enable!)"
   },
@@ -1633,7 +1633,7 @@
   {
     "opcode": 232,
     "group": "PAIR",
-    "mnemonic": "SD",
+    "mnemonic": "SE",
     "desc": "Take SIR into E, sets device enable signals",
     "pseudocode": "T=SIR E=T PC++ (Device Enable!)"
   },
@@ -1746,7 +1746,7 @@
   {
     "opcode": 248,
     "group": "PAIR",
-    "mnemonic": "PD",
+    "mnemonic": "PE",
     "desc": "Take PIR into E, sets device enable signals",
     "pseudocode": "T=PIR E=T PC++ (Device Enable!)"
   },

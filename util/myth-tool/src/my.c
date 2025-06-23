@@ -7,14 +7,8 @@
 #include <stdbool.h>
 #include <getopt.h>
 
-
 #include "my.h"
-#include "srcfile.h"
-#include "binfile.h"
 #include "cpu.h"
-#include "pulley.h"
-#include "asm.h"
-
 
 
 uint8_t print_listing = 0;
@@ -103,15 +97,17 @@ void
 try_dialog()
 {
         c=0; pc=0;
+        ram[OFFSET_OUTPUT] = '\0'; // Terminate string buffer
         for (unsigned u=0xFFFF; u>0; u--) {
                 myth_step();
-                if (ram[OFFSET_OUTPUT] != '\0') break;
+                if (ram[OFFSET_OUTPUT] != '\0') {
+                        terminal_output();
+                        return;
+                }
         }
-        if (ram[OFFSET_OUTPUT] != '\0') terminal_output();
-        else {
-                printf("No response after 64k cycles. ");
-                printf("To continue trying, run 'my -m'.\n");
-        }
+        printf("No response after 64k cycles. ");
+        printf("To continue trying, run 'my -m'.\n");
+
 }
 
 
@@ -365,8 +361,6 @@ main( int argc, char *argv[])
         char *fname = "rom.bin"; // Default name
 
         if(read_ram(fname) == -1) handle_N_option(fname);
-
-        ram[OFFSET_OUTPUT] = '\0'; // Terminate string buffer
 
         if (terminal_input(argc, argv) == -1) handle_args( argc, argv);
         else try_dialog();

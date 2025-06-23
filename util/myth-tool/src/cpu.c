@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include "pulley.h"
 #include "cpu.h"
+
 
 /*
 ** Minimal C program as reference on how Myth CPU is intended to work.
@@ -173,7 +175,6 @@ call( uint8_t dstpage)
         c = dstpage;
 
         l--;         /*Create stack frame*/
-        printf("call to %04X O=%02X B=%02X\n", c*256+pc, o, b);
 }
 
 
@@ -266,12 +267,17 @@ pair( uint8_t opcode)
                 case xM: ram[b*256 + o] = v;     break;
                 case xB: b = v;             break;
                 case xO: o = v;             break;
-                case xA: push_acc(v);       printf("to A: %02X\n",v); break;
+                case xA: push_acc(v);       break;
                 case xD: d = v;             break;
                 case xS: sor = v;           break;
                 case xP: por = v;           break;
                 case xE: e_old = e;
-                         e = v;             break;
+                         e = v;             
+                         // My-Tool specific!
+                         switch(e) {
+                                default: emit_pulley_block(stdout);
+                         }
+                         break;
                 case xK: b = k; o = v;      break;
 
                  /* Add signed 8-bit v to 16-bit B:O */
@@ -390,10 +396,10 @@ alu( uint8_t opcode)
 #define ADDV 14 /* Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0) */
 #define SUBB 15 /* Subtract A from X, result in A, BORROW bit in X (0 or 1) */
 
-        uint8_t a0 = a;
+        uint8_t a0 = a, x0 = x;
 
         /* Compute signed addition overflow flag */
-        int i = x+a;
+        int i = x + a;
         uint8_t ovf = ((a&0x80)^(x&0x80))==0    /* Addends have same sign */
                         && ((i&0x80)^(a&0x80)); /* But result has different sign */
         
@@ -404,16 +410,19 @@ alu( uint8_t opcode)
                 case AGX: a = (a>x)  ? 255:0;                           break;
                 case AND: a = a & x;                                    break;
                 case IOR: a = a | x;                                    break;
-                case EOR: a = a ^ x;                                    break;
-                case XA: a=x;                                           break;
-                case AX: x=a;                                           break;
+                case EOR:  a = a ^ x;                                   break;
+                case XA:   a=x;                                         break;
+                case AX:   x=a;                                         break;
                 case SWAP: a=x; x=a0;                                   break;
-                case SHL: a<<=1; x=(a0 & 0x80)? 1:0;                    break;
-                case SHR: a>>=1; x=(a0 & 1)? 0x80:0;                    break;
-                case ASR: a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0;     break;
+                case SHL:  a<<=1; x=(a0 & 0x80)? 1:0;                   break;
+                case SHR:  a>>=1; x=(a0 & 1)? 0x80:0;                   break;
+                case ASR:  a=(a>>1)+(a0 & 0x80); x=(a0 & 1)? 0x80:0;    break;
                 case ADDC: a=i&0xFF; x=(i>255)? 1:0;                    break;
                 case ADDV: a=i&0xFF; x=ovf?255:0;                       break;
-                case SUBB: i = (int)x - (int)a; a=i&0xFF; x=(i<0)? 0:1; break;
+                case SUBB: i = x - a;
+                           a = x - a;
+                           x = (i<0) ? 1 : 0;
+                 break;
         }
 }
 
@@ -483,7 +492,6 @@ sys( uint8_t opcode)
                         c = b;
                         pc = o;
                         l++; /* Leave stack frame*/
-                        printf("RTS\n");
                         break;
                 case COR: cor(); break;
         }

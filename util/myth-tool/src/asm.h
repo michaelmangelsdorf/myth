@@ -9,9 +9,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "my.h"
-#include "cpu.h"
-
 
 #define MAX_LABELS    1000
 #define MAX_LABEL_LEN 16
@@ -52,7 +49,7 @@ int handle_hex(const char* token, int* out_value);
 int handle_dec(const char* token, int* out_value);
 int handle_bin(const char* token, int* out_value);
 void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass);
-void handle_labelref(const char* label, char direction, uint16_t pc);
+int handle_labelref(const char* label, char prefix, uint16_t pc, int pass, uint8_t *target);
 void strip_trailing_punctuation(char* token);
 int find_opcode(const char* token, uint8_t* opcode);
 void strip_comment(char* str);

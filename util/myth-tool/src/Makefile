@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -g
 LDFLAGS = 
 
 # Source files
-SRC = my.c cpu.c srcfile.c binfile.c asm2.c
+SRC = my.c cpu.c srcfile.c binfile.c asm2.c pulley.c
 OBJ = $(SRC:.c=.o)
 
 # Output binary name

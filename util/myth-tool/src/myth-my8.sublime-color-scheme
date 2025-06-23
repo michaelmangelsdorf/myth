@@ -4,7 +4,7 @@
     "background": "#2e2e2e",
     "foreground": "#dcdcdc",
     "yellow": "#c4c700",
-    "red": "#e64a4a",
+    "emerald": "#80E080",
     "blue": "#5a99d1",
     "purple": "#d48fd6",
     "green": "#7fc97f",
@@ -62,7 +62,7 @@
     },
     {
       "scope": "keyword.control.scrounge.my8",
-      "foreground": "var(red)",
+      "foreground": "var(emerald)",
       "font_style": "bold"
     },
     {

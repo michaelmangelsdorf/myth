@@ -6,25 +6,9 @@
 #include "srcfile.h"
 
 
-
-// This fills the "text" fields of an array of Lines
-// with lines from a source text file:
-
-// #define MAX_D_REGS 40 // max object code bytes per line (single digit lits)
-
-// typedef struct {
-//     uint8_t index;
-//     uint8_t offset;
-//     uint8_t data[MAX_D_REGS];
-//     uint8_t data_len;
-//    char text[81]; // 80 chars + null-terminator
-//} Line;
-
-// The idea is to have the source text in "text", and assemble it
-// into "data" to be able to match object-code to source lines.
-
-
-Line **read_lines_from_file(const char *filename, size_t *out_count) {
+Line
+**read_lines_from_file(const char *filename, size_t *out_count)
+{
     FILE *fp = fopen(filename, "r");
     if (!fp) {
         fprintf( stderr, "Missing file: %s\n", filename);
@@ -88,7 +72,9 @@ Line **read_lines_from_file(const char *filename, size_t *out_count) {
     return lines;
 }
 
-void free_lines(Line **lines, size_t count) {
+void
+free_lines(Line **lines, size_t count)
+{
     if (!lines) return;
     for (size_t i = 0; i < count; ++i) {
         free(lines[i]);

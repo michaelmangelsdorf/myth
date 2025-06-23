@@ -9,27 +9,30 @@
 
 ; Try to keep page code to below 80h (Threaded Code offset and Locals)
 
-0@IRQ:  fb KEYPAGE - KEY.
-        fo FFh - fb PSTACK, BOP4. fb TSTACK, BOP3.
+; My-Tool tweak: writing into E talks to VM, E=0 means print pulley.
 
-@done fb MYBUFS, fo 0 om. ; EXIT signal for my-tool
-@idle fj <idle            ; Never reached
+0@IRQ: fb #KEYPAGE, KEY
+       fo FFh
+       fb #PSTACK, BOP4
+       fb #TSTACK, BOP3
 
-fj idle
+       fa 7 fa 3 fc >MUL8 a1 xa a2 ; a2 = 21
+       fa 88 fa 19 fc >DIVMOD8 a1 xa a2 ;   4 rem 12
 
-32@MYREGS:
-33@MYBUFS:
+@done  fb 21h, fo 80h, fa 65, am. ; EXIT signal for my-tool
+
+32@MYREGS:  ; Reserved
+33@MYBUFS:  ; Reserved
+
 34@KEYPAGE:
-35@PSTACK:
-36@TSTACK:
+
+
+35@PSTACK:  ; Reserved
+36@TSTACK:  ; Reserved
 
 ; ---------------------------------------------------------------------------
 
 ; Multiply A times X, result in A:X
-; A:X accumulator acts as a two-element push-down stack when writing to A
-; Both regs are the implied ALU operands, primary result in A, secondary in X
-
-; Using page 3: "my"-tool uses p1 for persisting regs, p2 as IO-buffer
 
 37@MUL8:
     a1          (Save multiplicand into L1 - turns into low order result)
@@ -51,8 +54,34 @@ fj idle
 
 ; ---------------------------------------------------------------------------
 
+; Divide X by A, quotient in A, remainder in X
 
+38@DIVMOD8:
+    
+    fz >e           ; Divisor is zero!
+    a1 xa a6        ; Divisor into L1, dividend into L6
+    fa 0 a3         ; Initialise quotient
+    fa 0 a4         ; Shift counter
+    fd 8            ; Max number of bit shifts
 
+@a  1a fn >b        ; Branch if divisor MSB set
+    shl a1          ; Shift divisor left
+    4a inc a4       ; Increment bit counter
+    fw <a           ; Repeat until either MSB set or 8 shifts
+@b  4d              ; Keep as next loop counter
+
+@c  3a shl a3       ; Shift quotient left
+    6a 1a SUBB a8   ; Subtract divisor from dividend and check
+    xa fh >d        ; If borrow bit set (dividend is less than)
+    8a a6           ; Accept subtraction result, update dividend
+    3a inc a3       ; Increment quotient
+@d  1a shr a1       ; Shift divisor right until smaller than dividend
+    fw <c
+
+    6a 3a           ; Push remainder, quotient
+@e  RTS
+
+; ---------------------------------------------------------------------------
 
 
 128@SYMTAB:

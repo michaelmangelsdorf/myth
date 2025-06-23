@@ -140,7 +140,7 @@ Opcode opcodes[] = {
     { 133, "PAIR", "FD", "Take M[C:PC++] into D", "T=M[C:PC] PC++ D=T PC++" },
     { 134, "PAIR", "FS", "Take M[C:PC++] into SOR", "T=M[C:PC] PC++ SOR=T PC++" },
     { 135, "PAIR", "FP", "Take M[C:PC++] into POR", "T=M[C:PC] PC++ POR=T PC++" },
-    { 136, "PAIR", "FD", "Take M[C:PC++] into E, sets device enable signals", "T=M[C:PC] PC++ E=T PC++ (Device Enable!)" },
+    { 136, "PAIR", "FE", "Take M[C:PC++] into E, sets device enable signals", "T=M[C:PC] PC++ E=T PC++ (Device Enable!)" },
     { 137, "PAIR", "FK", "Take M[C:PC++] into O, load K into B", "T=M[C:PC] PC++ O=T B=K PC++" },
     { 138, "PAIR", "FU", "Take M[C:PC++] as 8-bit signed number and add it to 16-bit pointer B:O", "T=M[C:PC] PC++ (B:O)+=T(signed) PC++" },
     { 139, "PAIR", "FW", "Take M[C:PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D", "T=M[C:PC] PC++ PC=(D?T:PC+1) D--" },
@@ -156,7 +156,7 @@ Opcode opcodes[] = {
     { 149, "PAIR", "MD", "Take M[B:O] into D", "T=M[B:O] D=T PC++" },
     { 150, "PAIR", "MS", "Take M[B:O] into SOR", "T=M[B:O] SOR=T PC++" },
     { 151, "PAIR", "MP", "Take M[B:O] into POR", "T=M[B:O] POR=T PC++" },
-    { 152, "PAIR", "MD", "Take M[B:O] into E, sets device enable signals", "T=M[B:O] E=T PC++ (Device Enable!)" },
+    { 152, "PAIR", "ME", "Take M[B:O] into E, sets device enable signals", "T=M[B:O] E=T PC++ (Device Enable!)" },
     { 153, "PAIR", "MK", "Take M[B:O] into O, load K into B", "T=M[B:O] O=T B=K PC++" },
     { 154, "PAIR", "MU", "Take M[B:O] as 8-bit signed number and add it to 16-bit pointer B:O", "T=M[B:O] (B:O)+=T(signed) PC++" },
     { 155, "PAIR", "MW", "Take M[B:O] as page offset and store it into PC - while register D is not zero. In either case, decrement D", "T=M[B:O] PC=(D?T:PC+1) D--" },
@@ -172,7 +172,7 @@ Opcode opcodes[] = {
     { 165, "PAIR", "BD", "Take B into D", "T=B D=T PC++" },
     { 166, "PAIR", "BS", "Take B into SOR", "T=B SOR=T PC++" },
     { 167, "PAIR", "BP", "Take B into POR", "T=B POR=T PC++" },
-    { 168, "PAIR", "BD", "Take B into E, sets device enable signals", "T=B E=T PC++ (Device Enable!)" },
+    { 168, "PAIR", "BE", "Take B into E, sets device enable signals", "T=B E=T PC++ (Device Enable!)" },
     { 169, "PAIR", "BK", "Take B into O, load K into B", "T=B O=T B=K PC++" },
     { 170, "PAIR", "BU", "Take B as 8-bit signed number and add it to 16-bit pointer B:O", "T=B (B:O)+=T(signed) PC++" },
     { 171, "PAIR", "BW", "Take B as page offset and store it into PC - while register D is not zero. In either case, decrement D", "T=B PC=(D?T:PC+1) D--" },
@@ -188,7 +188,7 @@ Opcode opcodes[] = {
     { 181, "PAIR", "OD", "Take O into D", "T=O D=T PC++" },
     { 182, "PAIR", "OS", "Take O into SOR", "T=O SOR=T PC++" },
     { 183, "PAIR", "OP", "Take O into POR", "T=O POR=T PC++" },
-    { 184, "PAIR", "OD", "Take O into E, sets device enable signals", "T=O E=T PC++ (Device Enable!)" },
+    { 184, "PAIR", "OE", "Take O into E, sets device enable signals", "T=O E=T PC++ (Device Enable!)" },
     { 185, "PAIR", "OK", "Take O into O, load K into B", "T=O O=T B=K PC++" },
     { 186, "PAIR", "OU", "Take O as 8-bit signed number and add it to 16-bit pointer B:O", "T=O (B:O)+=T(signed) PC++" },
     { 187, "PAIR", "OW", "Take O as page offset and store it into PC - while register D is not zero. In either case, decrement D", "T=O PC=(D?T:PC+1) D--" },
@@ -204,7 +204,7 @@ Opcode opcodes[] = {
     { 197, "PAIR", "AD", "Take A into D", "T=A D=T PC++" },
     { 198, "PAIR", "AS", "Take A into SOR", "T=A SOR=T PC++" },
     { 199, "PAIR", "AP", "Take A into POR", "T=A POR=T PC++" },
-    { 200, "PAIR", "AD", "Take A into E, sets device enable signals", "T=A E=T PC++ (Device Enable!)" },
+    { 200, "PAIR", "AE", "Take A into E, sets device enable signals", "T=A E=T PC++ (Device Enable!)" },
     { 201, "PAIR", "AK", "Take A into O, load K into B", "T=A O=T B=K PC++" },
     { 202, "PAIR", "AU", "Take A as 8-bit signed number and add it to 16-bit pointer B:O", "T=A (B:O)+=T(signed) PC++" },
     { 203, "PAIR", "AW", "Take A as page offset and store it into PC - while register D is not zero. In either case, decrement D", "T=A PC=(D?T:PC+1) D--" },
@@ -220,7 +220,7 @@ Opcode opcodes[] = {
     { 213, "PAIR", "INC", "Increment A (done instead of DD!)", "A-- PC++" },
     { 214, "PAIR", "DS", "Take D into SOR", "T=D SOR=T PC++" },
     { 215, "PAIR", "DP", "Take D into POR", "T=D POR=T PC++" },
-    { 216, "PAIR", "DD", "Take D into E, sets device enable signals", "T=D E=T PC++ (Device Enable!)" },
+    { 216, "PAIR", "DE", "Take D into E, sets device enable signals", "T=D E=T PC++ (Device Enable!)" },
     { 217, "PAIR", "DK", "Take D into O, load K into B", "T=D O=T B=K PC++" },
     { 218, "PAIR", "DU", "Take D as 8-bit signed number and add it to 16-bit pointer B:O", "T=D (B:O)+=T(signed) PC++" },
     { 219, "PAIR", "DW", "Take D as page offset and store it into PC - while register D is not zero. In either case, decrement D", "T=D PC=(D?T:PC+1) D--" },
@@ -236,7 +236,7 @@ Opcode opcodes[] = {
     { 229, "PAIR", "SD", "Take SIR into D", "T=SIR D=T PC++" },
     { 230, "PAIR", "DEC", "Decrement A (done instead of SS!)", "A=E PC++" },
     { 231, "PAIR", "SP", "Take SIR into POR", "T=SIR POR=T PC++" },
-    { 232, "PAIR", "SD", "Take SIR into E, sets device enable signals", "T=SIR E=T PC++ (Device Enable!)" },
+    { 232, "PAIR", "SE", "Take SIR into E, sets device enable signals", "T=SIR E=T PC++ (Device Enable!)" },
     { 233, "PAIR", "SK", "Take SIR into O, load K into B", "T=SIR O=T B=K PC++" },
     { 234, "PAIR", "SU", "Take SIR as 8-bit signed number and add it to 16-bit pointer B:O", "T=SIR (B:O)+=T(signed) PC++" },
     { 235, "PAIR", "SW", "Take SIR as page offset and store it into PC - while register D is not zero. In either case, decrement D", "T=SIR PC=(D?T:PC+1) D--" },
@@ -252,7 +252,7 @@ Opcode opcodes[] = {
     { 245, "PAIR", "PD", "Take PIR into D", "T=PIR D=T PC++" },
     { 246, "PAIR", "PS", "Take PIR into SOR", "T=PIR SOR=T PC++" },
     { 247, "PAIR", "EA", "Copy E to A (done instead of PP!)", "K=B PC++" },
-    { 248, "PAIR", "PD", "Take PIR into E, sets device enable signals", "T=PIR E=T PC++ (Device Enable!)" },
+    { 248, "PAIR", "PE", "Take PIR into E, sets device enable signals", "T=PIR E=T PC++ (Device Enable!)" },
     { 249, "PAIR", "PK", "Take PIR into O, load K into B", "T=PIR O=T B=K PC++" },
     { 250, "PAIR", "PU", "Take PIR as 8-bit signed number and add it to 16-bit pointer B:O", "T=PIR (B:O)+=T(signed) PC++" },
     { 251, "PAIR", "PW", "Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D", "T=PIR PC=(D?T:PC+1) D--" },
@@ -356,7 +356,7 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
         }
 
         // Parse number prefix before @
-        int prefix_num = 0;
+        int prefix_num = -1;
         const char* label = working_token;
 
         if (isdigit(label[0])) {
@@ -396,12 +396,9 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
         }
 
         // Rebase PC if a prefix number exists
-        if (prefix_num > 0) {
-                //uint16_t prev_pc = *pc;  // Save the old PC before changing
-
+        if (prefix_num > -1) {
                 if (is_upper) {
                         *pc = ((uint16_t)(prefix_num & 0xFF)) << 8;
-                        
                 } else {
                         *pc = (*pc & 0xFF00) | (prefix_num & 0xFF);
                 }
@@ -434,23 +431,22 @@ void handle_labeldef(const char* label_raw, uint16_t* pc, uint8_t pass)
         label_table[label_count].isglobal = isglobal;
         label_count++;
 
-        //printf("Label defined: %s -> 0x%04X (%s)\n", label, *pc, isglobal ? "global" : "local");
+        printf("Label defined: %s -> 0x%04X (%s)\n", label, *pc, isglobal ? "global" : "local");
 }
 
 
-void handle_labelref(const char* label, char direction, uint16_t pc)
+int handle_labelref(const char* label, char prefix, uint16_t pc, int pass, uint8_t *target)
 {
-        // if (pass == 1) {
-        //         // In pass 1, we just note the reference but don't emit code yet
-        //         printf("Pass 1: Deferring resolution of label reference %c%s at 0x%04X\n",
-        //                direction, label, pc);
-        //         return;
-        // }
+        if (pass == 1) {
+                // printf("Pass 1: Deferring resolution of label reference %c%s at 0x%04X\n",
+                //        prefix, label, pc);
+                return -1;
+        }
 
         int found = 0;
         uint16_t resolved_address = 0;
 
-        if (direction == '<') {
+        if (prefix == '<') {
                 // Search backwards in label_table for matching label
                 for (ssize_t i = (ssize_t)label_count - 1; i >= 0; --i) {
                         if (strcmp(label_table[i].name, label) == 0) {
@@ -460,7 +456,7 @@ void handle_labelref(const char* label, char direction, uint16_t pc)
                         }
                 }
         }
-        else if (direction == '>') {
+        else if (prefix == '>') {
                 // Search forwards in label_table for matching label
                 for (size_t i = 0; i < label_count; ++i) {
                         if (strcmp(label_table[i].name, label) == 0) {
@@ -470,15 +466,29 @@ void handle_labelref(const char* label, char direction, uint16_t pc)
                         }
                 }
         }
+        if (prefix == '#') {
+                // Search entire range - finds first match!
+                for (unsigned i=0; i < label_count; i++) {
+                        if (strcmp(label_table[i].name, label) == 0) {
+                                resolved_address = label_table[i].address;
+                                found = 1;
+                                break;
+                        }
+                }
+        }
 
-        if (found) {
+
+        if(found){
+                *target = (uint8_t)(resolved_address & 0xFF);
                 // Write low byte of label address into RAM
-                ram[pc] = (uint8_t)(resolved_address & 0xFF);
-                //printf("Resolved %c%s to 0x%04X -> emitted 0x%02X at 0x%04X\n",
-                //       direction, label, resolved_address, ram[pc], pc);
-        } else {
+                printf("Resolved %c%s to 0x%04X -> emitted 0x%02X at 0x%04X\n",
+                       prefix, label, resolved_address, *target, pc);
+                return 0;
+        }else{
+                *target = 0;
                 fprintf(stderr, "Error: Could not resolve label reference %c%s at 0x%04X\n",
-                        direction, label, pc);
+                        prefix, label, pc);
+                return -1;
         }
 }
 
@@ -905,7 +915,6 @@ void assemble(Line** line_ptr_array, size_t line_count)
                             break;
                         }
                     }
-
                     if (valid_prefix) {
                         handle_labeldef(token, &emit_at, pass);
                         token = strtok(NULL, " \t,");
@@ -913,18 +922,53 @@ void assemble(Line** line_ptr_array, size_t line_count)
                     }
                 }
 
-                if (token[0] == '<' || token[0] == '>') {
+                if (token[0] == '<' || token[0] == '>' || token[0] == '#') {
                     if (pass == 1) {
                         emit(0x00, &emit_at, &bytes_emitted); // Reserve space
                     } else {
-                        handle_labelref(token + 1, token[0], emit_at++);
+                        uint8_t target;
+                        if (handle_labelref(token + 1, token[0], emit_at, pass, &target) != -1) {
+                            emit(target, &emit_at, &bytes_emitted);
+                        } else {
+                            fprintf(stderr, "Unresolved label reference at 0x%04X\n", emit_at);
+                            emit(0, &emit_at, &bytes_emitted);
+                        }
+                    }
+                    token = strtok(NULL, " \t,");
+                    continue;
+                }
+                else if (token[0] == '*') { // Handle TRAP call references
+                    if (pass == 1) {
+                        emit(0x00, &emit_at, &bytes_emitted); // Reserve space
+                    } else {
+                        const char* arg = token + 1;
+                        char* endptr = NULL;
+                        int value = (int)strtol(arg, &endptr, 0);
+
+                        if (*endptr == '\0') {
+                            // It's a number
+                            if (value < 0 || value > 31) {
+                                fprintf(stderr, "ERROR: Value out of 5-bit range (0-31): '%s' on line %zu\n", token, i + 1);
+                                emit(0, &emit_at, &bytes_emitted);
+                            } else {
+                                emit((uint8_t)(0b00100000 | value), &emit_at, &bytes_emitted);
+                            }
+                        } else {
+                            // It's a label reference
+                            uint8_t target = 0;
+                            if (handle_labelref(arg, '#', emit_at, pass, &target) != -1) {
+                                emit((uint8_t)(0b00100000 | target), &emit_at, &bytes_emitted);
+                            } else {
+                                fprintf(stderr, "Unresolved label reference '%s' at 0x%04X\n", arg, emit_at);
+                                emit(0, &emit_at, &bytes_emitted);
+                            }
+                        }
                     }
                     token = strtok(NULL, " \t,");
                     continue;
                 }
 
                 uint8_t opcode = 0;
-
                 if (find_opcode(token, &opcode) == 0) {
                     if (pass == 1) {
                         line->objcode_offset = emit_at;
@@ -970,7 +1014,7 @@ void assemble(Line** line_ptr_array, size_t line_count)
                         }
 
                         if (pass == 2) {
-                            fprintf(stderr, "Unrecognized token on line %zu: %s\n", i + 1, token);
+                            fprintf(stderr, "WARNING: Unrecognized token '%s' on line %zu\n", token, i + 1);
                         }
                         if (pass == 1) {
                             line->objcode_offset = 0xFFFF;
@@ -982,7 +1026,7 @@ void assemble(Line** line_ptr_array, size_t line_count)
             }
 
             line->bytes_emitted = bytes_emitted;
-            final_offset = emit_at;
+            final_offset = final_offset > emit_at ? final_offset : emit_at;
         }
     }
 
@@ -1018,6 +1062,7 @@ write_listing(FILE* out, Line** line_ptr_array, size_t line_count)
         }
 
         pos = acurr;
+        int firstline = 1;
         while(len > 0){
             uint8_t chunk_len = len > 8 ? 8 : len;
             if (use_color) fprintf(out, COLOR_ADDR);
@@ -1039,11 +1084,12 @@ write_listing(FILE* out, Line** line_ptr_array, size_t line_count)
             fprintf(out, "   %04zu  ", i + 1);
             if (use_color) fprintf(out, COLOR_RESET);
 
-            fprintf(out, "%s", line->text);
+            if (firstline) fprintf(out, "%s", line->text);
             fprintf(out, "\n");
 
             pos += chunk_len;
             len -= chunk_len;
+            firstline = 0;
         }
     }
 }
