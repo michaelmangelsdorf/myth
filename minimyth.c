@@ -329,7 +329,7 @@ scrounge( uint8_t opcode)
                 case ENTER:    l--;                return ENTER;
                 case INC:      a++;                return INC;
                 case DEC:      a--;                return DEC;
-                case EA:       a=e;            return EA;
+                case EA:       push_acc(e);          return EA;
                 default: return 0;
         }
 }
