@@ -928,8 +928,8 @@
     "opcode": 132,
     "group": "PAIR",
     "mnemonic": "FA",
-    "desc": "Take M[C:PC++] into A",
-    "pseudocode": "T=M[C:PC] PC++ A=T PC++"
+    "desc": "Push M[C:PC++] into A",
+    "pseudocode": "T=M[C:PC] PC++ X=A A=T PC++"
   },
   {
     "opcode": 133,
@@ -1041,8 +1041,8 @@
     "opcode": 148,
     "group": "PAIR",
     "mnemonic": "MA",
-    "desc": "Take M[B:O] into A",
-    "pseudocode": "T=M[B:O] A=T PC++"
+    "desc": "Push M[B:O] into A",
+    "pseudocode": "T=M[B:O] X=A A=T PC++"
   },
   {
     "opcode": 149,
@@ -1154,8 +1154,8 @@
     "opcode": 164,
     "group": "PAIR",
     "mnemonic": "BA",
-    "desc": "Take B into A",
-    "pseudocode": "T=B A=T PC++"
+    "desc": "Push B into A",
+    "pseudocode": "T=B X=A A=T PC++"
   },
   {
     "opcode": 165,
@@ -1267,8 +1267,8 @@
     "opcode": 180,
     "group": "PAIR",
     "mnemonic": "OA",
-    "desc": "Take O into A",
-    "pseudocode": "T=O A=T PC++"
+    "desc": "Push O into Acc",
+    "pseudocode": "T=O X=A A=T PC++"
   },
   {
     "opcode": 181,
@@ -1492,8 +1492,8 @@
     "opcode": 212,
     "group": "PAIR",
     "mnemonic": "DA",
-    "desc": "Take D into A",
-    "pseudocode": "T=D A=T PC++"
+    "desc": "Push D into Acc",
+    "pseudocode": "T=D X=A A=T PC++"
   },
   {
     "opcode": 213,
@@ -1605,8 +1605,8 @@
     "opcode": 228,
     "group": "PAIR",
     "mnemonic": "SA",
-    "desc": "Take SIR into A",
-    "pseudocode": "T=SIR A=T PC++"
+    "desc": "Push SIR into Acc",
+    "pseudocode": "T=SIR X=A A=T PC++"
   },
   {
     "opcode": 229,
@@ -1718,8 +1718,8 @@
     "opcode": 244,
     "group": "PAIR",
     "mnemonic": "PA",
-    "desc": "Take PIR into A",
-    "pseudocode": "T=PIR A=T PC++"
+    "desc": "Push PIR into A",
+    "pseudocode": "T=PIR X=A A=T PC++"
   },
   {
     "opcode": 245,
@@ -1740,8 +1740,8 @@
     "group": "PAIR",
     "scrounge": "PP",
     "mnemonic": "EA",
-    "desc": "Copy E to A (done instead of PP!)",
-    "pseudocode": "K=B PC++"
+    "desc": "Push E to Acc (done instead of PP!)",
+    "pseudocode": "X=A A=E PC++"
   },
   {
     "opcode": 248,

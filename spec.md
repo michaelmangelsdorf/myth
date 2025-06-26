@@ -1,7 +1,7 @@
 ## Myth CPU/Micro-Controller
 ## OVERVIEW
 
-Myth is an educational 8-bit toy CPU with a reduced, but hopefully enjoyable feature set. It has no microcoded complex instructions, but care has been taken to allow for practicable programming that should be intuitive to the assembler programmer.
+Myth is an educational 8-bit CPU with a reduced, but hopefully enjoyable feature set. It has no microcoded complex instructions, but care has been taken to allow for practicable programming that should be intuitive to the assembler programmer.
 
 The project is based on an earlier prototype, built successfully using just under 100 74HC series chips, some CMOS memory and passive components.
 
@@ -12,9 +12,15 @@ https://github.com/michaelmangelsdorf/Sonne8
 
 ### Basic CPU
 
-An accumulator with two registers (A and X) feeds into an Arithmetic Logic Unit (ALU), computes a result, then overwrites A and X with the results.
+#### Power-up and Reset
 
-The primary result (the sum of both registers, for instance) is stored in A, the secondard result (carry bit of the sum) is stored in X.
+When the CPU is reset, registers L (stack frame pointer), C (program page index), PC (program offset) and the BUSY flag (disable interrupts) are set to zero, and the first instruction is fetched from address C:PC. PC is then incremented for the next instruction fetch, and so on.
+
+#### Accumulator and ALU
+
+An accumulator with two registers (A and X) feeds into an Arithmetic Logic Unit (ALU), computes a result, then overwrites A and, in some cases, X with the results.
+
+The primary result (the sum of both registers, for instance) is stored in A, the secondary result (carry bit of the sum) is stored in X.
 
 When writing a value into A (instructions _A and GETA), the accumulator functions as a two-element push-down stack: The old value of A is saved into X before overwriting it with the new value. X can be saved into A with the XA instruction.
 
@@ -78,7 +84,7 @@ There are only two offset registers and they are the only means of setting addre
 
 For data memory access, the byte offset in the offset register (O) is used, and the byte offset for fetching instructions and literals is stored in the program counter register (PC).
 
-There are instructions that access memory with implicit offsets, however.
+There are instructions that access memory with implied offsets, however.
 
 ##### Page-Index Registers
 
@@ -135,6 +141,8 @@ By writing a branch offset into J, the program counter is set to this new offset
 
 #### Interpage Control Flow and TRAP Instructions
 
+On power-up and reset, registers C and PC are set to zero and the first instruction is fetched from address C:PC.
+
 Branching to code in a different page is done by writing into one of the effect registers C (call), by executing a return instruction (RTS or RTI), the COR (coroutine) instruction, or executing a TRAP instruction.
 
 TRAP instructions have immediate opcodes that encode a target page-index for a call. When executed, an implicit subroutine call to this encoded page-index occurs within a single instruction. A TRAP to page 0 sets the BUSY flag and disables interrupts. The BUSY flag is cleared by executing RTI.
@@ -190,7 +198,7 @@ You can manually set BUSY by executing TRAP 0. Only this instruction will work, 
 
 #### Device Selection
 
-The CPU is designed to handle serial and parallel communication with external components. This is facilitated by dedicated hardware-registers and instructions.
+The CPU can control serial and parallel communication with external components. This is facilitated by dedicated hardware-registers and instructions.
 
 ##### E (Enable) register
 
@@ -200,7 +208,7 @@ Each four-bit group (L for the low-order, H for the high-order) drives a 4-to-16
 
 ###### Special Purpose Selectors
 
-Select signals SL0 and SH0 are reserved to select a NULL device ("nothing").
+Select signals SL0 and SH0 are reserved, and select a NULL device ("nothing"). These signals are selected on power-up or reset.
 
 SL1 corresponds to the internal POR register output enable signal (POE). SH1 corresponds to the internal PIR register latch enable signal (PLE).
 
@@ -366,7 +374,7 @@ Operation codes fall into 6 format groups, which are decodable using a priority 
 #### Comments
 
 - Any text after a semicolon (`;`) is a comment.
-- Text enclosed in parentheses `(A comment)` is also treated as a comment — including the parentheses themselves.
+- Text enclosed in parentheses `(A comment)` is also treated as a comment — including the parentheses themselves. Useful for commenting out just one or two mnemonics.
 
 #### Phrasing
 
@@ -382,10 +390,13 @@ Then in Sublime, press CMD-Shift-P. In the dialog, navigate to: `Preferences: Se
  
     // These settings override both User and Default settings for the myth-my8 syntax
     {
-    		"color_scheme": "myth-my8.sublime-color-scheme",
+    	// Sets the colors used within the text area.
+    	// The value "auto" will switch between the "light_color_scheme" and
+    	// "dark_color_scheme" based on the operating system appearance.
+    	"color_scheme": "myth-dark-my8.sublime-color-scheme"
     }
 
-
+There is also a light theme (`myth-light-my8.sublime-color-scheme`) in the repo.
 
 
 ### "My"-Tool for Native  Development
@@ -509,7 +520,7 @@ Use the accumulator (AX) for primary arguments in general.
 There is a "hidden" local variable shortcut "L0". You can obtain a pointer to this memory location by executing the instruction "LOCAL". Local sets B to the Local page, and O to F7h, the byte offset just below L1. Then use MxM instructions such as "am" to read or store into the L0 variable:
 
     ; Store number 4 in L0:
-    fa 2 shl, local am.
+    (fa 2 shl,) local am.
 
 
 ## Tables

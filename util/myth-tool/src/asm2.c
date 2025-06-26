@@ -136,7 +136,7 @@ Opcode opcodes[] = {
     { 129, "PAIR", "KEY", "Copy register B into K (done instead of FM!)", "B=C O=PC PC++" },
     { 130, "PAIR", "FB", "Take M[C:PC++] into B", "T=M[C:PC] PC++ B=T PC++" },
     { 131, "PAIR", "FO", "Take M[C:PC++] into O", "T=M[C:PC] PC++ O=T PC++" },
-    { 132, "PAIR", "FA", "Take M[C:PC++] into A", "T=M[C:PC] PC++ A=T PC++" },
+    { 132, "PAIR", "FA", "Take M[C:PC++] into Acc", "T=M[C:PC] PC++ X=A A=T PC++" },
     { 133, "PAIR", "FD", "Take M[C:PC++] into D", "T=M[C:PC] PC++ D=T PC++" },
     { 134, "PAIR", "FS", "Take M[C:PC++] into SOR", "T=M[C:PC] PC++ SOR=T PC++" },
     { 135, "PAIR", "FP", "Take M[C:PC++] into POR", "T=M[C:PC] PC++ POR=T PC++" },
@@ -168,7 +168,7 @@ Opcode opcodes[] = {
     { 161, "PAIR", "BM", "Take B into M[B:O]", "T=B M[B:O]=T PC++" },
     { 162, "PAIR", "LOCAL", "Copy pointer L:F7h (L0) into B:O (done instead of BB!)", "L++ PC++" },
     { 163, "PAIR", "BO", "Take B into O", "T=B O=T PC++" },
-    { 164, "PAIR", "BA", "Take B into A", "T=B A=T PC++" },
+    { 164, "PAIR", "BA", "Take B into Acc", "T=B X=A A=T PC++" },
     { 165, "PAIR", "BD", "Take B into D", "T=B D=T PC++" },
     { 166, "PAIR", "BS", "Take B into SOR", "T=B SOR=T PC++" },
     { 167, "PAIR", "BP", "Take B into POR", "T=B POR=T PC++" },
@@ -184,7 +184,7 @@ Opcode opcodes[] = {
     { 177, "PAIR", "OM", "Take O into M[B:O]", "T=O M[B:O]=T PC++" },
     { 178, "PAIR", "OB", "Take O into B", "T=O B=T PC++" },
     { 179, "PAIR", "LEAVE", "Increment L (done instead of OO!)", "L-- PC++" },
-    { 180, "PAIR", "OA", "Take O into A", "T=O A=T PC++" },
+    { 180, "PAIR", "OA", "Take O into Acc", "T=O X=A A=T PC++" },
     { 181, "PAIR", "OD", "Take O into D", "T=O D=T PC++" },
     { 182, "PAIR", "OS", "Take O into SOR", "T=O SOR=T PC++" },
     { 183, "PAIR", "OP", "Take O into POR", "T=O POR=T PC++" },
@@ -216,7 +216,7 @@ Opcode opcodes[] = {
     { 209, "PAIR", "DM", "Take D into M[B:O]", "T=D M[B:O]=T PC++" },
     { 210, "PAIR", "DB", "Take D into B", "T=D B=T PC++" },
     { 211, "PAIR", "DO", "Take D into O", "T=D O=T PC++" },
-    { 212, "PAIR", "DA", "Take D into A", "T=D A=T PC++" },
+    { 212, "PAIR", "DA", "Take D into Acc", "T=D X=A A=T PC++" },
     { 213, "PAIR", "INC", "Increment A (done instead of DD!)", "A-- PC++" },
     { 214, "PAIR", "DS", "Take D into SOR", "T=D SOR=T PC++" },
     { 215, "PAIR", "DP", "Take D into POR", "T=D POR=T PC++" },
@@ -232,7 +232,7 @@ Opcode opcodes[] = {
     { 225, "PAIR", "SM", "Take SIR into M[B:O]", "T=SIR M[B:O]=T PC++" },
     { 226, "PAIR", "SB", "Take SIR into B", "T=SIR B=T PC++" },
     { 227, "PAIR", "SO", "Take SIR into O", "T=SIR O=T PC++" },
-    { 228, "PAIR", "SA", "Take SIR into A", "T=SIR A=T PC++" },
+    { 228, "PAIR", "SA", "Take SIR into Acc", "T=SIR X=A A=T PC++" },
     { 229, "PAIR", "SD", "Take SIR into D", "T=SIR D=T PC++" },
     { 230, "PAIR", "DEC", "Decrement A (done instead of SS!)", "A=E PC++" },
     { 231, "PAIR", "SP", "Take SIR into POR", "T=SIR POR=T PC++" },
@@ -248,10 +248,10 @@ Opcode opcodes[] = {
     { 241, "PAIR", "PM", "Take PIR into M[B:O]", "T=PIR M[B:O]=T PC++" },
     { 242, "PAIR", "PB", "Take PIR into B", "T=PIR B=T PC++" },
     { 243, "PAIR", "PO", "Take PIR into O", "T=PIR O=T PC++" },
-    { 244, "PAIR", "PA", "Take PIR into A", "T=PIR A=T PC++" },
+    { 244, "PAIR", "PA", "Take PIR into Acc", "T=PIR X=A A=T PC++" },
     { 245, "PAIR", "PD", "Take PIR into D", "T=PIR D=T PC++" },
     { 246, "PAIR", "PS", "Take PIR into SOR", "T=PIR SOR=T PC++" },
-    { 247, "PAIR", "EA", "Copy E to A (done instead of PP!)", "K=B PC++" },
+    { 247, "PAIR", "EA", "Copy E to Acc (done instead of PP!)", "X=A A=E PC++" },
     { 248, "PAIR", "PE", "Take PIR into E, sets device enable signals", "T=PIR E=T PC++ (Device Enable!)" },
     { 249, "PAIR", "PK", "Take PIR into O, load K into B", "T=PIR O=T B=K PC++" },
     { 250, "PAIR", "PU", "Take PIR as 8-bit signed number and add it to 16-bit pointer B:O", "T=PIR (B:O)+=T(signed) PC++" },
@@ -718,6 +718,69 @@ int add_symbol_entry(uint8_t typeid, const char* name, const uint8_t* data,
     *offset = pos;
     return 0;
 }
+
+
+
+// (The commented-out block below will create the opcode table
+// as assembler source)
+
+// int get_group_id(const char* group) {
+//     if (strcmp(group, "SYS")     == 0) return 0;
+//     if (strcmp(group, "BOP")     == 0) return 1;
+//     if (strcmp(group, "ALU")     == 0) return 2;
+//     if (strcmp(group, "TRAP")    == 0) return 3;
+//     if (strcmp(group, "GETPUT")  == 0) return 4;
+//     if (strcmp(group, "PAIR")    == 0) return 5;
+//     return 0xFF; // Unknown group
+// }
+
+// void generate_symbol_table_entries(void) {
+//     const int TOTAL = 256;
+//     unsigned sizes[TOTAL];
+//     const char* names[TOTAL];
+//     const char* groups[TOTAL];
+//     char fallback[16];
+
+//     // First pass: gather names, groups, and compute entry sizes
+//     for (int i = 0; i < TOTAL; ++i) {
+//         const char* name = NULL;
+//         const char* group = "SYS"; // default
+
+//         for (int j = 0; j < sizeof(opcodes)/sizeof(Opcode); ++j) {
+//             if (opcodes[j].opcode == i) {
+//                 name = opcodes[j].mnemonic;
+//                 group = opcodes[j].group;
+//                 break;
+//             }
+//         }
+
+//         if (!name) {
+//             snprintf(fallback, sizeof(fallback), "UNK%02X", i);
+//             name = strdup(fallback); // static name OK for loop
+//         }
+
+//         names[i] = name;
+//         groups[i] = group;
+
+//         size_t namelen = strlen(name);
+//         sizes[i] = 1 + 1 + namelen + 1 + 2; // LL, IJ, name, null, opcode, group
+//     }
+
+//     // Second pass: emit with correct link byte
+//     for (int i = 0; i < TOTAL; ++i) {
+//         unsigned link = (i < TOTAL - 1) ? sizes[i] : 0;
+//         const char* name = names[i];
+//         const char* group = groups[i];
+//         size_t namelen = strlen(name);
+//         unsigned typelen = (2 << 4) | ((namelen - 1) & 0x0F);
+//         unsigned opcode = i;
+//         unsigned groupid = get_group_id(group);
+
+//         printf("%02Xh, %02Xh, \"%s\", 0, %02Xh, %02Xh\n",
+//                link, typelen, name, opcode, groupid);
+//     }
+// }
+
 
 
 

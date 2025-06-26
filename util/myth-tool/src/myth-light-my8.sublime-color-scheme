@@ -1,0 +1,117 @@
+{
+  "name": "My8 Light",
+  "variables": {
+    "background": "#ffffff",
+    "foreground": "#2e2e2e",
+    "yellow": "#aa8800",
+    "emerald": "#007744",
+    "blue": "#3366cc",
+    "purple": "#7a4b94",
+    "green": "#007700",
+    "orange": "#cc6600",
+    "gray": "#aaaaaa",
+    "cyan": "#007e8a",
+    "comment": "#888888"
+  },
+  "globals": {
+    "background": "var(background)",
+    "foreground": "var(foreground)",
+    "caret": "#000000",
+    "selection": "#d0e2ff",
+    "selection_border": "#00000000",
+    "line_highlight": "#f7f7f7"
+  },
+  "rules": [
+    {
+      "scope": "label.global.my8",
+      "foreground": "var(yellow)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "string.quoted.double.my8",
+      "foreground": "var(cyan)"
+    },
+    {
+      "scope": "keyword.directive.asm.my8",
+      "foreground": "var(orange)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "keyword.control.sys.my8",
+      "foreground": "var(yellow)"
+    },
+    {
+      "scope": "keyword.control.bop.my8",
+      "foreground": "var(blue)"
+    },
+    {
+      "scope": "keyword.control.alu.my8",
+      "foreground": "var(green)"
+    },
+    {
+      "scope": "keyword.control.trap.my8",
+      "foreground": "var(purple)"
+    },
+    {
+      "scope": "keyword.control.getput.my8",
+      "foreground": "var(blue)"
+    },
+    {
+      "scope": "keyword.control.pair.my8",
+      "foreground": "var(orange)"
+    },
+    {
+      "scope": "keyword.control.scrounge.my8",
+      "foreground": "var(emerald)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "constant.numeric.hex.my8 constant.numeric.decimal.my8",
+      "foreground": "#444444"
+    },
+    {
+      "scope": "variable.parameter.register.my8",
+      "foreground": "#336699"
+    },
+    {
+      "scope": "variable.labelref.page.my8",
+      "foreground": "#6d3796",
+      "font_style": "bold"
+    },
+    {
+      "scope": "variable.labelref.offset.my8",
+      "foreground": "#8d6ea8"
+    },
+    {
+      "scope": "entity.name.label.page.my8",
+      "foreground": "var(orange)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "entity.name.label.offset.my8",
+      "foreground": "#8d6ea8"
+    },
+    {
+      "scope": "comment.line.semicolon.my8",
+      "foreground": "var(comment)",
+      "font_style": "italic"
+    },
+    {
+      "scope": "punctuation.definition.string.begin.my8 punctuation.definition.string.end.my8",
+      "foreground": "var(gray)"
+    },
+    {
+      "scope": "constant.character.escape.my8",
+      "foreground": "var(purple)",
+      "font_style": "bold"
+    },
+    {
+      "scope": "constant.character.literal.my8",
+      "foreground": "var(cyan)"
+    },
+    {
+      "scope": "variable.name.constant.my8",
+      "foreground": "var(yellow)"
+    }
+  ]
+}
