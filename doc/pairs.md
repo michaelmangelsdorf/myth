@@ -7,7 +7,7 @@ There are 8 sources: F, M, B, O, A, D, S, P.
 
 All sources can also be targets, except F.
 
-In addition to these 7 sources why can use as targets, there are 9 additional targets which in turn can't be sources: C, E, K, U, W, J, H, Z, N.
+In addition to these 7 sources we can use as targets, there are 9 additional targets which in turn can't be sources: C, E, K, U, W, J, H, Z, N.
 
 So in total, there are 16 targets.
 
@@ -15,17 +15,21 @@ You can now combine these to form "pairs": FK (Copy F to K), AE (Copy A to E), a
 
 Regarding pair instructions, there is one additional rule, and one exception to this rule to remember.
 
+#### Scrounging
+
 The rule is that when both letters (source and target) are the same, that means something different! - another instruction entirely.
 
-This is called "scrounging" the original pair. The simplified reason for this feature is that copying the value from one register into itself (AA - copy A to A, for example) is not overly useful.
+This is called "scrounging" the original pair. The simplified reason for this feature is that copying the value from one register into itself (AA - copy A to A, for example) is not overly useful, so we are doing something else instead!
 
-Now, the exception to this rule of scrounging is that since F is not a target register, we scrounge FM instead, even though F and M are not the same letters.
+Now, the exception to this rule of scrounging, just something to remember, is that since F is not a target register, we scrounge FM instead, even though F and M are not the same letters.
 
 Here are all the scrounged combinations, and what they "redirect" to, which instruction they do instead:
 
 FM: KEY, MM: CODE, BB: LOCAL, OO: LEAVE, AA: ENTER, DD: INC, SS: DEC, PP: EA
 
 Each of these will be explained in the appropriate section.
+
+#### Effects
 
 Some of the sources and targets are what are called effects. Effect means that instead of being a little physical storage location (called a "register"), reading or writing it triggers a specific side effect. It has an action. We could say that effects are just names for their actions, instead of names for a storage cell or register.
 
