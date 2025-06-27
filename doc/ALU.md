@@ -8,9 +8,9 @@ Accumulator review: When you read A, you get its value back. When you write A, i
 
 What's an ALU? It's a very common, central part in a computer that takes input from registers, performs one of a number of possible operations (the instruction tells it which one it is) and then stores the result back in some register.
 
-In this computer, the ALU sees what is in A and X, so it bases its operation on those to values. There are 16 possible operations, 16 instructions. Let's look at them in a systematic way.
+In this computer, the ALU sees what is in A and X, so it bases its operation on those two values. There are 16 possible operations, 16 instructions. Let's look at them in a systematic way.
 
-Something noteworthy is that half of the ALU instructions just produce a primary result ("the" result) and it gets stored in A.
+Something noteworthy is that the first half of the ALU instructions in numerical order just produce a primary result ("the" result) and it gets stored in A.
 
 The other half of the instructions gives you the primary result in A (the one you **probably** want, but also another useful aside, stored in X).
 
@@ -39,23 +39,25 @@ Aha! So you **can** get the value of X. With this instruction, it gets stored in
 AX: Stores A into X. Swap: Swaps A and X.
 
 #### SHL SHR ASR
-* SHL shifts every bit in A to the left by one position. Position one - the first bit - is set to zero. So far so good. At this point, importantly, X gets zeroed. Now. The highest order bit from the original number (the bit that got "pushed" out) is put **back** as the first bit of X.
+* SHL shifts every bit in A to the left by one position. Position one - the first bit - is set to zero. So far so good. At this point, importantly, X gets zeroed. Now. The highest order bit from the original number (the bit that got "pushed" out) is put **back** as the first bit of X. So at the end, X either contains 0 or 1.
 
     This instruction is exactly the same as multiplying A by two, or adding A to itself. Think about it.
 
-* SHR is the opposite. Every bit is shifted one position to the right. The highest position - bit 7 - is set to zero. So far so good. X gets cleared again. Now. The lowest order bit from the original number (the bit that got "pushed" out) is put **back** as the highest-order bit of X.
+* SHR is the opposite. Every bit is shifted one position to the right. The highest position - bit 7 - is set to zero. So far so good. X gets cleared again. Now. The lowest order bit from the original number (the bit that got "pushed" out) is put **back** as the highest-order bit of X. So at the end, X contains either 0 or 80h (bit 7 set).
 
   This instruction is exactly the same as diving A by two, if you prefer to use the larger "unsigned" range of your bytes.
 
 * ASR is just like SHR, with one little difference:
 
-  Every bit is shifted one position to the right. The highest position - bit 7 - is set to **whatever the highest-order bit of the original number was**. So far so good. X gets cleared again. Now. The lowest order bit from the original number (the bit that got "pushed" out) is put **back** as the highest-order bit of X.
+  Every bit is shifted one position to the right. The highest position - bit 7 - is set to **whatever the highest-order bit of the original number was**. So far so good. X gets cleared again. Now. The lowest order bit from the original number (the bit that got "pushed" out) is put **back** as the highest-order bit of X. So at the end, X is either 0 or 80h.
 
   The reason why the high-order bit is copied down has to do with negative binary numbers. As we said in an earlier section, negative binary numbers have their highest bit set to 1. The highest bit is often abbreviated to MSB (Most Significant Bit). When you use SHR (the other shift-right instruction), the MSB changes from a possible 1 to a zero. Practically, let's say you divide -6 by 2, with SHR you would get 3, not -3. Whereas ASR gives the correct result in this case. For this reason, ASR stands for Arithmetic Shift Right.
+  
+  This instruction is exactly the same as diving A by two, if you prefer to use the smaller, "signed" range of your bytes.
 
 #### ADDC ADDV SUBB
 
-* ADDC is the easiest of the three. A received the sum of A and X. If the sum didn't fit into a byte, then X is set to 1. Else, X is set to zero.
+* ADDC is the easiest of the three. A receives the sum of A and X. If the sum didn't fit into a byte, then X is set to 1. Else, X is set to zero.
 
   Example: I'm sure you know that the maximum unsigned number you can store in a byte is 255. So if A=60 and X=200, then ADDC will leave A=5 and X set to 1.
 
