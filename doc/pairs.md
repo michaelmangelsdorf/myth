@@ -110,9 +110,7 @@ The action of the Z effect is almost identical, but this time we jump if A **is*
 Then, finally, the N effect. N stands for negative, so we will jump if the value in A is negative. A byte is negative, by a very practical convention called the two's complement, if its highest order bit (bit 7 if count from zero) is one.
 So this action can be used for checking that bit, too.
 
-Now you know what all the pair instructions do! They make up half of the entire instruction set of this computer, there are just so many combinations - exactly 128, including the "scrounges".
-
-
+Now you know what all the pair instructions do! They make up half of the entire instruction set of this computer, there are just so many combinations - exactly 128: 8 sources x 16 targets, including the "scrounges".
 
 
 
