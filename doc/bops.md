@@ -2,11 +2,11 @@
 
 I'm sure that you're asking yourself what these might be.
 
-This group of 8 instructions is probably the easiest one to understand. BOP stands for "B:O Pointers". As you know by now, the B:O register pair has a central place as the only address register in this computer.
+This group of 8 instructions is probably the easiest one to understand. BOP stands for "B:O Pointer". As you know by now, the B:O register pair has a central place as the only address register in this computer.
 
 In order to use it, almost invariably, you must copy suitable values into B and into O, before you can read or write memory.
 
-In order to aleviate this repetitive task, there are four "wide" registers, into which you can save and from which you can restore the B:O register pair in one go.
+In order to alleviate this repetitive task, there are four "wide" registers, into which you can save and from which you can restore the B:O register pair in one go.
 
 These registers are the four "amenity" or BOP registers P1, P2, P3, and P4.
 
