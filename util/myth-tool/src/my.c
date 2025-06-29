@@ -179,8 +179,8 @@ int parse_and_set_variable(const char *arg) {
     else if (strcmp(varname, "p2o") == 0) p2o = byte;
     else if (strcmp(varname, "p3b") == 0) p3b = byte;
     else if (strcmp(varname, "p3o") == 0) p3o = byte;
-    else if (strcmp(varname, "p4b") == 0) p4b = byte;
-    else if (strcmp(varname, "p4o") == 0) p4o = byte;
+    else if (strcmp(varname, "iab") == 0) iab = byte;
+    else if (strcmp(varname, "iao") == 0) iao = byte;
     else if (strcmp(varname, "k") == 0) k = byte;
     else if (strcmp(varname, "l") == 0) l = byte;
     else if (strcmp(varname, "d") == 0) d = byte;

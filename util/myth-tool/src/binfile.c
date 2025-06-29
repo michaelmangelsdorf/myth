@@ -40,8 +40,8 @@ write_ram(const char *filename)
     fwrite(&p2o, sizeof(uint8_t), 1, file);
     fwrite(&p3b, sizeof(uint8_t), 1, file);
     fwrite(&p3o, sizeof(uint8_t), 1, file);
-    fwrite(&p4b, sizeof(uint8_t), 1, file);
-    fwrite(&p4o, sizeof(uint8_t), 1, file);
+    fwrite(&iab, sizeof(uint8_t), 1, file);
+    fwrite(&iao, sizeof(uint8_t), 1, file);
     fwrite(&k, sizeof(uint8_t), 1, file);
     fwrite(&l, sizeof(uint8_t), 1, file);
     fwrite(&d, sizeof(uint8_t), 1, file);
@@ -91,8 +91,8 @@ read_ram(const char *filename)
     fread(&p2o, sizeof(uint8_t), 1, file);
     fread(&p3b, sizeof(uint8_t), 1, file);
     fread(&p3o, sizeof(uint8_t), 1, file);
-    fread(&p4b, sizeof(uint8_t), 1, file);
-    fread(&p4o, sizeof(uint8_t), 1, file);
+    fread(&iab, sizeof(uint8_t), 1, file);
+    fread(&iao, sizeof(uint8_t), 1, file);
     fread(&k, sizeof(uint8_t), 1, file);
     fread(&l, sizeof(uint8_t), 1, file);
     fread(&d, sizeof(uint8_t), 1, file);

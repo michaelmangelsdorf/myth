@@ -22,7 +22,7 @@ extern uint8_t o;
 extern uint8_t p1b, p1o;
 extern uint8_t p2b, p2o;
 extern uint8_t p3b, p3o;
-extern uint8_t p4b, p4o;
+extern uint8_t iab, iao;
 extern uint8_t k;
 extern uint8_t l;
 extern uint8_t d;

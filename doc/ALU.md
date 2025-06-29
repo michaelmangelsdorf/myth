@@ -10,7 +10,7 @@ What's an ALU? It's a very common, central part in a computer that takes input f
 
 In this computer, the ALU sees what is in A and X, so it bases its operation on those two values. There are 16 possible operations, 16 instructions. Let's look at them in a systematic way.
 
-Something noteworthy is that the first half of the ALU instructions in numerical order just produce a primary result ("the" result) and it gets stored in A.
+Something noteworthy is that the first half of the ALU instructions in numerical order just produce a primary result ("the" result) and it gets stored in A. X remains unchanged.
 
 The other half of the instructions gives you the primary result in A (the one you **probably** want, but also another useful aside, stored in X).
 
@@ -18,7 +18,9 @@ The other half of the instructions gives you the primary result in A (the one yo
 
 ##### NOT
 
-This instruction just inverts the bits in A. Those bits that are 0 become 1, those that are 1 become 0. This also called the "one's complement". When you add one to it 1, it's "minus" the original number. Look up how this works, it's fascinating.
+This instruction just inverts the bits in A. Those bits that are 0 become 1, those that are 1 become 0. This is also called the "one's complement". When you add 1 to it, it becomes "minus" the original number, the negative version of it. Look up how this works, it's fascinating: This is called the two's complement. It is how the computer actually does subtraction behind then scenes.
+
+Did you know that doing "EOR FFh" to a byte has the same effect as NOT? This is beclause Exclusive-OR is 1 if and only if the two input bits are different. The number FFh has all its bits set to 1. So if a bit in the other number is 1, that is the same as the corresponding bit in FFh, so the result bit is 0. And if the bit is 0, well then it's different from the 1 bit in FFh, so the result is 1.
 
 ##### ALX, AEX, AGX
 
@@ -63,7 +65,7 @@ AX: Stores A into X. Swap: Swaps A and X.
 
   Just like in decimal: Add 6 to 5, and you need another 1 to the left, because it's greater than 9. That one is called the carry bit. ADDC stands for ADD and CARRY. This instruction is for when you are treating your bytes as "unsigned".
 
-  In preparation for explaining the next instruction, think about this. Our example from before, 200+60=5 looks like this in hexadecimal: C8+3C=5, CARRY=1. So the result (05h) is "wrong" in a way. But in some other way, it just can't stand by itself, the carry is part of it. So you can fix it by prefixing it with the carry: 105h = 255 + 5 = 260.
+  In preparation for explaining the next instruction, think about this. Our example from before, 200+60=5 looks like this in hexadecimal: C8+3C=5, CARRY=1. So the result (05h) is "wrong" in a way. But in some other way, it only can't stand by itself, the carry must be part of it. So you can fix it by prefixing it with the carry: 105h = 255 + 5 = 260.
   
   The carry bit often comes into play when you have a 16-bit address, and add a small number to the low-order byte. If the carry bit is clear, you don't have to do anything to the high-order byte. But if it is set, you must increment the high-order byte by 1 to fix the address. The _U effect does this for you. Remember, when you store a number info _U, that number gets added to the B:O register pair. And although you are just adding a byte to O, the result may spill over into B, or underflow O. And _U has your back and updates B as required.
 
@@ -71,7 +73,7 @@ AX: Stores A into X. Swap: Swaps A and X.
 
     As we said, the carry bit is for **fixing** the result when the addition of two unsigned numbers overflows a byte.
 
-    The Overflow flag is different - you won't be able to use it directly to fix your result. All it tells you is that the addition didn't work, either operand is out of range. The overflow flag is an error flag. ADDV stands for ADD and OVERFLOW.
+    The Overflow flag is different - you won't be able to use it directly to fix your result. All it tells you is that the addition didn't work, the two operands when added are out of range. The overflow flag is an error flag. ADDV stands for ADD and OVERFLOW.
 
     You can tell that your result is wrong, when you add two positive numbers (A and X) but you get a negative result. And also a positive result when you add two negative numbers is clearly wrong. And that is what the overflow flag tells you, that one of these two cases occurred.
 
@@ -85,11 +87,7 @@ AX: Stores A into X. Swap: Swaps A and X.
     
     The borrow bit often comes into play when you have a 16-bit address, and subtract a small number from the low-order byte. If the borrow bit is clear, you don't have to do anything to the high-order byte. But if it is set, you must decrement the high-order byte by 1 to fix the address. The _U effect does this for you. Remember, when you store a number info _U, that number gets added to the B:O register pair. And although you are just subtracting a byte from O (oh, not 0), the result may spill over into B, or underflow O. And _U has your back and updates B as required.
     
-    
-
-
-
-
+  A good way to remember that A gets subtracted from X, and not the other way around, is the actual way in which you proceed. First you push a number into A, then you realize you need to subtract 5 from it, so you push the five. At this point, the number that is subtracted (the 5) is in A, and your orginal number (the one you want to subtract from) has been pushed into X. You then do SUBB and are left with the result in A.
 
 
 

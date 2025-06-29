@@ -103,12 +103,12 @@ void emit_pulley_block(FILE *fp) {
             label_color, reset_color, l);
 
     // Line 4
-    fprintf(fp, "%sBO:%s%02X%02X  %sP1:%s%02X%02X %sP2:%s%02X%02X %sP3:%s%02X%02X %sP4:%s%02X%02X   %sKEY:%s%02X %sL0:%s%02X\n",
+    fprintf(fp, "%sBO:%s%02X%02X  %sP1:%s%02X%02X %sP2:%s%02X%02X %sP3:%s%02X%02X %sIA:%s%02X%02X   %sKEY:%s%02X %sL0:%s%02X\n",
             label_color, reset_color, b, o,
             label_color, reset_color, p1b, p1o,
             label_color, reset_color, p2b, p2o,
             label_color, reset_color, p3b, p3o,
-            label_color, reset_color, p4b, p4o,
+            label_color, reset_color, iab, iao,
             label_color, reset_color, k,
             label_color, reset_color, ram[l * 256 + 0xF7]);
 

@@ -145,9 +145,11 @@ On power-up and reset, registers C and PC are set to zero and the first instruct
 
 Branching to code in a different page is done by writing into one of the effect registers C (call), by executing a return instruction (RTS or RTI), the COR (coroutine) instruction, or executing a TRAP instruction.
 
-TRAP instructions have immediate opcodes that encode a target page-index for a call. When executed, an implicit subroutine call to this encoded page-index occurs within a single instruction. A TRAP to page 0 sets the BUSY flag and disables interrupts. The BUSY flag is cleared by executing RTI.
+TRAP instructions have immediate opcodes that encode a target page-index for a call. When executed, an implicit subroutine call to this encoded page-index occurs within a single instruction. A TRAP to page 0 sets the BUSY flag and disables interrupts. The BUSY flag is cleared by executing RTI. Trap calls must be left by executing RTI (Return from Interrupt)!, since they are using another pointer (IA) instead of B:O for saving and restoring the return address.
 
-When executing RTS or RTI, the code page index register C is loaded with the value in B (base), the program counter register PC is loaded with the value of register O (offset), and the local-page index in register L is incremented.
+When executing RTS, the code page index register C is loaded with the value in B (base), the program counter register PC is loaded with the value of register O (offset), and the local-page index in register L is incremented.
+
+When executing RTI, the C:PC pair is loaded from the IA amenity pointer, and the local-page index in register L is incremented.
 
 While executing a trap or when writing a target page-index into the effect register C (call), the program counter is set to 0 (!) and the target page index is loaded into C, so that execution in the target page always starts at offset zero, the page "head".
 
@@ -177,7 +179,7 @@ As mentioned, registers B (base) and O (offset) form a 16-bit pointer for memory
 
 There are four 16-bit amenity registers into which the B:O pointer can be saved, or from which it can be loaded in a single instruction (instruction group BOP). For instance: BOP1 stores the B:O pointer into P1, and P1BO stores P1 into B:O.
 
-See the note on usage conventions for these pointers in the "Programming" section.
+The fourth amenity pointer (P4 => IA) is reserved for trap and interrupt operation. See the note on usage conventions for these pointers in the "Programming" section.
 
 #### Interrupts
 
@@ -187,7 +189,7 @@ At the beginning of each instruction cycle, the CPU checks whether an Interrupt 
 
 If the BUSY flag is not set, and the page index in C is not zero, the CPU injects a "fake" TRAP call instruction to page 0, instead of fetching a proper instruction opcode. By entering page 0, an interrupt service routine in page zero at address-offset 0 is run.
 
-To re-enable interrupts, the software must execute an RTI instruction (Return from Interrupt). RTI behaves identically to RTS (Return from Subroutine), but clears the BUSY flag. As long as the BUSY flag remains set, downstream service routines or other code will not be interrupted by interrupts.
+To re-enable interrupts, the software must execute an RTI instruction (Return from Interrupt). RTI behaves like RTS (Return from Subroutine), but clears the BUSY flag and uses a separate pointer register (IA) to save/restore the return address. As long as the BUSY flag remains set, downstream service routines or other code will not be interrupted by interrupts.
 
 The interrupt service subroutine once it returns resumes execution at the point in code where the interrupt occurred.
 
@@ -478,13 +480,15 @@ The firmware currently sets K to page 34, so that xK instructions set the B:O po
 
 (A table of these will be maintained here)
 
-##### Page 35 (2300h) - Stack and S4 Pointer
+##### Page 35 (2300h) - Stack and P3 Pointer
 
-The amenity pointer P4 is currently reserved as a system wide parameter stack pointer, and it is set to 23FFh, growing towards lower addresses. If your routines use it for other purposes, you should restore its value on return. P1 can be used as a scratch register for P:O.
+The amenity pointer P3 is currently reserved as a system wide stack pointer, which serves as parameter stack pointer and threading token pointer, and it is set to 23FFh, growing towards lower addresses. If your routines use it for other purposes, you should restore its value on return.
 
 ##### Page 36 (2400h) - Threading Stack
 
-To experiment with threaded code, amenity pointer P3 is currently reserved as a system wide threading stack pointer, set to 24FFh. P2 is reserved as the threading token pointer. If you use it for other purposes, you should restore its value on return.
+Amenity pointer P2 is currently reserved as a system wide threading stack pointer, set to 24FFh.
+
+P1 can be used as a scratch register for the base pointer (P:O).
 
 #### Other Points
 
@@ -554,9 +558,9 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0x02: SSO	Shift serial bit out
     0x03: SCL	Set serial clock low
     0x04: SCH	Set serial clock high
-    0x05: RTS	Return from interrupt
-    0x06: RTI	Return from subroutine
-    0x07: COR	Set C to B. Set PC to O. Save return pointer into B:O
+    0x05: RTS	Return from subroutine
+    0x06: RTI	Return from interrupt
+    0x07: COR	Coroutine Jump
     
     Group BOP
     
@@ -569,8 +573,8 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0x0C: P3BO	Copy pointer P3 into B:O
     0x0D: BOP3	Copy B:O into pointer P3
     
-    0x0E: P4BO	Copy pointer P4 into B:O
-    0x0F: BOP4	Copy B:O into pointer p4
+    0x0E: IABO	Copy pointer IA into B:O
+    0x0F: BOIA	Copy B:O into pointer IA
     
     Group ALU
     
@@ -706,7 +710,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0x81: KEY	Copy register B into K
     0x82: FB	Take M[C:PC++] into B
     0x83: FO	Take M[C:PC++] into O
-    0x84: FA	Take M[C:PC++] into A
+    0x84: FA	Push M[C:PC++] into Acc
     0x85: FD	Take M[C:PC++] into D
     0x86: FS	Take M[C:PC++] into SOR
     0x87: FP	Take M[C:PC++] into POR
@@ -723,7 +727,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0x91: CODE	Copy pointer C:PC into B:O
     0x92: MB	Take M[B:O] into B
     0x93: MO	Take M[B:O] into O
-    0x94: MA	Take M[B:O] into A
+    0x94: MA	Push M[B:O] into Acc
     0x95: MD	Take M[B:O] into D
     0x96: MS	Take M[B:O] into SOR
     0x97: MP	Take M[B:O] into POR
@@ -740,7 +744,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xA1: BM	Take B into M[B:O]
     0xA2: LOCAL	Copy pointer L:F7h (L0) into B:O
     0xA3: BO	Take B into O
-    0xA4: BA	Take B into A
+    0xA4: BA	PushB into Acc
     0xA5: BD	Take B into D
     0xA6: BS	Take B into SOR
     0xA7: BP	Take B into POR
@@ -757,7 +761,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xB1: OM	Take O into M[B:O]
     0xB2: OB	Take O into B
     0xB3: LEAVE	Increment L
-    0xB4: OA	Take O into A
+    0xB4: OA	Push O into Acc
     0xB5: OD	Take O into D
     0xB6: OS	Take O into SOR
     0xB7: OP	Take O into POR
@@ -791,7 +795,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xD1: DM	Take D into M[B:O]
     0xD2: DB	Take D into B
     0xD3: DO	Take D into O
-    0xD4: DA	Take D into A
+    0xD4: DA	Push D into Acc
     0xD5: INC	Increment A
     0xD6: DS	Take D into SOR
     0xD7: DP	Take D into POR
@@ -808,7 +812,7 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xE1: SM	Take SIR into M[B:O]
     0xE2: SB	Take SIR into B
     0xE3: SO	Take SIR into O
-    0xE4: SA	Take SIR into A
+    0xE4: SA	Push SIR into Acc
     0xE5: SD	Take SIR into D
     0xE6: DEC	Decrement A
     0xE7: SP	Take SIR into POR
@@ -825,10 +829,10 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xF1: PM	Take PIR into M[B:O]
     0xF2: PB	Take PIR into B
     0xF3: PO	Take PIR into O
-    0xF4: PA	Take PIR into A
+    0xF4: PA	Push PIR into Acc
     0xF5: PD	Take PIR into D
     0xF6: PS	Take PIR into SOR
-    0xF7: EA	Copy E to A
+    0xF7: EA	Push E into Acc
     0xF8: PE	Take PIR into E, sets device enable signals
     0xF9: PK	Take PIR into O, load K into B
     0xFA: PU	Take PIR as 8-bit signed number and add it to 16-bit pointer B:O
@@ -839,294 +843,4 @@ There is a "hidden" local variable shortcut "L0". You can obtain a pointer to th
     0xFF: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
     (base) ➜  mystuff git:(main) ✗ clang opcode_details.c
     (base) ➜  mystuff git:(main) ✗ a.out                 
-    Group SYS
-    
-    0x00: NOP	Pass the turn (no operation)
-    0x01: SSI	Shift serial bit in
-    0x02: SSO	Shift serial bit out
-    0x03: SCL	Set serial clock low
-    0x04: SCH	Set serial clock high
-    0x05: RTS	Return from interrupt
-    0x06: RTI	Return from subroutine
-    0x07: COR	Set C to B. Set PC to O. Save return pointer into B:O
-    
-    Group BOP
-    
-    0x08: P1BO	Copy pointer P1 into B:O
-    0x09: BOP1	Copy B:O into pointer P1
-    
-    0x0A: P2BO	Copy pointer P2 into B:O
-    0x0B: BOP2	Copy B:O into pointer P2
-    
-    0x0C: P3BO	Copy pointer P3 into B:O
-    0x0D: BOP3	Copy B:O into pointer P3
-    
-    0x0E: P4BO	Copy pointer P4 into B:O
-    0x0F: BOP4	Copy B:O into pointer p4
-    
-    Group ALU
-    
-    0x10: NOT	Set A to one's complement of A , X unchanged
-    0x11: ALX	Flag (A<X) in A (255 if true, 0 if false), X unchanged
-    0x12: AEX	Flag (A==X) in A (255 if true, 0 if false), X unchanged
-    0x13: AGX	Flag (A>X) in A (255 if true, 0 if false), X unchanged
-    0x14: AND	Set A to (A AND X), X unchanged
-    0x15: IOR	Set A to (A OR X), X unchanged
-    0x16: EOR	Set A to (A XOR X), X unchanged
-    0x17: XA	Set A equal to X, X unchanged
-    0x18: AX	Set X equal to A
-    0x19: SWAP	Swap A and X
-    0x1A: SHL	Shift A left, result in A, set X to previous MSB of A as LSB (0 or 1)
-    0x1B: SHR	Shift A right logically, result in A, set X to previous LSB of A as MSB (0 or 80h)
-    0x1C: ASR	Shift A right arithmetically, set X to previous LSB of A as MSB (0 or 80h)
-    0x1D: ADDC	Add A to X, result in A, CARRY bit in X (0 or 1)
-    0x1E: ADDV	Add A to X, result in A, OVERFLOW flag in X (255 if OVF, else 0)
-    0x1F: SUBB	Subtract A from X, result in A, BORROW bit in X (0 or 1)
-    
-    Group TRAP
-    
-    0x20: *0	Trap call to page 0, offset 0 - Set BUSY flag
-    0x21: *1	Trap call to page 1, offset 0
-    0x22: *2	Trap call to page 2, offset 0
-    0x23: *3	Trap call to page 3, offset 0
-    0x24: *4	Trap call to page 4, offset 0
-    0x25: *5	Trap call to page 5, offset 0
-    0x26: *6	Trap call to page 6, offset 0
-    0x27: *7	Trap call to page 7, offset 0
-    0x28: *8	Trap call to page 8, offset 0
-    0x29: *9	Trap call to page 9, offset 0
-    0x2A: *10	Trap call to page 10, offset 0
-    0x2B: *11	Trap call to page 11, offset 0
-    0x2C: *12	Trap call to page 12, offset 0
-    0x2D: *13	Trap call to page 13, offset 0
-    0x2E: *14	Trap call to page 14, offset 0
-    0x2F: *15	Trap call to page 15, offset 0
-    0x30: *16	Trap call to page 16, offset 0
-    0x31: *17	Trap call to page 17, offset 0
-    0x32: *18	Trap call to page 18, offset 0
-    0x33: *19	Trap call to page 19, offset 0
-    0x34: *20	Trap call to page 20, offset 0
-    0x35: *21	Trap call to page 21, offset 0
-    0x36: *22	Trap call to page 22, offset 0
-    0x37: *23	Trap call to page 23, offset 0
-    0x38: *24	Trap call to page 24, offset 0
-    0x39: *25	Trap call to page 25, offset 0
-    0x3A: *26	Trap call to page 26, offset 0
-    0x3B: *27	Trap call to page 27, offset 0
-    0x3C: *28	Trap call to page 28, offset 0
-    0x3D: *29	Trap call to page 29, offset 0
-    0x3E: *30	Trap call to page 30, offset 0
-    0x3F: *31	Trap call to page 31, offset 0
-    
-    Group GETPUT
-    
-    0x40: 1b	Load B from L1 (M[L:F8h])
-    0x41: 2b	Load B from L2 (M[L:F9h])
-    0x42: 3b	Load B from L3 (M[L:FAh])
-    0x43: 4b	Load B from L4 (M[L:FBh])
-    0x44: 5b	Load B from L5 (M[L:FCh])
-    0x45: 6b	Load B from L6 (M[L:FDh])
-    0x46: 7b	Load B from L7 (M[L:FEh])
-    0x47: 8b	Load B from L8 (M[L:FFh])
-    
-    0x48: b1	Store B into L1 (M[L:F8h])
-    0x49: b2	Store B into L2 (M[L:F9h])
-    0x4A: b3	Store B into L3 (M[L:FAh])
-    0x4B: b4	Store B into L4 (M[L:FBh])
-    0x4C: b5	Store B into L5 (M[L:FCh])
-    0x4D: b6	Store B into L6 (M[L:FDh])
-    0x4E: b7	Store B into L7 (M[L:FEh])
-    0x4F: b8	Store B into L8 (M[L:FFh])
-    
-    0x50: 1o	Load O from L1 (M[L:F8h])
-    0x51: 2o	Load O from L2 (M[L:F9h])
-    0x52: 3o	Load O from L3 (M[L:FAh])
-    0x53: 4o	Load O from L4 (M[L:FBh])
-    0x54: 5o	Load O from L5 (M[L:FCh])
-    0x55: 6o	Load O from L6 (M[L:FDh])
-    0x56: 7o	Load O from L7 (M[L:FEh])
-    0x57: 8o	Load O from L8 (M[L:FFh])
-    
-    0x58: o1	Store O into L1 (M[L:F8h])
-    0x59: o2	Store O into L2 (M[L:F9h])
-    0x5A: o3	Store O into L3 (M[L:FAh])
-    0x5B: o4	Store O into L4 (M[L:FBh])
-    0x5C: o5	Store O into L5 (M[L:FCh])
-    0x5D: o6	Store O into L6 (M[L:FDh])
-    0x5E: o7	Store O into L7 (M[L:FEh])
-    0x5F: o8	Store O into L8 (M[L:FFh])
-    
-    0x60: 1a	Load A from L1 (M[L:F8h])
-    0x61: 2a	Load A from L2 (M[L:F9h])
-    0x62: 3a	Load A from L3 (M[L:FAh])
-    0x63: 4a	Load A from L4 (M[L:FBh])
-    0x64: 5a	Load A from L5 (M[L:FCh])
-    0x65: 6a	Load A from L6 (M[L:FDh])
-    0x66: 7a	Load A from L7 (M[L:FEh])
-    0x67: 8a	Load A from L8 (M[L:FFh])
-    
-    0x68: a1	Store A into L1 (M[L:F8h])
-    0x69: a2	Store A into L2 (M[L:F9h])
-    0x6A: a3	Store A into L3 (M[L:FAh])
-    0x6B: a4	Store A into L4 (M[L:FBh])
-    0x6C: a5	Store A into L5 (M[L:FCh])
-    0x6D: a6	Store A into L6 (M[L:FDh])
-    0x6E: a7	Store A into L7 (M[L:FEh])
-    0x6F: a8	Store A into L8 (M[L:FFh])
-    
-    0x70: 1d	Load D from L1 (M[L:F8h])
-    0x71: 2d	Load D from L2 (M[L:F9h])
-    0x72: 3d	Load D from L3 (M[L:FAh])
-    0x73: 4d	Load D from L4 (M[L:FBh])
-    0x74: 5d	Load D from L5 (M[L:FCh])
-    0x75: 6d	Load D from L6 (M[L:FDh])
-    0x76: 7d	Load D from L7 (M[L:FEh])
-    0x77: 8d	Load D from L8 (M[L:FFh])
-    
-    0x78: d1	Store D into L1 (M[L:F8h])
-    0x79: d2	Store D into L2 (M[L:F9h])
-    0x7A: d3	Store D into L3 (M[L:FAh])
-    0x7B: d4	Store D into L4 (M[L:FBh])
-    0x7C: d5	Store D into L5 (M[L:FCh])
-    0x7D: d6	Store D into L6 (M[L:FDh])
-    0x7E: d7	Store D into L7 (M[L:FEh])
-    0x7F: d8	Store D into L8 (M[L:FFh])
-    
-    Group PAIR
-    
-    0x80: FC	Take M[C:PC++] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    0x81: KEY	Copy register B into K (done instead of FM!)
-    0x82: FB	Take M[C:PC++] into B
-    0x83: FO	Take M[C:PC++] into O
-    0x84: FA	Take M[C:PC++] into A
-    0x85: FD	Take M[C:PC++] into D
-    0x86: FS	Take M[C:PC++] into SOR
-    0x87: FP	Take M[C:PC++] into POR
-    0x88: FD	Take M[C:PC++] into E, sets device enable signals
-    0x89: FK	Take M[C:PC++] into O, load K into B
-    0x8A: FU	Take M[C:PC++] as 8-bit signed number and add it to 16-bit pointer B:O
-    0x8B: FW	Take M[C:PC++] as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0x8C: FJ	Take M[C:PC++] as page offset and store it into PC - always
-    0x8D: FH	Take M[C:PC++] as page offset and store it into PC - if A is not equal to zero
-    0x8E: FZ	Take M[C:PC++] as page offset and store it into PC - if A is equal to zero
-    0x8F: FN	Take M[C:PC++] as page offset and store it into PC - if A is negative (has bit 7 set)
-    
-    0x90: MC	Take M[B:O] as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    0x91: CODE	Copy pointer C:PC into B:O (done instead of MM!)
-    0x92: MB	Take M[B:O] into B
-    0x93: MO	Take M[B:O] into O
-    0x94: MA	Take M[B:O] into A
-    0x95: MD	Take M[B:O] into D
-    0x96: MS	Take M[B:O] into SOR
-    0x97: MP	Take M[B:O] into POR
-    0x98: MD	Take M[B:O] into E, sets device enable signals
-    0x99: MK	Take M[B:O] into O, load K into B
-    0x9A: MU	Take M[B:O] as 8-bit signed number and add it to 16-bit pointer B:O
-    0x9B: MW	Take M[B:O] as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0x9C: MJ	Take M[B:O] as page offset and store it into PC - always
-    0x9D: MH	Take M[B:O] as page offset and store it into PC - if A is not equal to zero
-    0x9E: MZ	Take M[B:O] as page offset and store it into PC - if A is equal to zero
-    0x9F: MN	Take M[B:O] as page offset and store it into PC - if A is negative (has bit 7 set)
-    
-    0xA0: BC	Take B as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    0xA1: BM	Take B into M[B:O]
-    0xA2: LOCAL	Copy pointer L:F7h (L0) into B:O (done instead of BB!)
-    0xA3: BO	Take B into O
-    0xA4: BA	Take B into A
-    0xA5: BD	Take B into D
-    0xA6: BS	Take B into SOR
-    0xA7: BP	Take B into POR
-    0xA8: BD	Take B into E, sets device enable signals
-    0xA9: BK	Take B into O, load K into B
-    0xAA: BU	Take B as 8-bit signed number and add it to 16-bit pointer B:O
-    0xAB: BW	Take B as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xAC: BJ	Take B as page offset and store it into PC - always
-    0xAD: BH	Take B as page offset and store it into PC - if A is not equal to zero
-    0xAE: BZ	Take B as page offset and store it into PC - if A is equal to zero
-    0xAF: BN	Take B as page offset and store it into PC - if A is negative (has bit 7 set)
-    
-    0xB0: OC	Take O as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    0xB1: OM	Take O into M[B:O]
-    0xB2: OB	Take O into B
-    0xB3: LEAVE	Increment L (done instead of OO!)
-    0xB4: OA	Take O into A
-    0xB5: OD	Take O into D
-    0xB6: OS	Take O into SOR
-    0xB7: OP	Take O into POR
-    0xB8: OD	Take O into E, sets device enable signals
-    0xB9: OK	Take O into O, load K into B
-    0xBA: OU	Take O as 8-bit signed number and add it to 16-bit pointer B:O
-    0xBB: OW	Take O as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xBC: OJ	Take O as page offset and store it into PC - always
-    0xBD: OH	Take O as page offset and store it into PC - if A is not equal to zero
-    0xBE: OZ	Take O as page offset and store it into PC - if A is equal to zero
-    0xBF: ON	Take O as page offset and store it into PC - if A is negative (has bit 7 set)
-    
-    0xC0: AC	Take A as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    0xC1: AM	Take A into M[B:O]
-    0xC2: AB	Take A into B
-    0xC3: AO	Take A into O
-    0xC4: ENTER	Decrement L (done instead of AA!)
-    0xC5: AD	Take A into D
-    0xC6: AS	Take A into SOR
-    0xC7: AP	Take A into POR
-    0xC8: AD	Take A into E, sets device enable signals
-    0xC9: AK	Take A into O, load K into B
-    0xCA: AU	Take A as 8-bit signed number and add it to 16-bit pointer B:O
-    0xCB: AW	Take A as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xCC: AJ	Take A as page offset and store it into PC - always
-    0xCD: AH	Take A as page offset and store it into PC - if A is not equal to zero
-    0xCE: AZ	Take A as page offset and store it into PC - if A is equal to zero
-    0xCF: AN	Take A as page offset and store it into PC - if A is negative (has bit 7 set)
-    
-    0xD0: DC	Take D as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    0xD1: DM	Take D into M[B:O]
-    0xD2: DB	Take D into B
-    0xD3: DO	Take D into O
-    0xD4: DA	Take D into A
-    0xD5: INC	Increment A (done instead of DD!)
-    0xD6: DS	Take D into SOR
-    0xD7: DP	Take D into POR
-    0xD8: DD	Take D into E, sets device enable signals
-    0xD9: DK	Take D into O, load K into B
-    0xDA: DU	Take D as 8-bit signed number and add it to 16-bit pointer B:O
-    0xDB: DW	Take D as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xDC: DJ	Take D as page offset and store it into PC - always
-    0xDD: DH	Take D as page offset and store it into PC - if A is not equal to zero
-    0xDE: DZ	Take D as page offset and store it into PC - if A is equal to zero
-    0xDF: DN	Take D as page offset and store it into PC - if A is negative (has bit 7 set)
-    
-    0xE0: SC	Take SIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    0xE1: SM	Take SIR into M[B:O]
-    0xE2: SB	Take SIR into B
-    0xE3: SO	Take SIR into O
-    0xE4: SA	Take SIR into A
-    0xE5: SD	Take SIR into D
-    0xE6: DEC	Decrement A (done instead of SS!)
-    0xE7: SP	Take SIR into POR
-    0xE8: SD	Take SIR into E, sets device enable signals
-    0xE9: SK	Take SIR into O, load K into B
-    0xEA: SU	Take SIR as 8-bit signed number and add it to 16-bit pointer B:O
-    0xEB: SW	Take SIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xEC: SJ	Take SIR as page offset and store it into PC - always
-    0xED: SH	Take SIR as page offset and store it into PC - if A is not equal to zero
-    0xEE: SZ	Take SIR as page offset and store it into PC - if A is equal to zero
-    0xEF: SN	Take SIR as page offset and store it into PC - if A is negative (has bit 7 set)
-    
-    0xF0: PC	Take PIR as page-index, load the index into C, set PC to 0. Save return pointer into B:O. Decrement L
-    0xF1: PM	Take PIR into M[B:O]
-    0xF2: PB	Take PIR into B
-    0xF3: PO	Take PIR into O
-    0xF4: PA	Take PIR into A
-    0xF5: PD	Take PIR into D
-    0xF6: PS	Take PIR into SOR
-    0xF7: EA	Copy E to A (done instead of PP!)
-    0xF8: PD	Take PIR into E, sets device enable signals
-    0xF9: PK	Take PIR into O, load K into B
-    0xFA: PU	Take PIR as 8-bit signed number and add it to 16-bit pointer B:O
-    0xFB: PW	Take PIR as page offset and store it into PC - while register D is not zero. In either case, decrement D
-    0xFC: PJ	Take PIR as page offset and store it into PC - always
-    0xFD: PH	Take PIR as page offset and store it into PC - if A is not equal to zero
-    0xFE: PZ	Take PIR as page offset and store it into PC - if A is equal to zero
-    0xFF: PN	Take PIR as page offset and store it into PC - if A is negative (has bit 7 set)
-
+  

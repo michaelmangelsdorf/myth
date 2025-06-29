@@ -61,7 +61,7 @@ uint8_t o;     /* Base Page-Offset Register */
 uint8_t p1b, p1o; /* Page-index, page-offset parts */
 uint8_t p2b, p2o;
 uint8_t p3b, p3o;
-uint8_t p4b, p4o;
+uint8_t iab, iao;
 
 /* Amenity Page-Index */
 
@@ -183,7 +183,14 @@ trap( uint8_t opcode)
 {
         uint8_t dstpage = opcode & 31; /* Keep low order 5 bits only */
         if (dstpage==0) busy = 1;      /* Unique side-effect of TRAP0 */
-        call( dstpage);
+
+        iao = pc;      /* Save page offset of return instruction */
+        pc = 0;      /* Always branch to page head: offset 0*/
+
+        iab = c;       /* Save page-index of return instruction */
+        c = dstpage;
+
+        l--;         /*Create stack frame*/
 }
 
 
@@ -439,8 +446,8 @@ bop( uint8_t opcode)
 #define BOP2 3
 #define P3BO 4 
 #define BOP3 5
-#define P4BO 6 
-#define BOP4 7
+#define IABO 6 
+#define BOIA 7
 
         switch(opcode & 7){
                 case P1BO: b=p1b; o=p1o; break;
@@ -452,8 +459,8 @@ bop( uint8_t opcode)
                 case P3BO: b=p3b; o=p3o; break;
                 case BOP3: p3b=b; p3o=o; break;
                 
-                case P4BO: b=p4b; o=p4o; break;
-                case BOP4: p4b=b; p4o=o; break;
+                case IABO: b=iab; o=iao; break;
+                case BOIA: iab=b; iao=o; break;
         }
 }
 
@@ -486,8 +493,13 @@ sys( uint8_t opcode)
                         break;
                 case SCL: sclk = 0; break;
                 case SCH: sclk = 1; break;
-                case RTI: busy = 0;
-                          /* Fall through! */
+                case RTI:
+                        busy = 0;
+                        c = iab;
+                        pc = iao;
+                        l++;
+                        break;
+
                 case RTS:
                         c = b;
                         pc = o;

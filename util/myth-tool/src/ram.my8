@@ -14,8 +14,8 @@
 
 0@IRQ: fb #KEYPAGE, KEY
        fo FFh
-       fb #PSTACK, BOP4
-       fb #TSTACK, BOP3
+       fb #PSTACK, BOP3
+       fb #TSTACK, BOP2
 
        fa 7 fa 3 fc >MUL8 a1 xa a2 ; a2 = 21
        fa 88 fa 19 fc >DIVMOD8 a1 xa a2 ;   4 rem 12
